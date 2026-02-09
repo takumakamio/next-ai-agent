@@ -1,0 +1,19 @@
+services:
+  db:
+    image: pgvector/pgvector:pg18
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_DB: next_ai_agent
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  voicevox:
+    image: voicevox/voicevox_engine:cpu-ubuntu20.04-latest
+    ports:
+      - '50021:50021'
+
+volumes:
+  pgdata:

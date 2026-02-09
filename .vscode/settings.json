@@ -1,0 +1,16 @@
+{
+  "editor.codeActionsOnSave": {
+    "quickfix.biome": "explicit",
+    "source.organizeImports.biome": "explicit"
+  },
+  "editor.defaultFormatter": "biomejs.biome",
+  "[javascript]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "search.useGlobalIgnoreFiles": true,
+  "search.exclude": {
+    "": true
+  },
+  "search.useParentIgnoreFiles": true,
+  "css.customData": [".vscode/tailwind.json"]
+}

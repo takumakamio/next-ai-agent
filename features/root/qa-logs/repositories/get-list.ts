@@ -1,0 +1,151 @@
+import { count, desc, getDB, ilike, or } from '@/db'
+import { languages, qaLogs, qaTranslations } from '@/db/schema/_index'
+import { and, eq } from 'drizzle-orm'
+
+export type GetQaLogsListOptions = {
+  locale: string
+  page: number
+  limit: number
+  search?: string
+}
+
+export type GetQaLogsListResult = {
+  data: any[]
+  meta: {
+    page: number
+    limit: number
+    total: number
+    totalPages: number
+  }
+}
+
+export async function getQaLogsList(options: GetQaLogsListOptions): Promise<GetQaLogsListResult> {
+  const db = getDB()
+  const { locale, page, limit, search } = options
+  const offset = (page - 1) * limit
+
+  const language = await db.query.languages.findFirst({
+    where: eq(languages.code, locale),
+  })
+
+  if (!language) {
+    return { data: [], meta: { page, limit, total: 0, totalPages: 0 } }
+  }
+
+  let total = 0
+  let data: {
+    id: string
+    chatSessionId: string | null
+    userQuestion: string
+    aiAnswer: string | null
+    similarityScore: number | null
+    userRating: number | null
+    userFeedback: string | null
+    responseTime: number | null
+    qaId: string | null
+    qaTranslationId: number | null
+    languageId: number
+    createdAt: Date
+    updatedAt: Date | null
+    qaQuestion: string | null
+  }[] = []
+
+  if (search) {
+    const searchPattern = `%${search}%`
+
+    const whereConditions = or(
+      ilike(qaLogs.id, searchPattern),
+      ilike(qaLogs.userQuestion, searchPattern),
+      ilike(qaLogs.aiAnswer, searchPattern),
+      ilike(qaTranslations.question, searchPattern),
+    )
+
+    const [countResult] = await db
+      .select({ total: count() })
+      .from(qaLogs)
+      .leftJoin(
+        qaTranslations,
+        and(eq(qaTranslations.id, qaLogs.qaTranslationId), eq(qaTranslations.languageId, language.id)),
+      )
+      .where(whereConditions)
+    total = countResult.total
+
+    data = await db
+      .select({
+        id: qaLogs.id,
+        chatSessionId: qaLogs.chatSessionId,
+        userQuestion: qaLogs.userQuestion,
+        aiAnswer: qaLogs.aiAnswer,
+        similarityScore: qaLogs.similarityScore,
+        userRating: qaLogs.userRating,
+        userFeedback: qaLogs.userFeedback,
+        responseTime: qaLogs.responseTime,
+        qaId: qaLogs.qaId,
+        qaTranslationId: qaLogs.qaTranslationId,
+        languageId: qaLogs.languageId,
+        createdAt: qaLogs.createdAt,
+        updatedAt: qaLogs.updatedAt,
+        qaQuestion: qaTranslations.question,
+      })
+      .from(qaLogs)
+      .leftJoin(
+        qaTranslations,
+        and(eq(qaTranslations.id, qaLogs.qaTranslationId), eq(qaTranslations.languageId, language.id)),
+      )
+      .where(whereConditions)
+      .orderBy(desc(qaLogs.createdAt))
+      .limit(limit)
+      .offset(offset)
+  } else {
+    const [countResult] = await db.select({ total: count() }).from(qaLogs)
+    total = countResult.total
+
+    data = await db
+      .select({
+        id: qaLogs.id,
+        chatSessionId: qaLogs.chatSessionId,
+        userQuestion: qaLogs.userQuestion,
+        aiAnswer: qaLogs.aiAnswer,
+        similarityScore: qaLogs.similarityScore,
+        userRating: qaLogs.userRating,
+        userFeedback: qaLogs.userFeedback,
+        responseTime: qaLogs.responseTime,
+        qaId: qaLogs.qaId,
+        qaTranslationId: qaLogs.qaTranslationId,
+        languageId: qaLogs.languageId,
+        createdAt: qaLogs.createdAt,
+        updatedAt: qaLogs.updatedAt,
+        qaQuestion: qaTranslations.question,
+      })
+      .from(qaLogs)
+      .leftJoin(
+        qaTranslations,
+        and(eq(qaTranslations.id, qaLogs.qaTranslationId), eq(qaTranslations.languageId, language.id)),
+      )
+      .orderBy(desc(qaLogs.createdAt))
+      .limit(limit)
+      .offset(offset)
+  }
+
+  const transformedData = data.map((qaLog) => {
+    return {
+      ...qaLog,
+      deletedAt: null,
+      userQuestionEmbedding: null,
+      embeddingModel: null,
+      qaQuestion: qaLog.qaQuestion || '',
+    }
+  })
+
+  const totalPages = Math.ceil(total / limit)
+
+  return {
+    data: transformedData,
+    meta: {
+      page,
+      limit,
+      total,
+      totalPages,
+    },
+  }
+}
