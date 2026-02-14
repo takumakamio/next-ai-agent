@@ -17,10 +17,8 @@ export const seedTags: TagSeed[] = [
     translations: {
       ja: '一般',
       en: 'General',
-
     },
   },
- 
 ]
 
 // タグのシード関数

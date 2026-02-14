@@ -21,6 +21,7 @@ const conversationRequestSchema = z.object({
   history: z.array(conversationExchangeSchema).max(5).optional().default([]),
   locale: z.string().optional().default('ja'),
   chatSessionId: z.string().optional(),
+  aiModel: z.enum(['gemini-2.5-flash', 'gemini-2.5-pro', 'gemini-2.0-flash']).optional().default('gemini-2.0-flash'),
 })
 
 const qaSearchResultSchema = z.object({
@@ -126,7 +127,7 @@ export const conversationRoute = new OpenAPIHono<{ Variables: Bindings }>().open
         )
       }
 
-      const { question, history, chatSessionId } = c.req.valid('json')
+      const { question, history, chatSessionId, aiModel } = c.req.valid('json')
       const requestLocale = c.get('locale')
       const limitedHistory = history.slice(-5)
       const relevantQAs = await searchRelevantQAs(question, requestLocale, 3)
@@ -155,7 +156,7 @@ Important instructions:
       const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY })
 
       const response = await ai.models.generateContent({
-        model: 'gemini-2.0-flash',
+        model: aiModel,
         contents: fullPrompt,
       })
 

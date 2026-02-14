@@ -1,6 +1,6 @@
-import postgres from 'postgres'
 import { config } from 'dotenv'
 import { drizzle } from 'drizzle-orm/postgres-js'
+import postgres from 'postgres'
 import * as schema from './schema/_index'
 import { seedLanguagesData } from './seeds/language'
 import { seedQasData } from './seeds/qa'

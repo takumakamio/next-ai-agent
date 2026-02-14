@@ -10,8 +10,7 @@ export const seedLanguages = [
     code: 'en',
     name: 'English',
     isDefault: false,
-  }
-  
+  },
 ]
 
 export async function seedLanguagesData(db: any) {

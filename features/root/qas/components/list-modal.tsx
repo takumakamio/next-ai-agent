@@ -1,13 +1,13 @@
 import { Button } from '@/components/ui'
 import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
-import type { QaCategory, QaContentType, RootQa } from '../schema'
-import { QA_CATEGORIES, QA_CONTENT_TYPES } from '../schema'
 import { clientFetch } from '@/lib/client-fetcher'
 import { rpc } from '@/lib/rpc'
 import { Calendar, ChevronRight, Eye, X } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
 import type React from 'react'
 import { useCallback, useEffect, useRef, useState } from 'react'
+import type { QaCategory, QaContentType, RootQa } from '../schema'
+import { QA_CATEGORIES, QA_CONTENT_TYPES } from '../schema'
 import { QaDetailModal } from './detail-modal'
 
 interface QaListModalProps {
@@ -108,7 +108,9 @@ export const QaListModal: React.FC<QaListModalProps> = ({ isOpen, onClose }) => 
                 <DrawerTitle className="text-2xl font-black uppercase tracking-widest text-foreground">
                   {t('FrequentlyAskedQuestions')}
                 </DrawerTitle>
-                <DrawerDescription className="text-muted-foreground">{t('BrowseCommonQuestionsAndAnswers')}</DrawerDescription>
+                <DrawerDescription className="text-muted-foreground">
+                  {t('BrowseCommonQuestionsAndAnswers')}
+                </DrawerDescription>
               </div>
               <Button
                 variant="ghost"

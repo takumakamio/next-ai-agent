@@ -20,8 +20,26 @@ interface ManageQaLogTableProps {
   onQaEditClick?: (id: string) => void
 }
 
-export const ManageQaLogTable = ({ data, meta, dataKey, header, onSearchChange, onPageChange, onQaEditClick }: ManageQaLogTableProps) => {
+export const ManageQaLogTable = ({
+  data,
+  meta,
+  dataKey,
+  header,
+  onSearchChange,
+  onPageChange,
+  onQaEditClick,
+}: ManageQaLogTableProps) => {
   const columns = useManageQaLogColumns({ onQaEditClick })
 
-  return <DataTable columns={columns} data={data} meta={meta} dataKey={dataKey} header={header} onSearchChange={onSearchChange} onPageChange={onPageChange} />
+  return (
+    <DataTable
+      columns={columns}
+      data={data}
+      meta={meta}
+      dataKey={dataKey}
+      header={header}
+      onSearchChange={onSearchChange}
+      onPageChange={onPageChange}
+    />
+  )
 }

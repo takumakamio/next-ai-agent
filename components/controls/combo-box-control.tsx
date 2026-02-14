@@ -109,10 +109,7 @@ function ComboboxControl<T extends FieldValues>({
                     {multiple ? (
                       selectedLabels.length > 0 ? (
                         selectedLabels.map((label, index) => (
-                          <span
-                            key={index}
-                            className="bg-primary text-primary-foreground text-xs px-2 py-1 rounded-md"
-                          >
+                          <span key={index} className="bg-primary text-primary-foreground text-xs px-2 py-1 rounded-md">
                             {label}
                           </span>
                         ))

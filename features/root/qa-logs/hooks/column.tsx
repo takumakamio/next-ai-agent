@@ -4,7 +4,9 @@ import type { ColumnDef } from '@tanstack/react-table'
 import { useTranslations } from 'next-intl'
 import type { SelectManageQaLog } from '../schema'
 
-export const useManageQaLogColumns = ({ onQaEditClick }: { onQaEditClick?: (id: string) => void } = {}): ColumnDef<SelectManageQaLog>[] => {
+export const useManageQaLogColumns = ({
+  onQaEditClick,
+}: { onQaEditClick?: (id: string) => void } = {}): ColumnDef<SelectManageQaLog>[] => {
   const t = useTranslations()
   const formatResponseTime = (responseTime: number) => {
     if (responseTime && responseTime > 0) {

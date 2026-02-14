@@ -8,7 +8,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { TextInput } from '@/features/root/home/components/text-input'
-import type { TtsEngine } from '@/hooks/avatar'
+import { AI_MODEL_OPTIONS, type AiModel, type TtsEngine } from '@/hooks/avatar'
 import { useAvatar } from '@/hooks/avatar'
 import { LANGUAGES } from '@/i18n/routing'
 import { VOICEVOX_SPEAKERS } from '@/lib/tts/voicevox'
@@ -41,6 +41,8 @@ export const Menus = () => {
   const ttsSpeakerId = useAvatar((state) => state.ttsSpeakerId)
   const setTtsEngine = useAvatar((state) => state.setTtsEngine)
   const setTtsSpeakerId = useAvatar((state) => state.setTtsSpeakerId)
+  const aiModel = useAvatar((state) => state.aiModel)
+  const setAiModel = useAvatar((state) => state.setAiModel)
 
   const locale = useLocale()
   const t = useTranslations()
@@ -202,11 +204,44 @@ export const Menus = () => {
 
           {/* Horizontal Menu Bar */}
           <div className="flex rounded-xl border border-border bg-card/90 backdrop-blur-md dmp-shadow">
-            {/* TTS Engine */}
+            {/* AI Model */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button
                   className={`${menuButtonClass} w-28 h-36 bg-secondary rounded-l-xl border-r border-border/40 hover:bg-secondary/80`}
+                  disabled={loading || isSpeaking}
+                  aria-label={t('AIModel')}
+                  title={isSpeaking ? 'Avatar is speaking...' : t('AIModel')}
+                >
+                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
+                    <path
+                      d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-4h2v2h-2zm1.61-9.96c-2.06-.3-3.88.97-4.43 2.79-.18.58.26 1.17.87 1.17h.2c.41 0 .74-.29.88-.67.32-.89 1.27-1.5 2.3-1.28.95.2 1.65 1.13 1.57 2.1-.1 1.34-1.62 1.63-2.45 2.88 0 .01-.01.01-.01.02-.01.02-.02.03-.03.05-.09.15-.18.32-.25.5-.01.03-.03.05-.04.08-.01.02-.01.04-.02.07C10.07 14.22 10 14.58 10 15h2c0-.31.05-.59.15-.85.09-.23.2-.44.34-.63.02-.02.03-.04.05-.06.38-.53.97-1.02 1.58-1.39.09-.06.18-.11.27-.17.39-.26.76-.52 1.06-.9.72-.88.94-2.07.56-3.16-.47-1.34-1.77-2.36-3.4-2.6z"
+                      fill="currentColor"
+                    />
+                  </svg>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-foreground">
+                    {t(AI_MODEL_OPTIONS.find((o) => o.value === aiModel)?.labelKey as any)}
+                  </span>
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent side="top" align="start" className="w-56">
+                <DropdownMenuLabel>{t('AIModel')}</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuRadioGroup value={aiModel} onValueChange={(value) => setAiModel(value as AiModel)}>
+                  {AI_MODEL_OPTIONS.map((opt) => (
+                    <DropdownMenuRadioItem key={opt.value} value={opt.value}>
+                      {t(opt.labelKey as any)}
+                    </DropdownMenuRadioItem>
+                  ))}
+                </DropdownMenuRadioGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {/* TTS Engine */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  className={`${menuButtonClass} w-28 h-36 bg-secondary border-r border-border/40 hover:bg-secondary/80`}
                   disabled={loading || isSpeaking}
                   aria-label={t('TTSEngine')}
                   title={isSpeaking ? 'Avatar is speaking...' : t('TTSEngine')}
@@ -333,7 +368,9 @@ export const Menus = () => {
                 <rect x="10" y="8" width="3" height="2" rx="0.5" fill="currentColor" />
                 <rect x="15" y="8" width="4" height="2" rx="0.5" fill="currentColor" />
               </svg>
-              <span className={`text-[10px] font-black uppercase tracking-widest ${isTypingBoxVisible ? 'text-primary-foreground' : 'text-foreground'}`}>
+              <span
+                className={`text-[10px] font-black uppercase tracking-widest ${isTypingBoxVisible ? 'text-primary-foreground' : 'text-foreground'}`}
+              >
                 {t('MenuButtonType')}
               </span>
             </button>

@@ -75,9 +75,7 @@ export const ManageQaForm = ({
     defaultValues,
   })
 
-  const contentTypeOptions = [
-    { value: 'general', label: t('General') },
-  ]
+  const contentTypeOptions = [{ value: 'general', label: t('General') }]
 
   const categoryOptions = [
     { value: 'programming', label: t('Programming') },
@@ -109,9 +107,7 @@ export const ManageQaForm = ({
           {/* Question & Answer */}
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col">
-              <h3 className="text-sm font-black uppercase tracking-wider text-foreground">
-                {t('QuestionAndAnswer')}
-              </h3>
+              <h3 className="text-sm font-black uppercase tracking-wider text-foreground">{t('QuestionAndAnswer')}</h3>
               <p className="text-sm text-muted-foreground">{t('EnterQaContent')}</p>
             </div>
             <div className="flex flex-col gap-4">
@@ -145,7 +141,7 @@ export const ManageQaForm = ({
               <Button
                 type="button"
                 variant="ghost"
-                onClick={() => onCancel ? onCancel() : router.back()}
+                onClick={() => (onCancel ? onCancel() : router.back())}
                 className="h-8 rounded-lg border border-border px-3 text-sm hover:bg-destructive hover:text-destructive-foreground hover:border-destructive"
               >
                 {t('Cancel')}

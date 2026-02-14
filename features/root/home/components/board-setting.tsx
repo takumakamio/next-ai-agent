@@ -7,8 +7,8 @@ export const BoardSettings = () => {
   const t = useTranslations()
   const avatar = useAvatar((state) => state.avatar)
   const setAvatar = useAvatar((state) => state.setAvatar)
-  const travelStyle = useAvatar((state) => state.travelStyle)
-  const setTravelStyle = useAvatar((state) => state.setTravelStyle)
+  const expertiseLevel = useAvatar((state) => state.expertiseLevel)
+  const setExpertiseLevel = useAvatar((state) => state.setExpertiseLevel)
   const [isExpanded, setIsExpanded] = useState(false)
   const [reduceMotion, setReduceMotion] = useState(false)
   const panelRef = useRef<HTMLDivElement>(null)
@@ -73,7 +73,7 @@ export const BoardSettings = () => {
     },
   ]
 
-  const travelStyles = [
+  const expertiseLevels = [
     {
       id: 'beginner',
       name: t('Beginner'),
@@ -126,9 +126,9 @@ export const BoardSettings = () => {
           ${reduceMotion ? '' : 'transition-all duration-200 hover:scale-105'}
           md:hidden
         `}
-        aria-label={isExpanded ? t('CloseTravelPreferences') : t('OpenTravelPreferences')}
+        aria-label={isExpanded ? t('ClosePreferences') : t('OpenPreferences')}
         aria-expanded={isExpanded}
-        aria-controls="travel-preferences-panel"
+        aria-controls="preferences-panel"
       >
         {isExpanded ? <X className="w-5 h-5" /> : <Settings className="w-5 h-5" />}
       </button>
@@ -136,7 +136,7 @@ export const BoardSettings = () => {
       {/* Settings Panel */}
       <div
         ref={panelRef}
-        id="travel-preferences-panel"
+        id="preferences-panel"
         className={`
           fixed md:absolute top-16 md:top-0 right-4 md:-right-80 md:-bottom-12
           w-80 md:w-72 max-h-[calc(100vh-5rem)] md:max-h-none overflow-y-auto
@@ -155,7 +155,7 @@ export const BoardSettings = () => {
             className="text-white font-black uppercase tracking-widest text-lg flex items-center gap-2"
           >
             <Palette className="w-5 h-5" aria-hidden="true" />
-            {t('TravelPreferences')}
+            {t('Preferences')}
           </h3>
           <button
             onClick={() => setIsExpanded(false)}
@@ -166,11 +166,11 @@ export const BoardSettings = () => {
           </button>
         </div>
 
-        {/* Travel Avatar Selection */}
+        {/* Avatar Selection */}
         <fieldset className="mb-6">
           <legend className="text-white/80 font-bold uppercase tracking-wider text-xs mb-3 flex items-center gap-2">
             <User className="w-4 h-4" aria-hidden="true" />
-            {t('YourTravelAvatar')}
+            {t('YourAIAvatar')}
           </legend>
           <div className="space-y-2" role="radiogroup" aria-labelledby="avatar-legend">
             {avatars.map((adv) => (
@@ -182,7 +182,7 @@ export const BoardSettings = () => {
                 aria-describedby={`avatar-${adv.id}-desc`}
               >
                 <div className="font-medium text-base flex items-center gap-2">
-                  <span role="img" aria-label={t('JapanFlag')}>
+                  <span role="img" aria-label={t('Flag')}>
                     {adv.flag}
                   </span>
                   {adv.name}
@@ -196,19 +196,19 @@ export const BoardSettings = () => {
           </div>
         </fieldset>
 
-        {/* Travel Style Selection */}
+        {/* Expertise Level Selection */}
         <fieldset className="mb-6">
           <legend className="text-white/80 font-bold uppercase tracking-wider text-xs mb-3 flex items-center gap-2">
             <DollarSign className="w-4 h-4" aria-hidden="true" />
-            {t('TravelStyle')}
+            {t('ExpertiseLevel')}
           </legend>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2" role="radiogroup">
-            {travelStyles.map((style) => (
+            {expertiseLevels.map((style) => (
               <button
                 key={style.id}
-                className={`${baseButtonClass} ${getButtonVariant(travelStyle === style.id)} p-2`}
-                onClick={() => setTravelStyle(style.id as any)}
-                aria-checked={travelStyle === style.id}
+                className={`${baseButtonClass} ${getButtonVariant(expertiseLevel === style.id)} p-2`}
+                onClick={() => setExpertiseLevel(style.id as any)}
+                aria-checked={expertiseLevel === style.id}
                 aria-describedby={`style-${style.id}-desc`}
               >
                 <div className="font-medium text-sm flex items-center gap-1">
@@ -216,7 +216,7 @@ export const BoardSettings = () => {
                     {style.icon}
                   </span>
                   {style.name}
-                  {travelStyle === style.id && <span className="sr-only">({t('Selected')})</span>}
+                  {expertiseLevel === style.id && <span className="sr-only">({t('Selected')})</span>}
                 </div>
                 <div id={`style-${style.id}-desc`} className="text-xs opacity-75">
                   {style.description}
@@ -240,7 +240,7 @@ export const BoardSettings = () => {
               <div className="flex items-center gap-2">
                 <span className="font-medium">{t('Style')}:</span>
                 <span className="text-accent">
-                  {travelStyles.find((style) => style.id === travelStyle)?.name}
+                  {expertiseLevels.find((style) => style.id === expertiseLevel)?.name}
                 </span>
               </div>
             </div>
@@ -249,10 +249,10 @@ export const BoardSettings = () => {
 
         {/* Accessibility note for screen readers */}
         <div className="sr-only" aria-live="polite">
-          {t('TravelPreferencesPanelStatus', {
+          {t('PreferencesPanelStatus', {
             status: isExpanded ? t('Open') : t('Closed'),
             avatar: avatars.find((adv) => adv.id === avatar)?.name || '',
-            travelStyle: travelStyles.find((style) => style.id === travelStyle)?.name || '',
+            expertiseLevel: expertiseLevels.find((style) => style.id === expertiseLevel)?.name || '',
           })}
         </div>
       </div>

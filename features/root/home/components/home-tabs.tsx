@@ -2,10 +2,10 @@
 
 import { useTranslations } from 'next-intl'
 import { useCallback, useState } from 'react'
-import { Chat } from './chat'
 import { QaLogsTab } from '../../qa-logs/components/qa-logs-tab'
 import { QasTab } from '../../qas/components/qas-tab'
 import { BackgroundSelector } from './background-selector'
+import { Chat } from './chat'
 
 type TabKey = 'chat' | 'qas' | 'qa-logs'
 
@@ -35,10 +35,7 @@ export const HomeTabs = () => {
               onClick={() => setActiveTab(tab.key)}
               className={`
                 px-6 py-3 text-sm font-black uppercase tracking-widest transition-colors rounded-t-lg
-                ${activeTab === tab.key
-                  ? 'bg-primary text-primary-foreground'
-                  : 'text-foreground hover:bg-muted'
-                }
+                ${activeTab === tab.key ? 'bg-primary text-primary-foreground' : 'text-foreground hover:bg-muted'}
               `}
             >
               {tab.label}

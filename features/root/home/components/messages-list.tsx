@@ -1,4 +1,4 @@
-import { type Message, type TravelRecommendation, useAvatar } from '@/hooks/avatar'
+import { type AIResponse, type Message, useAvatar } from '@/hooks/avatar'
 import { Play, Square, Trash2 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { QRCodeSVG } from 'qrcode.react'
@@ -33,7 +33,7 @@ export const MessagesList = (): JSX.Element => {
 
   useEffect(() => {
     try {
-      const savedFontSize = localStorage.getItem('travel-advisor-font-size')
+      const savedFontSize = localStorage.getItem('ai-agent-font-size')
       if (savedFontSize && ['small', 'normal', 'large'].includes(savedFontSize)) {
         setFontSize(savedFontSize)
       }
@@ -87,9 +87,9 @@ export const MessagesList = (): JSX.Element => {
     clearAll()
 
     try {
-      localStorage.removeItem('travel-advisor-conversation-log')
-      localStorage.removeItem('travel-advisor-conversation-history')
-      localStorage.removeItem('travel-advisor-messages')
+      localStorage.removeItem('ai-agent-conversation-log')
+      localStorage.removeItem('ai-agent-conversation-history')
+      localStorage.removeItem('ai-agent-messages')
     } catch (error) {
       console.warn('Could not clear localStorage conversation data:', error)
     }
@@ -98,7 +98,7 @@ export const MessagesList = (): JSX.Element => {
   }, [clearAll, t])
 
   const renderRecommendation = useCallback(
-    (recommendation: TravelRecommendation): JSX.Element => {
+    (recommendation: AIResponse): JSX.Element => {
       return (
         <div className="space-y-4">
           <h3
@@ -134,7 +134,7 @@ export const MessagesList = (): JSX.Element => {
       <div
         className={`${getBoardDimensions()} flex flex-col`}
         role="log"
-        aria-label={t('TravelRecommendationsAndConversations')}
+        aria-label={t('AIResponsesAndConversations')}
         aria-live="polite"
       >
         {/* Accessibility controls and conversation history */}
@@ -149,7 +149,7 @@ export const MessagesList = (): JSX.Element => {
               onChange={(e) => {
                 setFontSize(e.target.value)
                 try {
-                  localStorage.setItem('travel-advisor-font-size', e.target.value)
+                  localStorage.setItem('ai-agent-font-size', e.target.value)
                 } catch (error) {
                   console.warn('Could not save font size to localStorage:', error)
                 }
@@ -178,7 +178,7 @@ export const MessagesList = (): JSX.Element => {
         <div
           className="flex-1 p-4 md:p-6 overflow-y-auto space-y-4 md:space-y-6 focus:outline-none"
           ref={container}
-          aria-label={t('TravelRecommendationsList')}
+          aria-label={t('AIResponsesList')}
         >
           {messages.length === 0 && (
             <div className="h-full w-full grid place-content-center text-center">
@@ -196,7 +196,7 @@ export const MessagesList = (): JSX.Element => {
                   ${fontSize === 'large' ? 'text-4xl md:text-6xl lg:text-7xl' : fontSize === 'small' ? 'text-2xl md:text-4xl lg:text-5xl' : 'text-3xl md:text-5xl lg:text-6xl'}
                 `}
               >
-                {t('TouristInformationCenter')}
+                {t('AppName')}
               </h2>
               <p
                 className={`
@@ -204,7 +204,7 @@ export const MessagesList = (): JSX.Element => {
                   ${fontSize === 'large' ? 'text-xl md:text-2xl' : fontSize === 'small' ? 'text-base md:text-lg' : 'text-lg md:text-xl'}
                 `}
               >
-                {t('YourPersonalTravelPlannerAndGuide')}
+                {t('YourPersonalAIAssistant')}
               </p>
             </div>
           )}
@@ -248,7 +248,6 @@ export const MessagesList = (): JSX.Element => {
                       </div>
                     </div>
                   )}
-
                 </div>
 
                 {/* Audio controls */}
@@ -276,7 +275,6 @@ export const MessagesList = (): JSX.Element => {
           ))}
         </div>
       </div>
-
     </>
   )
 }

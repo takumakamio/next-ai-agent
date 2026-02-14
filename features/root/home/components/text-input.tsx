@@ -1,5 +1,5 @@
 import { LANGUAGES, type Language } from '@/i18n/routing'
-import { BookOpen, Calendar, ChevronDown, ChevronUp, Code, MapPin, Plus, Send, Settings, X } from 'lucide-react'
+import { BookOpen, ChevronDown, ChevronUp, Code, MapPin, Plus, Send, Settings, X } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import type React from 'react'
 import { useCallback, useEffect, useRef, useState } from 'react'
@@ -226,7 +226,7 @@ export const TextInput: React.FC<TextInputProps> = ({
           <input
             ref={inputRef}
             className="flex-1 bg-transparent text-foreground placeholder:text-muted-foreground border-none outline-none px-2 py-1 text-sm"
-            placeholder={t('AskAboutTravel')}
+            placeholder={t('AskAI')}
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
             onKeyDown={handleKeyDown}
@@ -326,11 +326,13 @@ export const TextInput: React.FC<TextInputProps> = ({
               </button>
             </div>
 
-            <p className="text-muted-foreground text-xs">{t('AskMeAboutDestinationsDescription')}</p>
+            <p className="text-muted-foreground text-xs">{t('AskMeAnythingDescription')}</p>
 
             {/* Language Selection in Drawer */}
             <div className="space-y-2">
-              <div className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">{t('Language')}</div>
+              <div className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">
+                {t('Language')}
+              </div>
               <div className="flex border-2 border-border/50 p-0.5 gap-0.5 bg-muted/40">
                 {LANGUAGES.map((lang) => (
                   <button
@@ -363,11 +365,7 @@ export const TextInput: React.FC<TextInputProps> = ({
 
               {/* Compact Suggestions Grid */}
               {showSuggestions && (
-                <div
-                  id="suggestions-panel"
-                  className="grid grid-cols-1 gap-1"
-                  aria-label={t('TravelSuggestionOptions')}
-                >
+                <div id="suggestions-panel" className="grid grid-cols-1 gap-1" aria-label={t('SuggestionOptions')}>
                   {quickSuggestions.map((suggestion, index) => (
                     <button
                       key={index}
@@ -420,7 +418,7 @@ export const TextInput: React.FC<TextInputProps> = ({
               <textarea
                 ref={textareaRef}
                 className="w-full text-foreground placeholder:text-muted-foreground border rounded-lg p-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-ring/80 focus:border-ring/50 disabled:opacity-50 disabled:cursor-not-allowed bg-muted/20 border-border/30"
-                placeholder={t('DescribeYourTravelPlansPlaceholder')}
+                placeholder={t('TypeYourQuestionPlaceholder')}
                 value={question}
                 onChange={(e) => setQuestion(e.target.value)}
                 onKeyDown={handleKeyDown}
@@ -489,10 +487,10 @@ export const TextInput: React.FC<TextInputProps> = ({
 
             {/* Screen reader only helper text */}
             <div id="input-help" className="sr-only">
-              {t('TypeYourTravelQuestionHelperText')}
+              {t('TypeYourQuestionHelperText')}
             </div>
             <div id="submit-help" className="sr-only">
-              {loading ? t('YourQuestionIsBeingProcessed') : t('SubmitYourTravelQuestion')}
+              {loading ? t('YourQuestionIsBeingProcessed') : t('SubmitYourQuestion')}
             </div>
           </div>
         </div>

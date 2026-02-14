@@ -194,7 +194,16 @@ export default function DataTable<TData extends { id: string | number }, TValue>
       id: 'actions',
       header: () => <span className="sr-only">{t('Actions')}</span>,
       cell: ({ row }: { row: Row<TData> }) => (
-        <RowActions row={row} dataKey={dataKey} isView={isView} isNew={isNew} isEdit={isEdit} onDelete={onDelete} onEditClick={onEditClick} onViewClick={onViewClick} />
+        <RowActions
+          row={row}
+          dataKey={dataKey}
+          isView={isView}
+          isNew={isNew}
+          isEdit={isEdit}
+          onDelete={onDelete}
+          onEditClick={onEditClick}
+          onViewClick={onViewClick}
+        />
       ),
       size: 60,
       enableHiding: false,
@@ -333,8 +342,8 @@ export default function DataTable<TData extends { id: string | number }, TValue>
             </AlertDialog>
           )}
           {/* Add new item button */}
-          {isNew && (
-            onNewClick ? (
+          {isNew &&
+            (onNewClick ? (
               <Button
                 onClick={onNewClick}
                 className="ml-auto cursor-pointer rounded-lg border border-primary hover:bg-primary hover:text-primary-foreground"
@@ -351,8 +360,7 @@ export default function DataTable<TData extends { id: string | number }, TValue>
                   <Plus className="opacity-60" size={16} strokeWidth={2} aria-hidden="true" />
                 </Button>
               </Link>
-            )
-          )}
+            ))}
         </div>
       </div>
 
@@ -544,8 +552,8 @@ function RowActions({
           </div>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          {isView && (
-            onViewClick ? (
+          {isView &&
+            (onViewClick ? (
               <DropdownMenuGroup>
                 <DropdownMenuItem onClick={() => onViewClick(String(row.original.id))}>
                   <span>{t('View')}</span>
@@ -561,10 +569,9 @@ function RowActions({
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
               </Link>
-            )
-          )}
-          {isEdit && (
-            onEditClick ? (
+            ))}
+          {isEdit &&
+            (onEditClick ? (
               <DropdownMenuGroup>
                 <DropdownMenuItem onClick={() => onEditClick(String(row.original.id))}>
                   <span>{t('Edit')}</span>
@@ -580,8 +587,7 @@ function RowActions({
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
               </Link>
-            )
-          )}
+            ))}
           {onDelete && (
             <>
               <DropdownMenuSeparator />

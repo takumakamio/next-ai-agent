@@ -89,6 +89,4 @@ export const QA_CATEGORIES: QaCategory[] = [
   { id: 'general', nameKey: 'GeneralInfo', color: 'bg-indigo-500' },
 ]
 
-export const QA_CONTENT_TYPES: QaContentType[] = [
-  { id: 'general', nameKey: 'General' },
-]
+export const QA_CONTENT_TYPES: QaContentType[] = [{ id: 'general', nameKey: 'General' }]

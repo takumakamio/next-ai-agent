@@ -1,5 +1,5 @@
-import postgres from 'postgres'
 import { type PostgresJsDatabase, drizzle } from 'drizzle-orm/postgres-js'
+import postgres from 'postgres'
 import { cache } from 'react'
 import * as schema from './schema/_index'
 

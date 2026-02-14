@@ -22,7 +22,17 @@ interface ManageQaTableProps {
   onPageChange?: (page: number) => void
 }
 
-export const ManageQaTable = ({ data, meta, onDelete, dataKey, header, onNewClick, onEditClick, onSearchChange, onPageChange }: ManageQaTableProps) => {
+export const ManageQaTable = ({
+  data,
+  meta,
+  onDelete,
+  dataKey,
+  header,
+  onNewClick,
+  onEditClick,
+  onSearchChange,
+  onPageChange,
+}: ManageQaTableProps) => {
   const columns = useManageQaColumns()
 
   return (

@@ -87,11 +87,7 @@ export const QasTab = () => {
   if (view === 'form') {
     return (
       <div className="p-4">
-        <ManageQaForm
-          qa={editingQa}
-          onSuccess={handleFormSuccess}
-          onCancel={handleFormCancel}
-        />
+        <ManageQaForm qa={editingQa} onSuccess={handleFormSuccess} onCancel={handleFormCancel} />
       </div>
     )
   }

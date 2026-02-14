@@ -61,9 +61,7 @@
         "languages_code_unique": {
           "name": "languages_code_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "code"
-          ]
+          "columns": ["code"]
         }
       },
       "policies": {},
@@ -180,12 +178,8 @@
           "name": "qa_logs_qa_id_qas_id_fk",
           "tableFrom": "qa_logs",
           "tableTo": "qas",
-          "columnsFrom": [
-            "qa_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["qa_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         },
@@ -193,12 +187,8 @@
           "name": "qa_logs_qa_translation_id_qa_translations_id_fk",
           "tableFrom": "qa_logs",
           "tableTo": "qa_translations",
-          "columnsFrom": [
-            "qa_translation_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["qa_translation_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         },
@@ -206,12 +196,8 @@
           "name": "qa_logs_language_id_languages_id_fk",
           "tableFrom": "qa_logs",
           "tableTo": "languages",
-          "columnsFrom": [
-            "language_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["language_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -221,9 +207,7 @@
         "qa_logs_id_unique": {
           "name": "qa_logs_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "id"
-          ]
+          "columns": ["id"]
         }
       },
       "policies": {},
@@ -342,12 +326,8 @@
           "name": "qa_translations_qa_id_qas_id_fk",
           "tableFrom": "qa_translations",
           "tableTo": "qas",
-          "columnsFrom": [
-            "qa_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["qa_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -355,12 +335,8 @@
           "name": "qa_translations_language_id_languages_id_fk",
           "tableFrom": "qa_translations",
           "tableTo": "languages",
-          "columnsFrom": [
-            "language_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["language_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -448,9 +424,7 @@
         "qas_id_unique": {
           "name": "qas_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "id"
-          ]
+          "columns": ["id"]
         }
       },
       "policies": {},
@@ -534,12 +508,8 @@
           "name": "tag_translations_tag_id_tags_id_fk",
           "tableFrom": "tag_translations",
           "tableTo": "tags",
-          "columnsFrom": [
-            "tag_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["tag_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -547,12 +517,8 @@
           "name": "tag_translations_language_id_languages_id_fk",
           "tableFrom": "tag_translations",
           "tableTo": "languages",
-          "columnsFrom": [
-            "language_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["language_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -601,9 +567,7 @@
         "tags_id_unique": {
           "name": "tags_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "id"
-          ]
+          "columns": ["id"]
         }
       },
       "policies": {},

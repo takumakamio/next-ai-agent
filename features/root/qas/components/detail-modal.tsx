@@ -1,10 +1,10 @@
 import { Button } from '@/components/ui'
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
-import type { RootQa } from '../schema'
-import { QA_CATEGORIES } from '../schema'
 import { X } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
 import type React from 'react'
+import type { RootQa } from '../schema'
+import { QA_CATEGORIES } from '../schema'
 
 interface QaDetailModalProps {
   qa: RootQa | null
@@ -22,26 +22,6 @@ export const QaDetailModal: React.FC<QaDetailModalProps> = ({ qa, isOpen, onClos
 
   const handleMainClose = () => {
     onClose()
-  }
-
-  const getTimeSinceUpdate = (dateString: string): string => {
-    const now = new Date()
-    const updated = new Date(dateString)
-    const diffInDays = Math.floor((now.getTime() - updated.getTime()) / (1000 * 60 * 60 * 24))
-
-    if (diffInDays === 0) {
-      return t('Today') || 'Today'
-    } else if (diffInDays === 1) {
-      return t('Yesterday') || 'Yesterday'
-    } else if (diffInDays < 7) {
-      return t('DaysAgo', { days: diffInDays }) || `${diffInDays} days ago`
-    } else if (diffInDays < 30) {
-      const weeks = Math.floor(diffInDays / 7)
-      return t('WeeksAgo', { weeks }) || `${weeks} week${weeks > 1 ? 's' : ''} ago`
-    } else {
-      const months = Math.floor(diffInDays / 30)
-      return t('MonthsAgo', { months }) || `${months} month${months > 1 ? 's' : ''} ago`
-    }
   }
 
   return (

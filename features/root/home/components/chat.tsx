@@ -175,7 +175,7 @@ export const Chat: React.FC = () => {
   const boardBackground = 'bg-card/95 backdrop-blur-sm border-border'
 
   return (
-    <div ref={containerRef} className="relative w-full h-full overflow-hidden" aria-label={t('TravelAvatarInterface')}>
+    <div ref={containerRef} className="relative w-full h-full overflow-hidden" aria-label={t('AIAvatarInterface')}>
       <StatusAnnouncer loading={loading} speaking={!!currentMessage} />
 
       <a
@@ -184,7 +184,6 @@ export const Chat: React.FC = () => {
       >
         {t('SkipToMainContent')}
       </a>
-
 
       {/* 3D Canvas - Only load when visible and not in performance mode */}
       {is3DVisible && !performanceMode && (

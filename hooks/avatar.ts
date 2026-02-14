@@ -2,10 +2,16 @@ import { rpc } from '@/lib/rpc'
 import { VOICEVOX_SPEAKERS } from '@/lib/tts/voicevox'
 import { create } from 'zustand'
 
-export type Avatar = 'Tsumugi' 
-export type TravelStyle = 'beginner' | 'advanced' | 'fullstack' | 'specialist'
+export type Avatar = 'Tsumugi'
+export type ExpertiseLevel = 'beginner' | 'advanced' | 'fullstack' | 'specialist'
 export type TtsEngine = 'auto' | 'elevenlabs' | 'gemini' | 'voicevox'
-export type Location = 'default' | 'office' | 'server-room' | 'coworking' | 'home'
+export type AiModel = 'gemini-2.5-flash' | 'gemini-2.5-pro' | 'gemini-2.0-flash'
+
+export const AI_MODEL_OPTIONS: { value: AiModel; labelKey: string }[] = [
+  { value: 'gemini-2.5-flash', labelKey: 'AIModelGemini25Flash' },
+  { value: 'gemini-2.5-pro', labelKey: 'AIModelGemini25Pro' },
+  { value: 'gemini-2.0-flash', labelKey: 'AIModelGemini20Flash' },
+]
 
 export interface ConversationExchange {
   user: string
@@ -13,23 +19,10 @@ export interface ConversationExchange {
   timestamp?: string
 }
 
-// Tag interface for filtering
-export interface FilterTag {
-  id: number
-  name: string
-  slug: string
-}
-
-export interface TravelRecommendation {
+export interface AIResponse {
   title: string
   description: string
-  location?: string
-  duration?: string
-  details?: string[]
   category?: string
-  rating?: number
-  tips?: string[]
-  tags?: FilterTag[]
   logId?: string
   websiteLink?: string | null
 }
@@ -43,8 +36,8 @@ export interface Viseme {
 export interface Message {
   id: number
   question: string
-  answer?: TravelRecommendation
-  travelStyle?: TravelStyle
+  answer?: AIResponse
+  expertiseLevel?: ExpertiseLevel
   audioPlayer?: HTMLAudioElement | null
   visemes?: Viseme[]
   audioBuffer?: ArrayBuffer
@@ -56,25 +49,23 @@ export interface AvatarState {
   conversationHistory: ConversationExchange[]
   currentMessage: Message | null
   avatar: Avatar
-  location: Location
   loading: boolean
   loadingTTS: boolean
   recording: boolean
   isSpeaking: boolean
-  showDetails: boolean
-  travelStyle: TravelStyle
+  expertiseLevel: ExpertiseLevel
   ttsEngine: TtsEngine
   ttsSpeakerId: number | undefined
+  aiModel: AiModel
   mediaRecorder?: MediaRecorder | null
   audioStream?: MediaStream | null
 
   // Actions
   setAvatar: (avatar: Avatar) => void
-  setLocation: (location: Location) => void
-  setShowDetails: (showDetails: boolean) => void
-  setTravelStyle: (travelStyle: TravelStyle) => void
+  setExpertiseLevel: (expertiseLevel: ExpertiseLevel) => void
   setTtsEngine: (engine: TtsEngine) => void
   setTtsSpeakerId: (id: number | undefined) => void
+  setAiModel: (model: AiModel) => void
   addToHistory: (userMessage: string, assistantResponse: string) => void
   clearHistory: () => void
   clearMessages: () => void
@@ -104,21 +95,9 @@ export const useAvatar = create<AvatarState>((set, get) => ({
       }),
     }))
   },
-  location: 'default',
-  setLocation: (location: Location) => {
-    set(() => ({
-      location,
-    }))
-  },
   loading: false,
   loadingTTS: false,
   recording: false,
-  showDetails: true,
-  setShowDetails: (showDetails: boolean) => {
-    set(() => ({
-      showDetails,
-    }))
-  },
 
   ttsEngine: 'voicevox' as TtsEngine,
   ttsSpeakerId: VOICEVOX_SPEAKERS.KASUKABE_TSUMUGI.NORMAL,
@@ -129,10 +108,15 @@ export const useAvatar = create<AvatarState>((set, get) => ({
     set(() => ({ ttsSpeakerId: id }))
   },
 
-  travelStyle: 'specialist',
-  setTravelStyle: (travelStyle: TravelStyle) => {
+  aiModel: 'gemini-2.0-flash' as AiModel,
+  setAiModel: (model: AiModel) => {
+    set(() => ({ aiModel: model }))
+  },
+
+  expertiseLevel: 'specialist',
+  setExpertiseLevel: (expertiseLevel: ExpertiseLevel) => {
     set(() => ({
-      travelStyle,
+      expertiseLevel,
     }))
   },
 
@@ -209,10 +193,8 @@ export const useAvatar = create<AvatarState>((set, get) => ({
 
           if (data.text) {
             get().askAI(data.text)
-            // Don't set loading: false here, askAI will manage it
             set({ recording: false })
           } else {
-            // No text received, stop loading
             set({ loading: false, recording: false })
           }
         } catch (error) {
@@ -268,10 +250,9 @@ export const useAvatar = create<AvatarState>((set, get) => ({
       loading: true,
     }))
 
-    // Create AbortController with 60s timeout for frontend protection
     const abortController = new AbortController()
     const timeoutId = setTimeout(() => {
-      console.error('⏰ Frontend request timeout after 60 seconds')
+      console.error('Frontend request timeout after 60 seconds')
       abortController.abort()
     }, 60000)
 
@@ -280,6 +261,7 @@ export const useAvatar = create<AvatarState>((set, get) => ({
         question,
         history: currentHistory,
         chatSessionId: '',
+        aiModel: get().aiModel,
       }
 
       const res = await fetch(rpc.api.root.home.conversation.$url(), {
@@ -291,7 +273,6 @@ export const useAvatar = create<AvatarState>((set, get) => ({
         signal: abortController.signal,
       })
 
-      // Clear timeout on successful response
       clearTimeout(timeoutId)
 
       if (!res.ok) {
@@ -302,30 +283,14 @@ export const useAvatar = create<AvatarState>((set, get) => ({
         response: string
         title?: string
         description?: string
-        tags?: FilterTag[]
         logId?: string
         websiteLink?: string | null
-        relatedQAs?: Array<{
-          id: string
-          question: string
-          answer: string
-          similarity: number
-          category: string | null
-          websiteLink?: string | null
-        }>
       }
 
-      console.log('AI response received:', {
-        response: data.response,
-        relatedQAsCount: data.relatedQAs?.length || 0,
-        logId: data.logId,
-        websiteLink: data.websiteLink,
-      })
-
-      let travelRecommendation: TravelRecommendation
+      let aiResponse: AIResponse
 
       if (data.response) {
-        travelRecommendation = {
+        aiResponse = {
           title: data.title || 'Answer',
           description: data.response,
           category: 'engineering',
@@ -333,23 +298,22 @@ export const useAvatar = create<AvatarState>((set, get) => ({
           websiteLink: data.websiteLink,
         }
       } else if (data.title || data.description) {
-        travelRecommendation = {
-          ...(data as TravelRecommendation),
+        aiResponse = {
+          title: data.title || '',
+          description: data.description || '',
           logId: data.logId,
           websiteLink: data.websiteLink,
         }
       } else {
-        const fallbackText = "I'm sorry, I couldn't generate a response."
-
-        travelRecommendation = {
+        aiResponse = {
           title: 'Error',
-          description: fallbackText,
+          description: "I'm sorry, I couldn't generate a response.",
           category: 'error',
         }
       }
 
-      message.answer = travelRecommendation
-      message.travelStyle = get().travelStyle
+      message.answer = aiResponse
+      message.expertiseLevel = get().expertiseLevel
 
       set(() => ({
         currentMessage: message,
@@ -365,30 +329,19 @@ export const useAvatar = create<AvatarState>((set, get) => ({
         get().addToHistory(question, data.response)
       }
 
-      console.log('Message added to state:', {
-        id: message.id,
-        historyLength: get().conversationHistory.length,
-        tagsCount: data.tags?.length || 0,
-        logId: data.logId,
-      })
-
       get().playMessage(message)
     } catch (error) {
       console.error('Error getting AI response:', error)
 
-      // Always clear timeout on error
       clearTimeout(timeoutId)
 
-      // Check if error is due to timeout/abort
       const isTimeout = error instanceof Error && error.name === 'AbortError'
-
-      const fallbackText = isTimeout
-        ? "I'm sorry, the request took too long. Please try asking your question again."
-        : "I'm sorry, I'm experiencing some technical difficulties. Please try asking your question again."
 
       message.answer = {
         title: isTimeout ? 'Request Timeout' : 'Technical Error',
-        description: fallbackText,
+        description: isTimeout
+          ? "I'm sorry, the request took too long. Please try asking your question again."
+          : "I'm sorry, I'm experiencing some technical difficulties. Please try asking your question again.",
         category: 'error',
       }
 
@@ -412,13 +365,7 @@ export const useAvatar = create<AvatarState>((set, get) => ({
       }))
 
       try {
-        let ttsText = 'Here is my response.'
-
-        if (message.answer.description) {
-          ttsText = message.answer.description
-        }
-
-        console.log('TTS Text being sent:', ttsText)
+        const ttsText = message.answer.description || 'Here is my response.'
 
         const ttsQuery: Record<string, string> = {
           avatar: get().avatar,
@@ -455,24 +402,20 @@ export const useAvatar = create<AvatarState>((set, get) => ({
             message.audioBuffer = audioBuffer
 
             audioPlayer.onplay = () => {
-              console.log('🎵 Audio started playing')
               set(() => ({ isSpeaking: true }))
             }
 
             audioPlayer.onended = () => {
-              console.log('🏁 Audio playback ended')
               set(() => ({
                 currentMessage: null,
                 isSpeaking: false,
               }))
             }
 
-            audioPlayer.onerror = (error) => {
-              console.error('❌ Audio playback error:', error)
+            audioPlayer.onerror = () => {
               set(() => ({ isSpeaking: false }))
             }
           } else {
-            console.log('📢 Using Web Speech API fallback (limited lip sync)')
             const jsonResponse = (await audioRes.json()) as {
               useClientTTS: boolean
               text?: string
@@ -516,19 +459,16 @@ export const useAvatar = create<AvatarState>((set, get) => ({
               message.audioPlayer = pseudoAudioPlayer as any
               message.visemes = []
               message.audioBuffer = undefined
-
-              console.log('⚠️ Web Speech API: Lip sync will use fallback procedural animation')
             }
           }
         } else {
-          console.log('❌ TTS request failed')
           message.audioPlayer = null
           message.visemes = []
           message.audioBuffer = undefined
           set(() => ({ isSpeaking: false }))
         }
       } catch (error) {
-        console.error('💥 Error in TTS generation:', error)
+        console.error('Error in TTS generation:', error)
         message.audioPlayer = null
         message.visemes = []
         message.audioBuffer = undefined
