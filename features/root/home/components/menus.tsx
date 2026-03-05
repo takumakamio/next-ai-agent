@@ -8,7 +8,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { TextInput } from '@/features/root/home/components/text-input'
-import { AI_MODEL_OPTIONS, type AiModel, type TtsEngine } from '@/hooks/avatar'
+import { AI_MODEL_OPTIONS, AVATAR_MODELS, type AiModel, type ModelFormat, type TtsEngine } from '@/hooks/avatar'
 import { useAvatar } from '@/hooks/avatar'
 import { LANGUAGES } from '@/i18n/routing'
 import { VOICEVOX_SPEAKERS } from '@/lib/tts/voicevox'
@@ -43,6 +43,8 @@ export const Menus = () => {
   const setTtsSpeakerId = useAvatar((state) => state.setTtsSpeakerId)
   const aiModel = useAvatar((state) => state.aiModel)
   const setAiModel = useAvatar((state) => state.setAiModel)
+  const modelFormat = useAvatar((state) => state.modelFormat)
+  const setModelFormat = useAvatar((state) => state.setModelFormat)
 
   const locale = useLocale()
   const t = useTranslations()
@@ -231,6 +233,46 @@ export const Menus = () => {
                   {AI_MODEL_OPTIONS.map((opt) => (
                     <DropdownMenuRadioItem key={opt.value} value={opt.value}>
                       {t(opt.labelKey as any)}
+                    </DropdownMenuRadioItem>
+                  ))}
+                </DropdownMenuRadioGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {/* 3D Model Format */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  className={`${menuButtonClass} w-28 h-36 bg-secondary border-r border-border/40 hover:bg-secondary/80`}
+                  disabled={loading || isSpeaking}
+                  aria-label={t('ThreeDModel')}
+                  title={isSpeaking ? 'Avatar is speaking...' : t('ThreeDModel')}
+                >
+                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
+                    <path
+                      d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      fill="none"
+                    />
+                  </svg>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-foreground">
+                    {modelFormat.toUpperCase()}
+                  </span>
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent side="top" align="start" className="w-56">
+                <DropdownMenuLabel>{t('ThreeDModel')}</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuRadioGroup
+                  value={modelFormat}
+                  onValueChange={(value) => setModelFormat(value as ModelFormat)}
+                >
+                  {AVATAR_MODELS.map((model) => (
+                    <DropdownMenuRadioItem key={`${model.avatar}-${model.format}`} value={model.format}>
+                      {model.label}
                     </DropdownMenuRadioItem>
                   ))}
                 </DropdownMenuRadioGroup>

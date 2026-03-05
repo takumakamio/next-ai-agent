@@ -36,12 +36,14 @@ export const useExpressionManager = (
   isSpeaking: boolean,
   currentMessage: any,
   isInIdleMode: boolean,
+  isVRM: boolean = true,
 ) => {
   // Start with neutral to avoid any expressions with closed eyes
   const currentExpressionRef = useRef<string>(VRM_EXPRESSIONS.NEUTRAL)
 
   useEffect(() => {
-    if (!enableExpressions) return
+    // GLB has no morph targets, always return neutral
+    if (!enableExpressions || !isVRM) return
 
     if (loading || loadingTTS) {
       currentExpressionRef.current = VRM_EXPRESSIONS.NEUTRAL
@@ -55,7 +57,7 @@ export const useExpressionManager = (
     } else {
       currentExpressionRef.current = VRM_EXPRESSIONS.NEUTRAL
     }
-  }, [enableExpressions, loading, loadingTTS, isSpeaking, currentMessage, isInIdleMode])
+  }, [enableExpressions, loading, loadingTTS, isSpeaking, currentMessage, isInIdleMode, isVRM])
 
   return currentExpressionRef
 }

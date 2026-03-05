@@ -5,14 +5,16 @@ import { useEffect, useRef } from 'react'
 /**
  * Hook for managing expression batching and blinking
  * Optimizes expression updates and provides natural blinking
+ * Returns null batcher/blinkController for GLB models (no morph targets)
  */
 export const useExpressionBatcher = (vrmModel: any, enableExpressions: boolean) => {
   const batcherRef = useRef<ExpressionBatcher | null>(null)
   const blinkControllerRef = useRef<BlinkController | null>(null)
 
-  // Initialize batcher and blink controller
+  // Initialize batcher and blink controller (VRM only)
   useEffect(() => {
-    if (!enableExpressions) return
+    // Skip for GLB - no expression manager available
+    if (!enableExpressions || vrmModel.modelFormatRef?.current === 'glb') return
 
     const config = getOptimalVRMConfig()
 
@@ -31,20 +33,17 @@ export const useExpressionBatcher = (vrmModel: any, enableExpressions: boolean) 
       )
     }
 
-    console.log('🎭 Expression batcher initialized')
-
     return () => {
       batcherRef.current?.dispose()
       batcherRef.current = null
       blinkControllerRef.current = null
     }
-  }, [enableExpressions])
+  }, [enableExpressions, vrmModel.modelFormatRef?.current])
 
   // Update expression manager when VRM changes
   useEffect(() => {
     if (vrmModel.vrmRef?.current?.expressionManager && batcherRef.current) {
       batcherRef.current.setExpressionManager(vrmModel.vrmRef.current.expressionManager)
-      console.log('🔗 Expression manager connected to batcher')
     }
   }, [vrmModel.vrmRef?.current])
 

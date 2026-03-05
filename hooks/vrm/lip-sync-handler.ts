@@ -12,6 +12,7 @@ const VISEME_TO_VRM_MAP: Record<string, string[]> = {
 
 export const useLipSyncHandler = (vrmModel: any, currentMessage: any, enableLipSync: boolean, isSpeaking: boolean) => {
   const applyLipSync = useCallback(() => {
+    // GLB has no morph targets - lip sync is unavailable
     if (!isSpeaking || !enableLipSync || !currentMessage || !vrmModel.vrmRef.current?.expressionManager) {
       return
     }

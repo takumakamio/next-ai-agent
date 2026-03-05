@@ -31,12 +31,17 @@ export const useAnimationPlayer = (
   shouldOptimizePerformance: boolean,
   applyNaturalPose: () => void,
 ) => {
+  const isGLB = vrmModel.modelFormatRef?.current === 'glb'
+
   /**
    * Fade to a new action (Amica's fadeToAction pattern)
    * This provides smoother transitions than simple crossfade
    */
   const fadeToAction = useCallback(
     (targetAnimationState: AnimationState, fadeDuration: number = ANIMATION_CONFIG.FADE_DURATION) => {
+      // GLB: skip all animation playback (static pose)
+      if (isGLB) return
+
       if (!vrmModel.mixerRef.current || !vrmModel.animationsRef.current || !enableAnimations) {
         applyNaturalPose()
         return
@@ -51,8 +56,6 @@ export const useAnimationPlayer = (
       }
 
       try {
-        console.log(`🎬 Fading to animation: ${targetAnimationState} (${animationName})`)
-
         const previousAction = animationState.currentActionRef.current
         const newAction = vrmModel.mixerRef.current.clipAction(clip)
 
@@ -87,7 +90,6 @@ export const useAnimationPlayer = (
         newAction.fadeIn(fadeInDuration).play()
 
         animationState.currentActionRef.current = newAction
-        console.log(`✅ Animation fade complete: ${targetAnimationState}`)
       } catch (error) {
         console.error('Animation fade error:', error)
         applyNaturalPose()
@@ -97,6 +99,7 @@ export const useAnimationPlayer = (
       enableAnimations,
       reduceMotion,
       shouldOptimizePerformance,
+      isGLB,
       vrmModel.mixerRef,
       vrmModel.animationsRef,
       animationState.currentActionRef,
@@ -107,10 +110,16 @@ export const useAnimationPlayer = (
   /**
    * Play a one-shot animation that returns to idle when finished (Amica pattern)
    * Returns duration in seconds for timing coordination
+   * No-op for GLB (only 1 animation available)
    */
   const playOneShotAnimation = useCallback(
     (targetAnimationState: AnimationState): number => {
       if (!vrmModel.mixerRef.current || !vrmModel.animationsRef.current || !enableAnimations) {
+        return 0
+      }
+
+      // GLB only has one animation, skip one-shot
+      if (vrmModel.modelFormatRef?.current === 'glb') {
         return 0
       }
 
@@ -122,8 +131,6 @@ export const useAnimationPlayer = (
       }
 
       try {
-        console.log(`🎯 Playing one-shot animation: ${targetAnimationState} (${animationName})`)
-
         const mixer = vrmModel.mixerRef.current
         const idleAction = animationState.currentActionRef.current
         const oneShotAction = mixer.clipAction(clip)
@@ -149,24 +156,19 @@ export const useAnimationPlayer = (
             const restoreDuration = reduceMotion ? 0.1 : ANIMATION_CONFIG.FADE_DURATION
             idleAction.reset().fadeIn(restoreDuration).play()
             animationState.currentActionRef.current = idleAction
-            console.log('🔄 Restored idle animation after one-shot')
           }
         }
 
         mixer.addEventListener('finished', restoreIdle)
 
-        // Calculate total duration (Amica returns this for coordination)
-        // clip duration + fade out time + fade in time
         const totalDuration = clip.duration + ANIMATION_CONFIG.FADE_OUT_DURATION + ANIMATION_CONFIG.FADE_DURATION
-
-        console.log(`✅ One-shot animation started, duration: ${totalDuration.toFixed(2)}s`)
         return totalDuration
       } catch (error) {
         console.error('One-shot animation error:', error)
         return 0
       }
     },
-    [enableAnimations, reduceMotion, vrmModel.mixerRef, vrmModel.animationsRef, animationState.currentActionRef],
+    [enableAnimations, reduceMotion, vrmModel.mixerRef, vrmModel.animationsRef, vrmModel.modelFormatRef, animationState.currentActionRef],
   )
 
   /**

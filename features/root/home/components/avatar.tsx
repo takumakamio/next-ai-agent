@@ -1,4 +1,4 @@
-import { type Avatar as AvatarType, useAvatar } from '@/hooks/avatar'
+import { type Avatar as AvatarType, type ModelFormat, useAvatar } from '@/hooks/avatar'
 import {
   ANIMATION_CONFIG,
   ANIMATION_STATES,
@@ -25,6 +25,7 @@ import type { Group } from 'three'
 // Types
 interface AvatarProps {
   avatar: AvatarType
+  modelFormat: ModelFormat
   scale?: number
   rotation?: [number, number, number]
   position?: [number, number, number]
@@ -61,43 +62,51 @@ const LoadingIndicator = ({
   thinkingText,
   reduceMotion,
   isInIdleMode,
+  modelFormat,
 }: {
   avatar: AvatarType
   isPreloading: boolean
   preloadProgress: Record<string, number>
-  isAvatarPreloaded: (avatar: AvatarType) => boolean
+  isAvatarPreloaded: (avatar: AvatarType, format?: ModelFormat) => boolean
   thinkingText: string
   reduceMotion: boolean
   isInIdleMode: boolean
-}) => (
-  <Html position-y={avatar === 'Tsumugi' ? 1.6 : 1.8}>
-    <div className="flex justify-center items-center -translate-x-1/2">
-      <span
-        className="relative flex h-8 w-8 items-center justify-center"
-        aria-label={
-          isPreloading
-            ? `Loading avatar: ${Math.round(preloadProgress[avatar] || 0)}%`
-            : isInIdleMode
-              ? 'Avatar is in idle mode'
-              : 'Avatar is thinking'
-        }
-      >
+  modelFormat: ModelFormat
+}) => {
+  const progressKey = `${avatar}-${modelFormat}`
+  return (
+    <Html position-y={avatar === 'Tsumugi' ? 1.6 : 1.8}>
+      <div className="flex justify-center items-center -translate-x-1/2">
         <span
-          className={`absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75 ${
-            reduceMotion ? '' : 'animate-ping'
-          }`}
-        />
-        <span className="relative inline-flex items-center justify-center duration-75 rounded-full h-8 w-8 bg-blue-400/80 text-white text-xs font-medium">
-          {isPreloading && !isAvatarPreloaded(avatar) ? Math.round(preloadProgress[avatar] || 0) + '%' : thinkingText}
+          className="relative flex h-8 w-8 items-center justify-center"
+          aria-label={
+            isPreloading
+              ? `Loading avatar: ${Math.round(preloadProgress[progressKey] || 0)}%`
+              : isInIdleMode
+                ? 'Avatar is in idle mode'
+                : 'Avatar is thinking'
+          }
+        >
+          <span
+            className={`absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75 ${
+              reduceMotion ? '' : 'animate-ping'
+            }`}
+          />
+          <span className="relative inline-flex items-center justify-center duration-75 rounded-full h-8 w-8 bg-blue-400/80 text-white text-xs font-medium">
+            {isPreloading && !isAvatarPreloaded(avatar, modelFormat)
+              ? Math.round(preloadProgress[progressKey] || 0) + '%'
+              : thinkingText}
+          </span>
         </span>
-      </span>
-    </div>
-  </Html>
-)
+      </div>
+    </Html>
+  )
+}
 
 // Main Avatar component
 export function Avatar({
   avatar,
+  modelFormat,
   reduceMotion = false,
   performanceMode = false,
   enableLipSync = true,
@@ -110,12 +119,14 @@ export function Avatar({
   const group = useRef<Group>(null)
   const frameSkipCounter = useRef(0)
 
+  const isVRM = modelFormat === 'vrm'
+
   // Hooks
   const { isLowPerformance } = usePerformanceMonitor()
   const shouldOptimizePerformance = performanceMode || isLowPerformance
 
   const { getPreloadedData, isAvatarPreloaded, isPreloading, preloadProgress } = useVRMPreloader()
-  const { audioContextRef, initializeAudio, cleanup: cleanupAudio } = useLipSync(enableLipSync)
+  const { audioContextRef, initializeAudio, cleanup: cleanupAudio } = useLipSync(enableLipSync && isVRM)
 
   const animationState = useAnimationState()
   const currentMessage = useAvatar((state) => state.currentMessage)
@@ -154,21 +165,21 @@ export function Avatar({
       }
 
       vrmModel.vrmRef.current = null
+      vrmModel.sceneRef.current = null
       vrmModel.animationsRef.current = {}
       vrmModel.vrmAnimationsRef.current = {}
       animationState.currentAnimationStateRef.current = 'THINKING'
 
       if (window.gc) window.gc()
-      console.log('✅ VRM cleanup completed')
     } catch (error) {
       console.error('Error during cleanup:', error)
     }
   }, [])
 
-  const vrmModel = useVRMModel(avatar, getPreloadedData, cleanupVRM)
+  const vrmModel = useVRMModel(avatar, modelFormat, getPreloadedData, cleanupVRM)
 
-  // Initialize expression batcher for optimized expression updates
-  const { batcher, blinkController } = useExpressionBatcher(vrmModel, enableExpressions)
+  // Initialize expression batcher for optimized expression updates (VRM only)
+  const { batcher, blinkController } = useExpressionBatcher(vrmModel, enableExpressions && isVRM)
 
   const {
     idleStateRef,
@@ -186,6 +197,7 @@ export function Avatar({
     animationState.isSpeaking,
     currentMessage,
     idleStateRef.current.isInIdleMode,
+    isVRM,
   )
 
   const { applyNaturalPose, applyEmergencyPose } = useNaturalPose(vrmModel)
@@ -197,7 +209,7 @@ export function Avatar({
     shouldOptimizePerformance,
     applyNaturalPose,
   )
-  const applyLipSync = useLipSyncHandler(vrmModel, currentMessage, enableLipSync, animationState.isSpeaking)
+  const applyLipSync = useLipSyncHandler(vrmModel, currentMessage, enableLipSync && isVRM, animationState.isSpeaking)
 
   const throttledAnimationUpdate = useMemo(() => {
     let lastUpdate = 0
@@ -211,7 +223,7 @@ export function Avatar({
       lastUpdate = now
 
       if (targetAnimation !== animationState.currentAnimationStateRef.current) {
-        applyEmergencyPose()
+        if (isVRM) applyEmergencyPose()
 
         // Small delay to ensure pose is applied
         setTimeout(() => {
@@ -220,7 +232,7 @@ export function Avatar({
         }, 16)
       }
     }
-  }, [shouldOptimizePerformance, playAnimation, animationState.currentAnimationStateRef, applyEmergencyPose])
+  }, [shouldOptimizePerformance, playAnimation, animationState.currentAnimationStateRef, applyEmergencyPose, isVRM])
 
   // Animation state update logic
   const updateAnimationState = useCallback(() => {
@@ -274,6 +286,9 @@ export function Avatar({
   const initializeNaturalAnimation = useCallback(() => {
     if (!vrmModel.mixerRef.current || !vrmModel.animationsRef.current || !enableAnimations) return
 
+    // For GLB, the animation is already playing from loadModelFromPreloadedData
+    if (!isVRM) return
+
     try {
       const availableAnimations = Object.keys(vrmModel.animationsRef.current)
       let initialAnimation: AnimationState = 'IDLE'
@@ -292,21 +307,13 @@ export function Avatar({
         }
       }
 
-      console.log(`🎭 Initializing with animation: ${initialAnimation}`)
-
       // Apply natural pose first as base
       applyNaturalPose()
-
-      // Small delay to ensure pose is applied before animation
-      // setTimeout(() => {
-      //   playAnimation(initialAnimation)
-      //   animationState.currentAnimationStateRef.current = initialAnimation
-      // }, 50)
     } catch (error) {
       console.error('Error initializing natural animation:', error)
       applyNaturalPose()
     }
-  }, [vrmModel.mixerRef, vrmModel.animationsRef, enableAnimations, playAnimation, applyNaturalPose])
+  }, [vrmModel.mixerRef, vrmModel.animationsRef, enableAnimations, isVRM, playAnimation, applyNaturalPose])
 
   // Main effect for state management
   useEffect(() => {
@@ -317,8 +324,8 @@ export function Avatar({
       trackUserActivity()
     }
 
-    // Initialize audio
-    if (enableLipSync) {
+    // Initialize audio (VRM only)
+    if (enableLipSync && isVRM) {
       const audioInitialized = initializeAudio()
       if (!audioInitialized) {
         vrmModel.setHasError(true)
@@ -327,10 +334,12 @@ export function Avatar({
       }
     }
 
-    // Load VRM model
-    if (vrmModel.loadedAvatarRef.current !== avatar || !vrmModel.vrmRef.current) {
-      vrmModel.loadVRMFromPreloadedData(
+    // Load model
+    const modelKey = `${avatar}-${modelFormat}`
+    if (vrmModel.loadedAvatarRef.current !== modelKey || (!vrmModel.vrmRef.current && !vrmModel.sceneRef.current)) {
+      vrmModel.loadModelFromPreloadedData(
         avatar,
+        modelFormat,
         shouldOptimizePerformance,
         enableAnimations,
         reduceMotion,
@@ -338,16 +347,17 @@ export function Avatar({
       )
 
       setTimeout(() => {
-        if (vrmModel.vrmRef.current) {
+        if (vrmModel.vrmRef.current || vrmModel.sceneRef.current) {
           initializeNaturalAnimation()
         }
       }, 500)
     }
 
     // Handle preloading completion
-    if (!isPreloading && !vrmModel.vrmRef.current && avatar && !vrmModel.hasError) {
-      vrmModel.loadVRMFromPreloadedData(
+    if (!isPreloading && !vrmModel.vrmRef.current && !vrmModel.sceneRef.current && avatar && !vrmModel.hasError) {
+      vrmModel.loadModelFromPreloadedData(
         avatar,
+        modelFormat,
         shouldOptimizePerformance,
         enableAnimations,
         reduceMotion,
@@ -355,7 +365,7 @@ export function Avatar({
       )
 
       setTimeout(() => {
-        if (vrmModel.vrmRef.current) {
+        if (vrmModel.vrmRef.current || vrmModel.sceneRef.current) {
           initializeNaturalAnimation()
         }
       }, 500)
@@ -393,7 +403,7 @@ export function Avatar({
       const handlePlay = () => {
         animationState.setIsSpeaking(true)
         trackUserActivity()
-        if (audioContextRef.current?.state === 'suspended') {
+        if (isVRM && audioContextRef.current?.state === 'suspended') {
           audioContextRef.current.resume()
         }
       }
@@ -438,6 +448,8 @@ export function Avatar({
     }
   }, [
     avatar,
+    modelFormat,
+    isVRM,
     enableLipSync,
     enableAnimations,
     enableIdleAnimation,
@@ -462,7 +474,8 @@ export function Avatar({
 
   // Frame loop
   useFrame((_, delta) => {
-    if (!vrmModel.vrmRef.current || !vrmModel.isModelReady) return
+    const hasModel = isVRM ? !!vrmModel.vrmRef.current : !!vrmModel.sceneRef.current
+    if (!hasModel || !vrmModel.isModelReady) return
 
     // Performance optimization
     if (shouldOptimizePerformance) {
@@ -476,7 +489,7 @@ export function Avatar({
     }
 
     try {
-      // Update animation mixer
+      // Update animation mixer (both VRM and GLB)
       if (vrmModel.mixerRef.current && enableAnimations) {
         const timeScale = reduceMotion
           ? ANIMATION_CONFIG.TIMESCALE_REDUCED
@@ -486,7 +499,10 @@ export function Avatar({
         vrmModel.mixerRef.current.update(delta * timeScale)
       }
 
-      // Apply natural pose fallback
+      // Skip VRM-specific features for GLB
+      if (!isVRM) return
+
+      // Apply natural pose fallback (VRM only)
       if (!vrmModel.mixerRef.current && vrmModel.vrmRef.current?.humanoid) {
         const frameCount = Math.floor(Date.now() / 100)
         if (frameCount % 60 === 0) {
@@ -494,7 +510,13 @@ export function Avatar({
         }
       }
 
-      if (!vrmModel.vrmRef.current.expressionManager || !enableExpressions) return
+      if (!vrmModel.vrmRef.current?.expressionManager || !enableExpressions) {
+        // Still need to update VRM even without expressions
+        if (vrmModel.vrmRef.current) {
+          vrmModel.vrmRef.current.update(delta)
+        }
+        return
+      }
 
       // Use expression batcher for optimized updates
       if (batcher) {
@@ -555,7 +577,7 @@ export function Avatar({
         vrmModel.memoryMonitor.sample()
         const stats = vrmModel.memoryMonitor.getStats()
         if (stats.isLeaking) {
-          console.warn('⚠️ Potential memory leak detected!', stats)
+          console.warn('Potential memory leak detected!', stats)
         }
       }
 
@@ -568,12 +590,19 @@ export function Avatar({
 
   // Render states
   const showLoadingState =
-    loading || loadingTTS || !vrmModel.isModelReady || (isPreloading && !isAvatarPreloaded(avatar))
+    loading || loadingTTS || !vrmModel.isModelReady || (isPreloading && !isAvatarPreloaded(avatar, modelFormat))
 
   const handleRetry = useCallback(() => {
     vrmModel.setHasError(false)
-    vrmModel.loadVRMFromPreloadedData(avatar, shouldOptimizePerformance, enableAnimations, reduceMotion, group.current)
-  }, [avatar, shouldOptimizePerformance, enableAnimations, reduceMotion, vrmModel])
+    vrmModel.loadModelFromPreloadedData(
+      avatar,
+      modelFormat,
+      shouldOptimizePerformance,
+      enableAnimations,
+      reduceMotion,
+      group.current,
+    )
+  }, [avatar, modelFormat, shouldOptimizePerformance, enableAnimations, reduceMotion, vrmModel])
 
   if (vrmModel.hasError) {
     return (
@@ -602,6 +631,7 @@ export function Avatar({
           thinkingText={animationState.thinkingText}
           reduceMotion={reduceMotion}
           isInIdleMode={idleStateRef.current.isInIdleMode}
+          modelFormat={modelFormat}
         />
       )}
     </group>

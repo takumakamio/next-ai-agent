@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "claude": "claude --dangerously-skip-permissions",
+    "cc": "claude --dangerously-skip-permissions",
     "with-dev": "dotenv -e .env.local --",
     "dev": "docker compose up -d && bun with-dev next dev",
     "build": "bun next build",
