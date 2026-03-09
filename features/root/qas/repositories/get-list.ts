@@ -31,6 +31,7 @@ export async function getQasList(options: GetQasListOptions): Promise<GetQasList
     updatedAt: Date | null
     question: string | null
     answer: string | null
+    embeddingModel: string | null
   }[] = []
 
   if (search) {
@@ -53,6 +54,7 @@ export async function getQasList(options: GetQasListOptions): Promise<GetQasList
         updatedAt: qas.updatedAt,
         question: qas.question,
         answer: qas.answer,
+        embeddingModel: qas.embeddingModel,
       })
       .from(qas)
       .where(whereConditions)
@@ -71,6 +73,7 @@ export async function getQasList(options: GetQasListOptions): Promise<GetQasList
         updatedAt: qas.updatedAt,
         question: qas.question,
         answer: qas.answer,
+        embeddingModel: qas.embeddingModel,
       })
       .from(qas)
       .orderBy(desc(qas.createdAt))

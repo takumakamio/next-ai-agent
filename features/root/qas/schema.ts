@@ -39,6 +39,8 @@ export const selectQaSchema = createSelectSchema(qas).extend({
   category: z.enum(categories),
   question: z.string().optional(),
   answer: z.string().optional(),
+  embedding: z.array(z.number()).nullable().optional(),
+  embeddingModel: z.string().nullable().optional(),
 })
 
 export const insertQaSchema = createInsertSchema(qas, {

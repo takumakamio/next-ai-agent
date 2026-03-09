@@ -1,7 +1,10 @@
 import { Button } from '@/components/ui'
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
+import { clientFetch } from '@/lib/client-fetcher'
+import { rpc } from '@/lib/rpc'
 import { X } from 'lucide-react'
 import type React from 'react'
+import { useEffect, useState } from 'react'
 import type { RootQa } from '../schema'
 import { QA_CATEGORIES } from '../schema'
 
@@ -12,6 +15,30 @@ interface QaDetailModalProps {
 }
 
 export const QaDetailModal: React.FC<QaDetailModalProps> = ({ qa, isOpen, onClose }) => {
+  const [embedding, setEmbedding] = useState<number[] | null>(null)
+  const [embeddingModel, setEmbeddingModel] = useState<string | null>(null)
+  const [loadingEmbedding, setLoadingEmbedding] = useState(false)
+
+  useEffect(() => {
+    if (isOpen && qa?.id) {
+      setLoadingEmbedding(true)
+      clientFetch(rpc.api.root.qas[':id'], { param: { id: qa.id } })
+        .then((detail) => {
+          setEmbedding(detail.embedding ?? null)
+          setEmbeddingModel(detail.embeddingModel ?? null)
+        })
+        .catch((err) => {
+          console.error('Failed to fetch QA detail:', err)
+        })
+        .finally(() => {
+          setLoadingEmbedding(false)
+        })
+    } else {
+      setEmbedding(null)
+      setEmbeddingModel(null)
+    }
+  }, [isOpen, qa?.id])
+
   if (!qa) return null
 
   const categoryInfo = QA_CATEGORIES.find((cat) => cat.id === qa.category) || QA_CATEGORIES[0]
@@ -60,6 +87,7 @@ export const QaDetailModal: React.FC<QaDetailModalProps> = ({ qa, isOpen, onClos
               <p className="text-foreground whitespace-pre-wrap leading-relaxed text-base">{qa.answer}</p>
             </div>
           </div>
+
           {/* Website Link QR Code Section */}
           {qa.websiteLink && (
             <div>
@@ -83,6 +111,48 @@ export const QaDetailModal: React.FC<QaDetailModalProps> = ({ qa, isOpen, onClos
               </div>
             </div>
           )}
+
+          {/* Embedding Section */}
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <div className="w-6 h-6 bg-violet-500 rounded-full flex items-center justify-center">
+                <span className="text-white text-xs font-bold">E</span>
+              </div>
+              <h3 className="font-semibold text-foreground text-lg">Embedding</h3>
+            </div>
+            <div className="bg-violet-500/5 border border-violet-500/30 rounded-lg p-6 space-y-4">
+              {loadingEmbedding ? (
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-muted border-t-violet-500" />
+                  <span className="text-sm">読み込み中...</span>
+                </div>
+              ) : embedding ? (
+                <>
+                  <div className="flex flex-wrap gap-3 text-sm">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-muted-foreground">モデル:</span>
+                      <span className="px-2 py-0.5 font-medium bg-violet-100 text-violet-800 dark:bg-violet-900/30 dark:text-violet-400 rounded">
+                        {embeddingModel}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-muted-foreground">次元数:</span>
+                      <span className="font-mono font-medium text-foreground">{embedding.length}</span>
+                    </div>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-2">ベクトル値 (先頭20次元):</p>
+                    <div className="bg-muted/50 rounded-md p-3 font-mono text-xs leading-relaxed text-foreground overflow-x-auto">
+                      [{embedding.slice(0, 20).map((v) => Number(v).toFixed(6)).join(', ')}
+                      {embedding.length > 20 && ', ...'}]
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <p className="text-sm text-muted-foreground">Embeddingが未生成です</p>
+              )}
+            </div>
+          </div>
         </div>
       </DrawerContent>
     </Drawer>
