@@ -8,24 +8,10 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { TextInput } from '@/features/home/components/text-input'
-import { AI_MODEL_OPTIONS, type AiModel, type TtsEngine } from '@/hooks/avatar'
+import { AI_MODEL_OPTIONS, type AiModel } from '@/hooks/avatar'
 import { useAvatar } from '@/hooks/avatar'
-import { VOICEVOX_SPEAKERS } from '@/lib/tts/voicevox'
 import { useCallback, useEffect, useState } from 'react'
 import { QaListModal } from '../../qas/components/list-modal'
-
-const VOICEVOX_SPEAKER_OPTIONS = [
-  { id: VOICEVOX_SPEAKERS.ZUNDAMON.NORMAL, label: 'ずんだもん' },
-  { id: VOICEVOX_SPEAKERS.SHIKOKU_METAN.NORMAL, label: '四国めたん' },
-  { id: VOICEVOX_SPEAKERS.KASUKABE_TSUMUGI.NORMAL, label: '春日部つむぎ' },
-  { id: VOICEVOX_SPEAKERS.NAMINE_RITSU.NORMAL, label: '波音リツ' },
-] as const
-
-const TTS_ENGINE_OPTIONS: { value: TtsEngine; label: string }[] = [
-  { value: 'auto', label: '自動' },
-  { value: 'gemini', label: 'Gemini' },
-  { value: 'voicevox', label: 'VOICEVOX' },
-]
 
 export const Menus = () => {
   const askAI = useAvatar((state) => state.askAI)
@@ -34,10 +20,6 @@ export const Menus = () => {
   const isSpeaking = useAvatar((state) => state.isSpeaking)
   const startVoiceInput = useAvatar((state) => state.startVoiceInput)
   const stopVoiceInput = useAvatar((state) => state.stopVoiceInput)
-  const ttsEngine = useAvatar((state) => state.ttsEngine)
-  const ttsSpeakerId = useAvatar((state) => state.ttsSpeakerId)
-  const setTtsEngine = useAvatar((state) => state.setTtsEngine)
-  const setTtsSpeakerId = useAvatar((state) => state.setTtsSpeakerId)
   const aiModel = useAvatar((state) => state.aiModel)
   const setAiModel = useAvatar((state) => state.setAiModel)
 
@@ -184,65 +166,6 @@ export const Menus = () => {
                     </DropdownMenuRadioItem>
                   ))}
                 </DropdownMenuRadioGroup>
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-            {/* TTS Engine */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button
-                  className={`${menuButtonClass} w-28 h-36 bg-secondary border-r border-border/40 hover:bg-secondary/80`}
-                  disabled={loading || isSpeaking}
-                  aria-label="音声エンジン"
-                  title={isSpeaking ? 'Avatar is speaking...' : '音声エンジン'}
-                >
-                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
-                    <path
-                      d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"
-                      fill="currentColor"
-                    />
-                  </svg>
-                  <span className="text-[10px] font-black uppercase tracking-widest text-foreground">
-                    {TTS_ENGINE_OPTIONS.find((o) => o.value === ttsEngine)?.label}
-                  </span>
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent side="top" align="start" className="w-56">
-                <DropdownMenuLabel>{'音声エンジン'}</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuRadioGroup
-                  value={ttsEngine}
-                  onValueChange={(value) => {
-                    setTtsEngine(value as TtsEngine)
-                    if (value !== 'voicevox') {
-                      setTtsSpeakerId(undefined)
-                    } else if (ttsSpeakerId === undefined) {
-                      setTtsSpeakerId(VOICEVOX_SPEAKERS.ZUNDAMON.NORMAL)
-                    }
-                  }}
-                >
-                  {TTS_ENGINE_OPTIONS.map((opt) => (
-                    <DropdownMenuRadioItem key={opt.value} value={opt.value}>
-                      {opt.label}
-                    </DropdownMenuRadioItem>
-                  ))}
-                </DropdownMenuRadioGroup>
-                {ttsEngine === 'voicevox' && (
-                  <>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuLabel>{'話者'}</DropdownMenuLabel>
-                    <DropdownMenuRadioGroup
-                      value={String(ttsSpeakerId ?? VOICEVOX_SPEAKERS.ZUNDAMON.NORMAL)}
-                      onValueChange={(value) => setTtsSpeakerId(Number(value))}
-                    >
-                      {VOICEVOX_SPEAKER_OPTIONS.map((speaker) => (
-                        <DropdownMenuRadioItem key={speaker.id} value={String(speaker.id)}>
-                          {speaker.label}
-                        </DropdownMenuRadioItem>
-                      ))}
-                    </DropdownMenuRadioGroup>
-                  </>
-                )}
               </DropdownMenuContent>
             </DropdownMenu>
 

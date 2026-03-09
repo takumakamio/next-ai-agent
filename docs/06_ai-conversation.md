@@ -35,7 +35,9 @@ DB 内の Q&A も同じように数値に変換済み
 
 Claude Code への指示：
 
-> 「@google/genai パッケージを使って、Gemini のクライアントを設定するユーティリティファイルを lib/google-ai.ts に作って。embedding 生成の関数も用意して。モデルは gemini-embedding-001、次元数は 2000 で」
+> 「@google/genai パッケージを使って、Gemini のクライアントを設定するユーティリティファイルを lib/google-ai.ts に作って。embedding 生成の関数も用意して。モデルは gemini-embedding-001、次元数は 2000 で。API キーは環境変数から読み込んで」
+
+> **セキュリティポイント：** AI のクライアント設定では `process.env.GOOGLE_GENERATIVE_AI_API_KEY` のように **環境変数から API キーを読み込みます**。コードに直接キーを書くと、Git にアップしたときに全世界に公開されてしまいます。環境変数を使うことで、キーはサーバー上にだけ存在し、ブラウザ（フロントエンド）からは見えません。
 
 → 生成されたファイルを確認：
 

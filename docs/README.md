@@ -13,21 +13,23 @@
 
 ## タイムテーブル
 
-| 時間          | Step       | 内容                             | 資料                                               |
-| ------------- | ---------- | -------------------------------- | -------------------------------------------------- |
-| 事前          | Pre-Step   | 環境構築（VS Code, Node.js, Docker 等） | [00_pre-setup.md](./00_pre-setup.md)            |
-| 9:00 - 9:45   | **Step 0** | Claude Code の使い方を覚えよう     | [01_claude-code-intro.md](./01_claude-code-intro.md) |
-| 9:45 - 10:00  |            | 休憩                             |                                                    |
-| 10:00 - 11:00 | **Step 1** | データベースを作ろう               | [02_database.md](./02_database.md)                 |
-| 11:00 - 11:15 |            | 休憩                             |                                                    |
-| 11:15 - 12:15 | **Step 2** | API を作ろう                      | [03_api.md](./03_api.md)                           |
-| 12:15 - 13:15 |            | 昼休憩                           |                                                    |
-| 13:15 - 14:15 | **Step 3** | AI と会話できるようにしよう        | [04_ai-conversation.md](./04_ai-conversation.md)   |
-| 14:15 - 14:30 |            | 休憩                             |                                                    |
-| 14:30 - 15:45 | **Step 4** | 画面を作ろう                      | [05_frontend.md](./05_frontend.md)                 |
-| 15:45 - 16:00 |            | 休憩                             |                                                    |
-| 16:00 - 16:30 | **Step 5** | 仕上げ & 動作確認                 | [06_finishing.md](./06_finishing.md)                |
-| 16:30 - 17:00 |            | 成果発表 & 振り返り               | [06_finishing.md](./06_finishing.md)                |
+| 時間          | Step       | 内容                                   | 資料                                                 |
+| ------------- | ---------- | -------------------------------------- | ---------------------------------------------------- |
+| 事前          |            | 研修で理解できるようになること           | [00_learning-outcomes.md](./00_learning-outcomes.md)  |
+| 事前          |            | この研修で使う技術を知ろう              | [01_tech-overview.md](./01_tech-overview.md)          |
+| 事前          | Pre-Step   | 環境構築（VS Code, Node.js, Docker 等） | [02_pre-setup.md](./02_pre-setup.md)                 |
+| 9:00 - 9:45   | **Step 0** | Claude Code の使い方を覚えよう          | [03_claude-code-intro.md](./03_claude-code-intro.md) |
+| 9:45 - 10:00  |            | 休憩                                   |                                                      |
+| 10:00 - 11:00 | **Step 1** | データベースを作ろう                    | [04_database.md](./04_database.md)                   |
+| 11:00 - 11:15 |            | 休憩                                   |                                                      |
+| 11:15 - 12:15 | **Step 2** | API を作ろう                            | [05_api.md](./05_api.md)                             |
+| 12:15 - 13:15 |            | 昼休憩                                 |                                                      |
+| 13:15 - 14:15 | **Step 3** | AI と会話できるようにしよう              | [06_ai-conversation.md](./06_ai-conversation.md)     |
+| 14:15 - 14:30 |            | 休憩                                   |                                                      |
+| 14:30 - 15:45 | **Step 4** | 画面を作ろう                            | [07_frontend.md](./07_frontend.md)                   |
+| 15:45 - 16:00 |            | 休憩                                   |                                                      |
+| 16:00 - 16:30 | **Step 5** | 仕上げ & 動作確認                       | [08_finishing.md](./08_finishing.md)                  |
+| 16:30 - 17:00 |            | 成果発表 & 振り返り                     | [08_finishing.md](./08_finishing.md)                  |
 
 ---
 
@@ -49,7 +51,7 @@
 ## 講師向け：事前準備チェックリスト
 
 ```
-[ ] 受講者に 00_pre-setup.md を1週間前に配布
+[ ] 受講者に 00_learning-outcomes.md、01_tech-overview.md、02_pre-setup.md を1週間前に配布
 [ ] 受講者PCに VS Code / Node.js / Docker / Claude Code がインストールされていることを確認
 [ ] Google AI Studio の API キーを各自取得（または共有キーを用意）
 [ ] Docker イメージを事前 pull（当日のネットワーク負荷軽減）
@@ -78,11 +80,13 @@
 ```
 docs/
 ├── README.md                  ← この文書（研修概要）
-├── 00_pre-setup.md            ← 事前セットアップ手順
-├── 01_claude-code-intro.md    ← Step 0: Claude Code 入門
-├── 02_database.md             ← Step 1: データベース構築
-├── 03_api.md                  ← Step 2: API 構築
-├── 04_ai-conversation.md      ← Step 3: AI 会話機能
-├── 05_frontend.md             ← Step 4: フロントエンド
-└── 06_finishing.md            ← Step 5: 仕上げ & 振り返り
+├── 00_learning-outcomes.md    ← 研修で理解できるようになること
+├── 01_tech-overview.md        ← この研修で使う技術を知ろう
+├── 02_pre-setup.md            ← 事前セットアップ手順
+├── 03_claude-code-intro.md    ← Step 0: Claude Code 入門
+├── 04_database.md             ← Step 1: データベース構築
+├── 05_api.md                  ← Step 2: API 構築
+├── 06_ai-conversation.md      ← Step 3: AI 会話機能
+├── 07_frontend.md             ← Step 4: フロントエンド
+└── 08_finishing.md            ← Step 5: 仕上げ & 振り返り
 ```

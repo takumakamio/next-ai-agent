@@ -1,7 +1,7 @@
 # Step 0：Claude Code の使い方を覚えよう（45分）
 
 > 事前セットアップが完了している前提で進めます。
-> まだの方は [00_pre-setup.md](./00_pre-setup.md) を先に完了してください。
+> まだの方は [02_pre-setup.md](./02_pre-setup.md) を先に完了してください。
 
 ---
 
@@ -96,6 +96,8 @@ Claude Code への指示：
 > 「.env.local ファイルを作って。中身はこの2つ：
 > DATABASE_URL=postgresql://postgres:postgres@localhost:5432/next_ai_agent
 > GOOGLE_GENERATIVE_AI_API_KEY=（自分のAPIキーをここに貼る）」
+
+> **セキュリティ注意：** `.env.local` には API キーなどの秘密情報を書きます。このファイルは `.gitignore` に含まれているため Git にアップされません。**API キーを直接コードに書かない** ようにしましょう。
 
 ### Docker Compose の設定
 

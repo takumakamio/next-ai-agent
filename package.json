@@ -5,7 +5,7 @@
   "scripts": {
     "cc": "claude --dangerously-skip-permissions",
     "with-dev": "dotenv -e .env.local --",
-    "dev": "docker compose up -d && bun with-dev next dev",
+    "dev": "bun with-dev next dev",
     "build": "bun next build",
     "start": "bun next start",
     "lint": "bunx biome check .",
