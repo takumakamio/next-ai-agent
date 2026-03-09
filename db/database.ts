@@ -47,18 +47,3 @@ export async function withTransaction<T>(callback: (tx: PostgresJsDatabase<typeo
   }
 }
 
-export const asTranslations = {
-  translations: true,
-} as const
-
-export const withTranslations = {
-  with: {
-    translations: true,
-  },
-} as const
-
-export const getTranslation = <T extends { translations: Array<Record<string, any>> }>(
-  entity: T,
-): T['translations'][0] | null => {
-  return entity.translations[0] || null
-}

@@ -1,4 +1,4 @@
-import { asTranslations, eq, getDB, getTranslation } from '@/db'
+import { eq, getDB } from '@/db'
 import { qas } from '@/db/schema/_index'
 
 export async function getQaById(id: string, locale: string) {
@@ -6,20 +6,15 @@ export async function getQaById(id: string, locale: string) {
 
   const data = await db.query.qas.findFirst({
     where: eq(qas.id, id),
-    with: {
-      ...asTranslations,
-    },
   })
 
   if (!data) {
     return null
   }
 
-  const qaTranslation = getTranslation(data)
-
   return {
     ...data,
-    question: qaTranslation?.question || '',
-    answer: qaTranslation?.answer || '',
+    question: data.question || '',
+    answer: data.answer || '',
   }
 }

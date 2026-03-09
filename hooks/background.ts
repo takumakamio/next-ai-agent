@@ -85,22 +85,26 @@ export const BACKGROUND_PRESETS: BackgroundPresetInfo[] = [
 
 interface BackgroundStore {
   preset: BackgroundPreset
+  hydrated: boolean
   setPreset: (preset: BackgroundPreset) => void
+  hydrate: () => void
 }
 
-const getInitialPreset = (): BackgroundPreset => {
-  if (typeof window === 'undefined') return 'dark-mode-pro'
-  const saved = localStorage.getItem('background-preset')
-  if (saved && BACKGROUND_PRESETS.some((p) => p.id === saved)) {
-    return saved as BackgroundPreset
-  }
-  return 'dark-mode-pro'
-}
+const DEFAULT_PRESET: BackgroundPreset = 'dark-mode-pro'
 
 export const useBackgroundStore = create<BackgroundStore>((set) => ({
-  preset: getInitialPreset(),
+  preset: DEFAULT_PRESET,
+  hydrated: false,
   setPreset: (preset) => {
     localStorage.setItem('background-preset', preset)
     set({ preset })
+  },
+  hydrate: () => {
+    const saved = localStorage.getItem('background-preset')
+    if (saved && BACKGROUND_PRESETS.some((p) => p.id === saved)) {
+      set({ preset: saved as BackgroundPreset, hydrated: true })
+    } else {
+      set({ hydrated: true })
+    }
   },
 }))

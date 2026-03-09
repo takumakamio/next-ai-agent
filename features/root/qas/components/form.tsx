@@ -1,7 +1,6 @@
 'use client'
 
 import { ComboboxControl, InputControl, TextAreaControl } from '@/components/controls'
-import SwitchControl from '@/components/controls/switch-control'
 import { Button, Form } from '@/components/ui'
 import { clientPost } from '@/lib/client-fetcher'
 import { rpc } from '@/lib/rpc'
@@ -28,16 +27,11 @@ export const ManageQaForm = ({
 
   const defaultValues: FV = {
     id: qa?.id ?? '',
-    contentType: qa?.contentType ?? 'general',
     category: qa?.category ?? 'general',
-    priority: qa?.priority ?? 1,
-    isActive: qa?.isActive ?? true,
     question: qa?.question ?? '',
     answer: qa?.answer ?? '',
     websiteLink: qa?.websiteLink ?? '',
     locale: 'ja',
-    // For create mode, always translate; for update mode, default to false (user can opt-in)
-    shouldTranslate: !qa?.id,
   }
 
   const [isPending, setIsPending] = useState(false)
@@ -71,8 +65,6 @@ export const ManageQaForm = ({
     defaultValues,
   })
 
-  const contentTypeOptions = [{ value: 'general', label: '一般' }]
-
   const categoryOptions = [
     { value: 'programming', label: 'プログラミング' },
     { value: 'architecture', label: 'アーキテクチャ' },
@@ -93,7 +85,6 @@ export const ManageQaForm = ({
               <p className="text-sm text-muted-foreground">{'Q&Aの分類を設定'}</p>
             </div>
             <div className="flex flex-col gap-4">
-              <ComboboxControl<FV> fieldName="contentType" label={'コンテンツタイプ'} options={contentTypeOptions} />
               <ComboboxControl<FV> fieldName="category" label={'カテゴリ'} options={categoryOptions} />
             </div>
           </div>
@@ -128,35 +119,29 @@ export const ManageQaForm = ({
           <div className="border-t border-dashed border-border" />
 
           {/* Submit Buttons */}
-          <div className="mt-auto flex items-center justify-between gap-2 border-t border-border pt-4">
-            {/* Translation option - only show in update mode */}
-            <div className="flex items-center">
-              {qa?.id && <SwitchControl<FV> fieldName="shouldTranslate" label={'保存時に翻訳'} />}
-            </div>
-            <div className="flex items-center gap-2">
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={() => (onCancel ? onCancel() : router.back())}
-                className="h-8 rounded-lg border border-border px-3 text-sm hover:bg-destructive hover:text-destructive-foreground hover:border-destructive"
-              >
-                {'キャンセル'}
-              </Button>
-              <Button
-                type="submit"
-                disabled={isPending}
-                className="h-8 gap-2 rounded-lg bg-primary px-3 text-sm text-primary-foreground hover:bg-primary/90"
-              >
-                {isPending ? (
-                  <Loader className="size-4 animate-spin" />
-                ) : (
-                  <>
-                    <Send className="size-4" />
-                    {qa?.id ? '保存' : '作成'}
-                  </>
-                )}
-              </Button>
-            </div>
+          <div className="mt-auto flex items-center justify-end gap-2 border-t border-border pt-4">
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => (onCancel ? onCancel() : router.back())}
+              className="h-8 rounded-lg border border-border px-3 text-sm hover:bg-destructive hover:text-destructive-foreground hover:border-destructive"
+            >
+              {'キャンセル'}
+            </Button>
+            <Button
+              type="submit"
+              disabled={isPending}
+              className="h-8 gap-2 rounded-lg bg-primary px-3 text-sm text-primary-foreground hover:bg-primary/90"
+            >
+              {isPending ? (
+                <Loader className="size-4 animate-spin" />
+              ) : (
+                <>
+                  <Send className="size-4" />
+                  {qa?.id ? '保存' : '作成'}
+                </>
+              )}
+            </Button>
           </div>
         </form>
       </Form>

@@ -17,7 +17,6 @@
 // responseTime         | integer | nullable
 // embeddingModel       | varchar | nullable | default: 'gemini-embedding-001'
 // qaId                 | varchar | nullable | references qas.id
-// qaTranslationId      | integer | nullable | references qaTranslations.id
 //
 // ============================================================================
 

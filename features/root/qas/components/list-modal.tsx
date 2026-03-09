@@ -2,11 +2,11 @@ import { Button } from '@/components/ui'
 import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
 import { clientFetch } from '@/lib/client-fetcher'
 import { rpc } from '@/lib/rpc'
-import { Calendar, ChevronRight, Eye, X } from 'lucide-react'
+import { Calendar, ChevronRight, X } from 'lucide-react'
 import type React from 'react'
 import { useCallback, useEffect, useState } from 'react'
-import type { QaCategory, QaContentType, RootQa } from '../schema'
-import { QA_CATEGORIES, QA_CONTENT_TYPES } from '../schema'
+import type { QaCategory, RootQa } from '../schema'
+import { QA_CATEGORIES } from '../schema'
 import { QaDetailModal } from './detail-modal'
 
 interface QaListModalProps {
@@ -67,14 +67,6 @@ export const QaListModal: React.FC<QaListModalProps> = ({ isOpen, onClose }) => 
     (categoryId: string): QaCategory => {
       const category = QA_CATEGORIES.find((cat) => cat.id === categoryId) || QA_CATEGORIES[0]
       return category
-    },
-    [],
-  )
-
-  const getContentTypeInfo = useCallback(
-    (typeId: string): QaContentType => {
-      const type = QA_CONTENT_TYPES.find((type) => type.id === typeId) || QA_CONTENT_TYPES[0]
-      return type
     },
     [],
   )
@@ -174,7 +166,6 @@ export const QaListModal: React.FC<QaListModalProps> = ({ isOpen, onClose }) => 
                 <div className="space-y-4">
                   {filteredQas.map((qa) => {
                     const categoryInfo = getCategoryInfo(qa.category)
-                    const contentTypeInfo = getContentTypeInfo(qa.contentType)
 
                     return (
                       <div
@@ -189,9 +180,6 @@ export const QaListModal: React.FC<QaListModalProps> = ({ isOpen, onClose }) => 
                               <span className={`px-3 py-1 text-xs font-bold text-white ${categoryInfo.color}`}>
                                 {categoryInfo.name}
                               </span>
-                              <span className="border border-border bg-muted text-foreground font-bold px-3 py-1 text-xs rounded">
-                                {contentTypeInfo.name}
-                              </span>
                             </div>
                             <ChevronRight className="h-5 w-5 text-muted-foreground flex-shrink-0 mt-0.5" />
                           </div>
@@ -204,12 +192,6 @@ export const QaListModal: React.FC<QaListModalProps> = ({ isOpen, onClose }) => 
                           {/* Metadata */}
                           <div className="flex items-center justify-between text-xs text-muted-foreground">
                             <div className="flex items-center gap-4">
-                              <div className="flex items-center gap-1.5">
-                                <Eye className="h-3 w-3" />
-                                <span className="font-medium">
-                                  {qa.viewCount} {'閲覧数'}
-                                </span>
-                              </div>
                               <div className="flex items-center gap-1.5">
                                 <Calendar className="h-3 w-3" />
                                 <span className="font-medium">{new Date(qa.createdAt).toLocaleDateString()}</span>

@@ -1,13 +1,7 @@
 import { generateEmbedding } from '@/lib/google-ai'
 import { nanoid } from 'nanoid'
-import { qaTranslations, qas } from '../schema/_index'
+import { qas } from '../schema/_index'
 import qaData from './qaData.json'
-
-const commonSettings = {
-  contentType: 'general',
-  priority: 1,
-  isActive: true,
-}
 
 export async function seedQasData(db: any) {
   console.log('❓ Seeding Q&As...')
@@ -38,20 +32,12 @@ export async function seedQasData(db: any) {
       const qaId = nanoid()
 
       try {
-        await db.insert(qas).values({
-          id: qaId,
-          contentType: commonSettings.contentType,
-          category: category,
-          priority: commonSettings.priority,
-          isActive: commonSettings.isActive,
-        })
-
-        // Generate embedding and save translation
         const embeddingText = `${qa.question} ${qa.answer}`
         const embedding = await generateEmbedding(embeddingText)
 
-        await db.insert(qaTranslations).values({
-          qaId,
+        await db.insert(qas).values({
+          id: qaId,
+          category: category,
           question: qa.question,
           answer: qa.answer,
           embedding,

@@ -1,5 +1,5 @@
 import { count, desc, getDB, ilike, or } from '@/db'
-import { qaLogs, qaTranslations } from '@/db/schema/_index'
+import { qaLogs, qas } from '@/db/schema/_index'
 import { eq } from 'drizzle-orm'
 
 export type GetQaLogsListOptions = {
@@ -35,7 +35,6 @@ export async function getQaLogsList(options: GetQaLogsListOptions): Promise<GetQ
     userFeedback: string | null
     responseTime: number | null
     qaId: string | null
-    qaTranslationId: number | null
     createdAt: Date
     updatedAt: Date | null
     qaQuestion: string | null
@@ -48,16 +47,13 @@ export async function getQaLogsList(options: GetQaLogsListOptions): Promise<GetQ
       ilike(qaLogs.id, searchPattern),
       ilike(qaLogs.userQuestion, searchPattern),
       ilike(qaLogs.aiAnswer, searchPattern),
-      ilike(qaTranslations.question, searchPattern),
+      ilike(qas.question, searchPattern),
     )
 
     const [countResult] = await db
       .select({ total: count() })
       .from(qaLogs)
-      .leftJoin(
-        qaTranslations,
-        eq(qaTranslations.id, qaLogs.qaTranslationId),
-      )
+      .leftJoin(qas, eq(qas.id, qaLogs.qaId))
       .where(whereConditions)
     total = countResult.total
 
@@ -72,16 +68,12 @@ export async function getQaLogsList(options: GetQaLogsListOptions): Promise<GetQ
         userFeedback: qaLogs.userFeedback,
         responseTime: qaLogs.responseTime,
         qaId: qaLogs.qaId,
-        qaTranslationId: qaLogs.qaTranslationId,
         createdAt: qaLogs.createdAt,
         updatedAt: qaLogs.updatedAt,
-        qaQuestion: qaTranslations.question,
+        qaQuestion: qas.question,
       })
       .from(qaLogs)
-      .leftJoin(
-        qaTranslations,
-        eq(qaTranslations.id, qaLogs.qaTranslationId),
-      )
+      .leftJoin(qas, eq(qas.id, qaLogs.qaId))
       .where(whereConditions)
       .orderBy(desc(qaLogs.createdAt))
       .limit(limit)
@@ -101,16 +93,12 @@ export async function getQaLogsList(options: GetQaLogsListOptions): Promise<GetQ
         userFeedback: qaLogs.userFeedback,
         responseTime: qaLogs.responseTime,
         qaId: qaLogs.qaId,
-        qaTranslationId: qaLogs.qaTranslationId,
         createdAt: qaLogs.createdAt,
         updatedAt: qaLogs.updatedAt,
-        qaQuestion: qaTranslations.question,
+        qaQuestion: qas.question,
       })
       .from(qaLogs)
-      .leftJoin(
-        qaTranslations,
-        eq(qaTranslations.id, qaLogs.qaTranslationId),
-      )
+      .leftJoin(qas, eq(qas.id, qaLogs.qaId))
       .orderBy(desc(qaLogs.createdAt))
       .limit(limit)
       .offset(offset)

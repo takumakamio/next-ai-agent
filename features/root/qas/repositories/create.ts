@@ -3,7 +3,7 @@ import { qas } from '@/db/schema/_index'
 import type { InsertQa } from '@/features/root/qas/schema'
 import { handleRecordError } from '@/lib/server/handle-record-error'
 import { nanoid } from 'nanoid'
-import { handleQaTranslationsForCreate } from './helpers'
+import { handleQaEmbeddingForCreate } from './helpers'
 
 export type CreateQaData = Omit<InsertQa, 'id'> & { id?: never }
 
@@ -17,11 +17,10 @@ export async function createQa(qa: CreateQaData): Promise<CreateQaResult> {
   const uniqueId = nanoid()
 
   const qaData = {
-    contentType: qa.contentType,
     category: qa.category || null,
-    priority: qa.priority || 1,
-    isActive: qa.isActive ?? true,
     websiteLink: qa.websiteLink || null,
+    question: qa.question,
+    answer: qa.answer,
   }
 
   try {
@@ -33,7 +32,7 @@ export async function createQa(qa: CreateQaData): Promise<CreateQaResult> {
       })
       .returning({ id: qas.id })
 
-    await handleQaTranslationsForCreate(newQa.id, qa)
+    await handleQaEmbeddingForCreate(newQa.id, qa)
 
     return {
       success: true,
@@ -47,7 +46,6 @@ export async function createQa(qa: CreateQaData): Promise<CreateQaResult> {
       recordType: 'qa',
       action: 'Insert',
       additionalContext: {
-        contentType: qa.contentType,
         category: qa.category,
       },
     })

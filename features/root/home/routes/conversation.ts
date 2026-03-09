@@ -1,11 +1,11 @@
 import { getDB } from '@/db'
-import { qaLogs, qaTranslations, qas } from '@/db/schema/_index'
+import { qaLogs, qas } from '@/db/schema/_index'
 import { generateEmbedding } from '@/lib/google-ai'
 import type { Bindings } from '@/type'
 import { GoogleGenAI } from '@google/genai'
 import { OpenAPIHono, createRoute } from '@hono/zod-openapi'
 
-import { and, desc, eq, sql } from 'drizzle-orm'
+import { desc, sql } from 'drizzle-orm'
 import { nanoid } from 'nanoid'
 import { z } from 'zod'
 
@@ -29,8 +29,6 @@ const qaSearchResultSchema = z.object({
   answer: z.string(),
   similarity: z.number(),
   category: z.string().nullable(),
-  contentType: z.string(),
-  translationId: z.number().optional(),
   websiteLink: z.string().nullable().optional(),
 })
 
@@ -51,15 +49,6 @@ const conversationResponseSchema = z.object({
     )
     .optional(),
   websiteLink: z.string().nullable().optional(),
-  tags: z
-    .array(
-      z.object({
-        id: z.number(),
-        name: z.string(),
-        slug: z.string(),
-      }),
-    )
-    .optional(),
   logId: z.string().optional(),
 })
 
@@ -240,9 +229,7 @@ async function searchRelevantQAs(question: string, locale: string, limit = 5): P
       question: string | null
       answer: string | null
       category: string | null
-      contentType: string
       similarity: number
-      translationId: number
       websiteLink: string | null
     }>
 
@@ -256,23 +243,15 @@ async function searchRelevantQAs(question: string, locale: string, limit = 5): P
       const queryPromise = db
         .select({
           id: qas.id,
-          question: qaTranslations.question,
-          answer: qaTranslations.answer,
+          question: qas.question,
+          answer: qas.answer,
           category: qas.category,
-          contentType: qas.contentType,
-          similarity: sql<number>`1 - (${qaTranslations.embedding} <=> ${embeddingString}::vector)`,
-          translationId: qaTranslations.id,
+          similarity: sql<number>`1 - (${qas.embedding} <=> ${embeddingString}::vector)`,
           websiteLink: qas.websiteLink,
         })
-        .from(qaTranslations)
-        .innerJoin(qas, eq(qaTranslations.qaId, qas.id))
-        .where(
-          and(
-            eq(qas.isActive, true),
-            sql`${qaTranslations.embedding} IS NOT NULL`,
-          ),
-        )
-        .orderBy(desc(sql<number>`1 - (${qaTranslations.embedding} <=> ${embeddingString}::vector)`))
+        .from(qas)
+        .where(sql`${qas.embedding} IS NOT NULL`)
+        .orderBy(desc(sql<number>`1 - (${qas.embedding} <=> ${embeddingString}::vector)`))
         .limit(limit)
 
       // Race between query and timeout
@@ -320,8 +299,6 @@ async function searchRelevantQAs(question: string, locale: string, limit = 5): P
       answer: qaResult.answer || '',
       similarity: qaResult.similarity,
       category: qaResult.category,
-      contentType: qaResult.contentType,
-      translationId: qaResult.translationId,
       websiteLink: qaResult.websiteLink,
     }))
 
@@ -372,7 +349,6 @@ async function logQAInteraction({
       responseTime,
       embeddingModel: 'gemini-embedding-001',
       qaId: bestQA?.id || null,
-      qaTranslationId: bestQA?.translationId || null,
     }
 
     const [insertedLog] = await db.insert(qaLogs).values(logData).returning({ id: qaLogs.id })

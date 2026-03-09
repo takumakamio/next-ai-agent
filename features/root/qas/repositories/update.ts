@@ -2,7 +2,7 @@ import { eq, getDB } from '@/db'
 import { qas } from '@/db/schema/_index'
 import type { InsertQa } from '@/features/root/qas/schema'
 import { handleRecordError } from '@/lib/server/handle-record-error'
-import { handleQaTranslationsForUpdate } from './helpers'
+import { handleQaEmbeddingForUpdate } from './helpers'
 
 export type UpdateQaData = InsertQa & { id: string }
 
@@ -15,18 +15,16 @@ export async function updateQa(qa: UpdateQaData): Promise<UpdateQaResult> {
   const db = getDB()
 
   const qaData = {
-    contentType: qa.contentType,
     category: qa.category || null,
-    priority: qa.priority || 1,
-    isActive: qa.isActive ?? true,
     websiteLink: qa.websiteLink || null,
+    question: qa.question,
+    answer: qa.answer,
   }
 
   try {
     await db.update(qas).set(qaData).where(eq(qas.id, qa.id))
 
-    const shouldTranslate = qa.shouldTranslate ?? false
-    await handleQaTranslationsForUpdate(qa.id, qa, shouldTranslate)
+    await handleQaEmbeddingForUpdate(qa.id, qa)
 
     return {
       success: true,
@@ -40,7 +38,6 @@ export async function updateQa(qa: UpdateQaData): Promise<UpdateQaResult> {
       recordType: 'qa',
       action: 'Update',
       additionalContext: {
-        contentType: qa.contentType,
         category: qa.category,
       },
     })

@@ -6,6 +6,11 @@ import { useEffect } from 'react'
 
 export default function Home() {
   const preset = useBackgroundStore((s) => s.preset)
+  const hydrate = useBackgroundStore((s) => s.hydrate)
+
+  useEffect(() => {
+    hydrate()
+  }, [hydrate])
 
   useEffect(() => {
     document.documentElement.setAttribute('data-preset', preset)

@@ -43,7 +43,6 @@ export interface Message {
     conversationType: string
     title?: string
     description?: string
-    tags?: any[]
   }
 }
 
