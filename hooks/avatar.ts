@@ -5,12 +5,11 @@ import { create } from 'zustand'
 export type Avatar = 'Tsumugi'
 export type ExpertiseLevel = 'beginner' | 'advanced' | 'fullstack' | 'specialist'
 export type TtsEngine = 'auto' | 'elevenlabs' | 'gemini' | 'voicevox'
-export type AiModel = 'gemini-2.5-flash' | 'gemini-2.5-pro' | 'gemini-2.0-flash'
+export type AiModel = 'gemini-2.5-flash' | 'gemini-2.5-pro'
 
 export const AI_MODEL_OPTIONS: { value: AiModel; labelKey: string }[] = [
   { value: 'gemini-2.5-flash', labelKey: 'AIModelGemini25Flash' },
   { value: 'gemini-2.5-pro', labelKey: 'AIModelGemini25Pro' },
-  { value: 'gemini-2.0-flash', labelKey: 'AIModelGemini20Flash' },
 ]
 
 export interface ConversationExchange {
@@ -108,7 +107,7 @@ export const useAvatar = create<AvatarState>((set, get) => ({
     set(() => ({ ttsSpeakerId: id }))
   },
 
-  aiModel: 'gemini-2.0-flash' as AiModel,
+  aiModel: 'gemini-2.5-flash' as AiModel,
   setAiModel: (model: AiModel) => {
     set(() => ({ aiModel: model }))
   },

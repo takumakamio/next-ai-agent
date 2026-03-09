@@ -21,7 +21,7 @@ const conversationRequestSchema = z.object({
   history: z.array(conversationExchangeSchema).max(5).optional().default([]),
   locale: z.string().optional().default('ja'),
   chatSessionId: z.string().optional(),
-  aiModel: z.enum(['gemini-2.5-flash', 'gemini-2.5-pro', 'gemini-2.0-flash']).optional().default('gemini-2.0-flash'),
+  aiModel: z.enum(['gemini-2.5-flash', 'gemini-2.5-pro']).optional().default('gemini-2.5-flash'),
 })
 
 const qaSearchResultSchema = z.object({
