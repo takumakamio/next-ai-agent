@@ -74,7 +74,7 @@ Claude Code への指示：
 
 Claude Code への指示：
 
-> 「チャット用の POST API を features/root/home/routes/conversation.ts に作って。ユーザーの質問を受け取って、ベクトル検索で関連 Q&A を見つけて、それをコンテキストとして Gemini 2.5-flash に渡して回答を生成して。会話履歴（history）も受け取って、前の会話を踏まえた回答ができるようにして」
+> 「チャット用の POST API を features/home/routes/conversation.ts に作って。ユーザーの質問を受け取って、ベクトル検索で関連 Q&A を見つけて、それをコンテキストとして Gemini 2.5-flash に渡して回答を生成して。会話履歴（history）も受け取って、前の会話を踏まえた回答ができるようにして」
 
 ### データの流れ
 
@@ -98,7 +98,7 @@ Claude Code への指示：
 
 ### 期待されるリクエスト・レスポンス
 
-**POST** `/api/root/home/conversation`
+**POST** `/api/home/conversation`
 
 リクエスト：
 
@@ -131,7 +131,7 @@ Claude Code への指示：
 ## ④ 動作確認（10分）
 
 ```bash
-curl -X POST http://localhost:3000/api/root/home/conversation \
+curl -X POST http://localhost:3000/api/home/conversation \
   -H "Content-Type: application/json" \
   -d '{"question":"TypeScript って何ですか？","history":[]}'
 ```

@@ -43,11 +43,11 @@ Claude Code への指示：
 
 Claude Code への指示：
 
-> 「Q&A の一覧を取得する GET API を作って。ページネーション対応で、検索もできるようにして。features/root/qas/ フォルダにルートとリポジトリを分けて配置して」
+> 「Q&A の一覧を取得する GET API を作って。ページネーション対応で、検索もできるようにして。features/qas/ フォルダにルートとリポジトリを分けて配置して」
 
 ### 期待されるリクエスト・レスポンス
 
-**GET** `/api/root/qas?page=1&limit=10&search=TypeScript`
+**GET** `/api/qas?page=1&limit=10&search=TypeScript`
 
 ```json
 {
@@ -72,7 +72,7 @@ Claude Code への指示：
 ### ファイル構成
 
 ```
-features/root/qas/
+features/qas/
 ├── routes/          # APIルート定義
 │   └── index.ts
 ├── repositories/    # DB操作（データアクセス層）
@@ -98,7 +98,7 @@ Claude Code への指示：
 
 ### 期待されるリクエスト・レスポンス
 
-**POST** `/api/root/qas`
+**POST** `/api/qas`
 
 リクエスト：
 
@@ -134,7 +134,7 @@ Claude Code への指示：
 ### 一覧取得
 
 ```bash
-curl http://localhost:3000/api/root/qas
+curl http://localhost:3000/api/qas
 ```
 
 → シードで入れた Q&A データが JSON で返ってくればOK
@@ -142,7 +142,7 @@ curl http://localhost:3000/api/root/qas
 ### 新規作成
 
 ```bash
-curl -X POST http://localhost:3000/api/root/qas \
+curl -X POST http://localhost:3000/api/qas \
   -H "Content-Type: application/json" \
   -d '{"question":"React とは？","answer":"UI を作るためのライブラリです","category":"programming"}'
 ```
@@ -152,7 +152,7 @@ curl -X POST http://localhost:3000/api/root/qas \
 ### もう一度一覧取得して確認
 
 ```bash
-curl http://localhost:3000/api/root/qas
+curl http://localhost:3000/api/qas
 ```
 
 → 先ほど追加した「React とは？」が含まれていれば **Step 2 完了！**

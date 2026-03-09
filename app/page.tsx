@@ -1,6 +1,6 @@
 'use client'
 
-import { HomeTabs } from '@/features/root/home/components/home-tabs'
+import { HomeTabs } from '@/features/home/components/home-tabs'
 
 export default function Home() {
   return (

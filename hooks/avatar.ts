@@ -183,7 +183,7 @@ export const useAvatar = create<AvatarState>((set, get) => ({
 
         try {
           set({ loading: true })
-          const response = await fetch('/api/root/home/stt', {
+          const response = await fetch('/api/home/stt', {
             method: 'POST',
             body: formData,
           })
@@ -263,7 +263,7 @@ export const useAvatar = create<AvatarState>((set, get) => ({
         aiModel: get().aiModel,
       }
 
-      const res = await fetch(rpc.api.root.home.conversation.$url(), {
+      const res = await fetch(rpc.api.home.conversation.$url(), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -377,7 +377,7 @@ export const useAvatar = create<AvatarState>((set, get) => ({
         }
 
         const audioRes = await fetch(
-          rpc.api.root.home.tts.$url({
+          rpc.api.home.tts.$url({
             query: ttsQuery as any,
           }),
         )

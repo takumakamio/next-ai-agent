@@ -9,10 +9,10 @@
  * import { clientFetch, clientPost } from '@/lib/client-fetcher'
  *
  * // GET request
- * const data = await clientFetch(rpc.api.manage.spots, { query: { page: 1, limit: 10 } })
+ * const data = await clientFetch(rpc.api.qas, { query: { page: 1, limit: 10 } })
  *
  * // POST request
- * const created = await clientPost(rpc.api.manage.spots.lookup, { name: 'Tokyo Station' })
+ * const created = await clientPost(rpc.api.qas, { question: 'What is TypeScript?' })
  * ```
  *
  * @module
@@ -108,7 +108,7 @@ async function processFilesInObject<T>(obj: T): Promise<T> {
  *
  * @example
  * ```ts
- * const data = await clientFetch(rpc.api.manage.spots, { query: { page: 1 } })
+ * const data = await clientFetch(rpc.api.qas, { query: { page: 1 } })
  * ```
  */
 export async function clientFetch<T extends HonoGetEndpoint<ExtractGetArgs<T>>>(
@@ -128,22 +128,11 @@ export async function clientFetch<T extends HonoGetEndpoint<ExtractGetArgs<T>>>(
 /**
  * Client-side typed POST request.
  *
- * Automatically handles File objects in the body:
- * - Detects File objects recursively in the body
- * - Resizes images client-side before upload (AVIF/WebP)
- * - Uploads files to /api/manage/utils/image-upload
- * - Replaces File objects with their uploaded URLs
- * - Then sends the processed body as JSON
+ * Automatically handles Date objects in the body by converting to ISO strings.
  *
  * @example
  * ```ts
- * const result = await clientPost(rpc.api.manage.stops.lookup, { name: 'Tokyo Station' })
- *
- * // With File objects (automatically uploaded)
- * const result = await clientPost(rpc.api.manage.spots, {
- *   name: 'My Spot',
- *   image: fileFromInput, // File will be resized, uploaded, and replaced with URL
- * })
+ * const result = await clientPost(rpc.api.qas, { question: 'What is React?', answer: '...', category: 'programming' })
  * ```
  */
 export async function clientPost<T extends HonoPostEndpoint<ExtractPostArgs<T>>>(
@@ -176,7 +165,7 @@ export async function clientPost<T extends HonoPostEndpoint<ExtractPostArgs<T>>>
  *
  * @example
  * ```ts
- * const updated = await clientPatch(rpc.api.manage.spots[':id'], formData, { param: { id: '123' } })
+ * const updated = await clientPatch(rpc.api.qas[':id'], formData, { param: { id: '123' } })
  * ```
  */
 export async function clientPatch<T extends HonoPatchEndpoint<ExtractPatchArgs<T>>>(
@@ -203,7 +192,7 @@ export async function clientPatch<T extends HonoPatchEndpoint<ExtractPatchArgs<T
  *
  * @example
  * ```ts
- * await clientDelete(rpc.api.manage.spots[':id'], { param: { id: '123' } })
+ * await clientDelete(rpc.api.qas[':id'], { param: { id: '123' } })
  * ```
  */
 export async function clientDelete<T extends HonoDeleteEndpoint<ExtractDeleteArgs<T>>>(

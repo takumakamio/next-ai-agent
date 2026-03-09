@@ -1,6 +1,6 @@
-import { rootHomeRoutes } from '@/features/root/home/routes'
-import { rootQaLogRoutes } from '@/features/root/qa-logs/routes'
-import { rootQaRoutes } from '@/features/root/qas/routes'
+import { homeRoutes } from '@/features/home/routes'
+import { qaLogRoutes } from '@/features/qa-logs/routes'
+import { qaRoutes } from '@/features/qas/routes'
 import { APP_TITLE, ROOT_URL } from '@/lib/constants'
 import { handleApiError } from '@/lib/server/api-error-handle'
 import { customLoggerMiddleware, printLogger } from '@/lib/server/middleware/logger'
@@ -83,11 +83,11 @@ app.get(
 )
 
 // Route registration
-const rootRouter = app.route('/', rootHomeRoutes).route('/', rootQaRoutes).route('/', rootQaLogRoutes)
+const appRouter = app.route('/', homeRoutes).route('/', qaRoutes).route('/', qaLogRoutes)
 
 export const GET = handle(app)
 export const POST = handle(app)
 export const PATCH = handle(app)
 export const DELETE = handle(app)
 
-export type RootType = typeof rootRouter
+export type AppType = typeof appRouter
