@@ -1,4 +1,3 @@
-import type { ModelFormat } from '@/hooks/avatar'
 import { getOptimalVRMConfig, optimizeVRM } from '@/lib/vrm'
 import { getGlobalVRMACache, stabilizeSpringBones } from '@/lib/vrm/utils'
 import type { VRMAnimation } from '@/lib/vrm/vrm-animation'
@@ -9,8 +8,7 @@ import { type AnimationClip, AnimationMixer, type Group } from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 
 export interface PreloadedModelData {
-  format: ModelFormat
-  vrm: VRM | null
+  vrm: VRM
   vrmAnimations: { [key: string]: VRMAnimation }
   scene: Group
   animations: { [key: string]: AnimationClip }
@@ -27,11 +25,8 @@ export interface VRMPreloaderState {
   preloadErrors: { [key: string]: string }
 }
 
-// Models to preload (avatar + format combinations)
-const MODELS_TO_PRELOAD: { avatar: string; format: ModelFormat }[] = [
-  { avatar: 'Tsumugi', format: 'vrm' },
-  { avatar: 'Tsumugi', format: 'glb' },
-]
+// Avatars to preload
+const AVATARS_TO_PRELOAD = ['Tsumugi']
 
 // Animation files to preload for each VRM
 const ANIMATION_FILES = [
@@ -45,10 +40,6 @@ const ANIMATION_FILES = [
   'spin.vrma',
   'squat.vrma',
 ]
-
-function getModelKey(avatar: string, format: ModelFormat): string {
-  return `${avatar}-${format}`
-}
 
 export function useVRMPreloader() {
   const [state, setState] = useState<VRMPreloaderState>({
@@ -70,77 +61,9 @@ export function useVRMPreloader() {
     }),
   ).current
 
-  // Preload a GLB model (no VRM plugin, no spring bones, no VRMA animations)
-  const preloadGLB = async (avatarName: string): Promise<PreloadedModelData | null> => {
-    const key = getModelKey(avatarName, 'glb')
-    console.log(`Starting GLB preload for: ${key}`)
-
-    try {
-      setState((prev) => ({
-        ...prev,
-        preloadProgress: { ...prev.preloadProgress, [key]: 0 },
-      }))
-
-      const loader = new GLTFLoader()
-      const glbPath = `/models/${avatarName}.glb`
-
-      const gltf = await new Promise<any>((resolve, reject) => {
-        loader.load(
-          glbPath,
-          (gltf) => resolve(gltf),
-          (progress) => {
-            const progressPercent = Math.round((progress.loaded / progress.total) * 100)
-            setState((prev) => ({
-              ...prev,
-              preloadProgress: { ...prev.preloadProgress, [key]: progressPercent },
-            }))
-          },
-          (error) => reject(error),
-        )
-      })
-
-      if (abortControllerRef.current?.signal.aborted) return null
-
-      const scene = gltf.scene as Group
-      const mixer = new AnimationMixer(scene)
-
-      // Extract embedded animations
-      const loadedAnimations: { [key: string]: AnimationClip } = {}
-      for (const clip of gltf.animations as AnimationClip[]) {
-        loadedAnimations[clip.name] = clip
-      }
-
-      console.log(`GLB preloaded: ${key}, animations: ${Object.keys(loadedAnimations).join(', ') || 'none'}`)
-
-      setState((prev) => ({
-        ...prev,
-        preloadProgress: { ...prev.preloadProgress, [key]: 100 },
-      }))
-
-      return {
-        format: 'glb',
-        vrm: null,
-        vrmAnimations: {},
-        scene,
-        animations: loadedAnimations,
-        mixer,
-      }
-    } catch (error) {
-      console.error(`Error preloading GLB ${key}:`, error)
-      setState((prev) => ({
-        ...prev,
-        preloadErrors: {
-          ...prev.preloadErrors,
-          [key]: error instanceof Error ? error.message : 'Unknown error',
-        },
-      }))
-      return null
-    }
-  }
-
   // Preload a single VRM model with animations
   const preloadVRM = async (avatarName: string): Promise<PreloadedModelData | null> => {
-    const key = getModelKey(avatarName, 'vrm')
+    const key = avatarName
     console.log(`Starting VRM preload for: ${key}`)
 
     try {
@@ -232,7 +155,6 @@ export function useVRMPreloader() {
       }))
 
       return {
-        format: 'vrm',
         vrm,
         vrmAnimations: loadedVrmAnimations,
         scene: vrm.scene,
@@ -264,14 +186,13 @@ export function useVRMPreloader() {
 
     const preloadedModels = new Map<string, PreloadedModelData>()
 
-    for (const { avatar, format } of MODELS_TO_PRELOAD) {
+    for (const avatar of AVATARS_TO_PRELOAD) {
       if (abortControllerRef.current?.signal.aborted) break
 
-      const preloadedData = format === 'glb' ? await preloadGLB(avatar) : await preloadVRM(avatar)
+      const preloadedData = await preloadVRM(avatar)
       if (preloadedData) {
-        const key = getModelKey(avatar, format)
-        preloadedModels.set(key, preloadedData)
-        console.log(`${key} successfully preloaded and cached`)
+        preloadedModels.set(avatar, preloadedData)
+        console.log(`${avatar} successfully preloaded and cached`)
       }
     }
 
@@ -281,17 +202,15 @@ export function useVRMPreloader() {
       isPreloading: false,
     }))
 
-    console.log(`Preloading completed! ${preloadedModels.size}/${MODELS_TO_PRELOAD.length} models loaded`)
+    console.log(`Preloading completed! ${preloadedModels.size}/${AVATARS_TO_PRELOAD.length} models loaded`)
   }
 
-  // Get preloaded data for a specific avatar+format
-  const getPreloadedData = (avatarName: string, format: ModelFormat = 'vrm'): PreloadedModelData | null => {
-    const key = getModelKey(avatarName, format)
-    const data = state.preloadedModels.get(key)
+  // Get preloaded data for a specific avatar
+  const getPreloadedData = (avatarName: string): PreloadedModelData | null => {
+    const data = state.preloadedModels.get(avatarName)
     if (!data) return null
 
     return {
-      format: data.format,
       vrm: data.vrm,
       vrmAnimations: { ...data.vrmAnimations },
       scene: data.scene,
@@ -300,9 +219,9 @@ export function useVRMPreloader() {
     }
   }
 
-  // Check if a specific avatar+format is preloaded
-  const isAvatarPreloaded = (avatarName: string, format: ModelFormat = 'vrm'): boolean => {
-    return state.preloadedModels.has(getModelKey(avatarName, format))
+  // Check if a specific avatar is preloaded
+  const isAvatarPreloaded = (avatarName: string): boolean => {
+    return state.preloadedModels.has(avatarName)
   }
 
   // Cleanup function

@@ -9,8 +9,6 @@ export * from './vrm-cvrm-animation'
 export * from './vrm-animation-loader-plugin'
 export * from './vrm-animation-loader-plugin-options'
 export * from './load-vrm-animation'
-export * from './load-mixamo-animation'
-export * from './mixamo-vrm-rig-map'
 
 // VRM Look-At
 export * from './vrm-look-at-smoother'

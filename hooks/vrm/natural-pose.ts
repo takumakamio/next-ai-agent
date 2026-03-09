@@ -4,7 +4,6 @@ export const useNaturalPose = (vrmModel: any) => {
   const lastPoseApplicationRef = useRef<number>(0)
 
   const applyNaturalPose = useCallback(() => {
-    // GLB doesn't have VRM humanoid API - skip
     if (!vrmModel.vrmRef.current?.humanoid) return
 
     // Throttle pose application to avoid conflicts with animations
@@ -60,7 +59,6 @@ export const useNaturalPose = (vrmModel: any) => {
 
   // Enhanced pose application that works as fallback during animation gaps
   const applyEmergencyPose = useCallback(() => {
-    // GLB doesn't have VRM humanoid API - skip
     if (!vrmModel.vrmRef.current?.humanoid) return
 
     try {

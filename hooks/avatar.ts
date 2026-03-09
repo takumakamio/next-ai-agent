@@ -3,19 +3,7 @@ import { VOICEVOX_SPEAKERS } from '@/lib/tts/voicevox'
 import { create } from 'zustand'
 
 export type Avatar = 'Tsumugi'
-export type ModelFormat = 'vrm' | 'glb'
 export type ExpertiseLevel = 'beginner' | 'advanced' | 'fullstack' | 'specialist'
-
-export interface AvatarModel {
-  avatar: Avatar
-  format: ModelFormat
-  label: string
-}
-
-export const AVATAR_MODELS: AvatarModel[] = [
-  { avatar: 'Tsumugi', format: 'vrm', label: 'Tsumugi (VRM)' },
-  { avatar: 'Tsumugi', format: 'glb', label: 'Tsumugi (GLB)' },
-]
 export type TtsEngine = 'auto' | 'elevenlabs' | 'gemini' | 'voicevox'
 export type AiModel = 'gemini-2.5-flash' | 'gemini-2.5-pro' | 'gemini-2.0-flash'
 
@@ -61,7 +49,6 @@ export interface AvatarState {
   conversationHistory: ConversationExchange[]
   currentMessage: Message | null
   avatar: Avatar
-  modelFormat: ModelFormat
   loading: boolean
   loadingTTS: boolean
   recording: boolean
@@ -75,7 +62,6 @@ export interface AvatarState {
 
   // Actions
   setAvatar: (avatar: Avatar) => void
-  setModelFormat: (format: ModelFormat) => void
   setExpertiseLevel: (expertiseLevel: ExpertiseLevel) => void
   setTtsEngine: (engine: TtsEngine) => void
   setTtsSpeakerId: (id: number | undefined) => void
@@ -98,7 +84,6 @@ export const useAvatar = create<AvatarState>((set, get) => ({
   conversationHistory: [],
   currentMessage: null,
   avatar: avatars[0],
-  modelFormat: 'vrm' as ModelFormat,
   isSpeaking: false,
 
   setAvatar: (avatar: Avatar) => {
@@ -109,9 +94,6 @@ export const useAvatar = create<AvatarState>((set, get) => ({
         return message
       }),
     }))
-  },
-  setModelFormat: (format: ModelFormat) => {
-    set(() => ({ modelFormat: format }))
   },
   loading: false,
   loadingTTS: false,

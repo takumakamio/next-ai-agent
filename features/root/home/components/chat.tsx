@@ -144,7 +144,6 @@ export const Chat: React.FC = () => {
 
   // Avatar state
   const avatar = useAvatar((state) => state.avatar)
-  const modelFormat = useAvatar((state) => state.modelFormat)
   const loading = useAvatar((state) => state.loading)
   const currentMessage = useAvatar((state) => state.currentMessage)
 
@@ -203,8 +202,7 @@ export const Chat: React.FC = () => {
           >
             <Avatar
               avatar={avatar}
-              modelFormat={modelFormat}
-              key={`${avatar}-${modelFormat}`}
+              key={avatar}
               position={currentStyle.avatarPosition}
               scale={currentStyle.avatarScale}
               rotation-y={currentStyle.avatarRotation}
