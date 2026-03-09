@@ -3,7 +3,6 @@ import { Button, Form } from '@/components/ui'
 import { submitQAFeedbackAction } from '@/features/root/qa-logs/actions/feedback-action'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Mic, MicOff, Star, X } from 'lucide-react'
-import { useTranslations } from 'next-intl'
 import { useAction } from 'next-safe-action/hooks'
 import { type JSX, useCallback, useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -24,10 +23,8 @@ export const FeedbackDialog = ({ isOpen, logId, onClose, messageQuestion }: Feed
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
   const audioStreamRef = useRef<MediaStream | null>(null)
 
-  const t = useTranslations()
-
   const feedbackFormSchema = z.object({
-    rating: z.number().min(1, t('PleaseSelectARating')).max(5),
+    rating: z.number().min(1, '評価を選択してください').max(5),
     feedback: z.string().optional(),
   })
 
@@ -36,14 +33,14 @@ export const FeedbackDialog = ({ isOpen, logId, onClose, messageQuestion }: Feed
   const { execute: submitFeedback, isPending } = useAction(submitQAFeedbackAction, {
     onSuccess({ data }) {
       if (data?.success) {
-        toast.success(t('FeedbackSubmittedSuccessfully'))
+        toast.success('フィードバックが正常に送信されました')
         handleClose()
       } else {
-        toast.error(data?.message || t('FailedToSubmitFeedback'))
+        toast.error(data?.message || 'フィードバックの送信に失敗しました')
       }
     },
     onError(error) {
-      toast.error(t('AnUnexpectedErrorOccurred'))
+      toast.error('予期しないエラーが発生しました')
       console.error('Feedback submission error:', error)
     },
   })
@@ -76,7 +73,7 @@ export const FeedbackDialog = ({ isOpen, logId, onClose, messageQuestion }: Feed
 
   const startVoiceInput = useCallback(async () => {
     if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-      toast.error(t('BrowserDoesntSupportSpeechRecognition'))
+      toast.error('お使いのブラウザは音声認識をサポートしていません。Chromeをお試しください。')
       return
     }
 
@@ -113,13 +110,13 @@ export const FeedbackDialog = ({ isOpen, logId, onClose, messageQuestion }: Feed
             const updatedFeedback = currentFeedback ? `${currentFeedback} ${newText}` : newText
 
             form.setValue('feedback', updatedFeedback, { shouldValidate: true, shouldDirty: true })
-            toast.success(t('VoiceInputAddedToFeedback'))
+            toast.success('音声入力がフィードバックに追加されました')
           } else {
-            toast.error(data.error || t('FailedToTranscribeVoiceInput'))
+            toast.error(data.error || '音声入力の文字起こしに失敗しました')
           }
         } catch (error) {
           console.error('Error processing voice input:', error)
-          toast.error(t('ErrorProcessingVoiceInput'))
+          toast.error('音声入力の処理中にエラーが発生しました。もう一度お試しください。')
         } finally {
           setIsProcessingVoice(false)
           setIsRecording(false)
@@ -138,10 +135,10 @@ export const FeedbackDialog = ({ isOpen, logId, onClose, messageQuestion }: Feed
       }, 10000)
     } catch (error) {
       console.error('Error starting voice recording:', error)
-      toast.error(t('ErrorAccessingMicrophone'))
+      toast.error('マイクへのアクセスエラー。権限を確認してください。')
       setIsRecording(false)
     }
-  }, [form, t])
+  }, [form])
 
   const stopVoiceInput = useCallback(() => {
     if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
@@ -191,12 +188,12 @@ export const FeedbackDialog = ({ isOpen, logId, onClose, messageQuestion }: Feed
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg text-white font-black uppercase tracking-wider flex items-center gap-2">
             <Star className="w-5 h-5" />
-            {t('RateThisResponse')}
+            {'この回答を評価'}
           </h3>
           <button
             onClick={handleClose}
             className="text-white/70 hover:text-white border-2 border-white/30 hover:border-white p-1 focus:outline-none focus:ring-2 focus:ring-blue-400"
-            aria-label={t('CloseFeedbackDialog')}
+            aria-label={'フィードバックダイアログを閉じる'}
             disabled={isDisabled}
           >
             <X className="w-5 h-5" />
@@ -205,7 +202,7 @@ export const FeedbackDialog = ({ isOpen, logId, onClose, messageQuestion }: Feed
 
         {/* Question preview */}
         <div className="mb-6 p-3 bg-white/10 border-2 border-white/20">
-          <p className="text-slate-300 text-sm font-medium mb-1">{t('YourQuestion')}</p>
+          <p className="text-slate-300 text-sm font-medium mb-1">{'あなたの質問：'}</p>
           <p className="text-white text-sm line-clamp-2">{messageQuestion}</p>
         </div>
 
@@ -213,23 +210,23 @@ export const FeedbackDialog = ({ isOpen, logId, onClose, messageQuestion }: Feed
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
             {/* Rating using StarRatingControl */}
             <div className="space-y-2 text-white ">
-              <StarRatingControl<FV> fieldName="rating" label={t('HowHelpfulWasThisResponse')} max={5} />
+              <StarRatingControl<FV> fieldName="rating" label={'この回答はどの程度役に立ちましたか？'} max={5} />
             </div>
 
             {/* Feedback text with voice input */}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <label className="block text-slate-300 text-sm font-medium">{t('AdditionalFeedbackOptional')}</label>
+                <label className="block text-slate-300 text-sm font-medium">{'追加のフィードバック（任意）'}</label>
                 <div className="flex items-center gap-2">
                   <button
                     type="button"
                     onClick={clearFeedback}
                     disabled={isDisabled || !watchedFeedback}
                     className="flex items-center gap-1 px-2 py-1 text-xs transition-colors bg-white/10 text-white border-2 border-white/20 hover:bg-white/20 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-400"
-                    title={t('ClearFeedbackText')}
+                    title={'フィードバックテキストをクリア'}
                   >
                     <X className="w-3 h-3" />
-                    {t('Clear')}
+                    {'クリア'}
                   </button>
                   <button
                     type="button"
@@ -245,17 +242,17 @@ export const FeedbackDialog = ({ isOpen, logId, onClose, messageQuestion }: Feed
                       disabled:opacity-50 disabled:cursor-not-allowed
                       focus:outline-none focus:ring-2 focus:ring-blue-400
                     `}
-                    title={isRecording ? t('StopVoiceInput') : t('StartVoiceInput')}
+                    title={isRecording ? '音声入力を停止' : '音声入力を開始'}
                   >
                     {isRecording ? (
                       <>
                         <MicOff className="w-3 h-3" />
-                        {t('Stop')}
+                        {'停止'}
                       </>
                     ) : (
                       <>
                         <Mic className="w-3 h-3" />
-                        {t('Voice')}
+                        {'音声'}
                       </>
                     )}
                   </button>
@@ -267,8 +264,8 @@ export const FeedbackDialog = ({ isOpen, logId, onClose, messageQuestion }: Feed
                   <div className="flex items-center gap-2">
                     <div className={`w-2 h-2 ${isRecording ? 'bg-destructive animate-pulse' : 'bg-primary'}`} />
                     <span className="text-xs text-blue-300">
-                      {isRecording && t('RecordingMaxTenSeconds')}
-                      {isProcessingVoice && t('ProcessingVoiceInput')}
+                      {isRecording && '録音中...（最大10秒）'}
+                      {isProcessingVoice && '音声入力を処理中...'}
                     </span>
                   </div>
                 </div>
@@ -276,7 +273,7 @@ export const FeedbackDialog = ({ isOpen, logId, onClose, messageQuestion }: Feed
 
               <TextAreaControl<FV>
                 fieldName="feedback"
-                placeholder={t('TellUsHowWeCanImprove')}
+                placeholder={'改善方法をお聞かせください...（音声入力も使用できます）'}
                 rows={3}
                 maxLength={500}
                 disabled={isDisabled}
@@ -292,14 +289,14 @@ export const FeedbackDialog = ({ isOpen, logId, onClose, messageQuestion }: Feed
                 disabled={isDisabled}
                 className="text-white border-2 border-white/30 hover:bg-white/10"
               >
-                {t('Cancel')}
+                {'キャンセル'}
               </Button>
               <Button
                 type="submit"
                 disabled={isDisabled}
                 className="bg-primary hover:bg-primary/90 text-white font-bold border border-primary/50 rounded-lg"
               >
-                {isPending ? t('Submitting') : t('SubmitFeedback')}
+                {isPending ? '送信中...' : 'フィードバックを送信'}
               </Button>
             </div>
           </form>

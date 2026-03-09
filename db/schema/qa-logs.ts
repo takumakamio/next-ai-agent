@@ -2,7 +2,6 @@ import { relations } from 'drizzle-orm'
 import { doublePrecision, integer, pgTable, text, varchar, vector } from 'drizzle-orm/pg-core'
 import { nanoid } from 'nanoid'
 import { timestamps } from '../utils'
-import { languages } from './languages'
 import { qaTranslations, qas } from './qas'
 
 export const qaLogs = pgTable('qa_logs', {
@@ -26,9 +25,6 @@ export const qaLogs = pgTable('qa_logs', {
 
   qaId: varchar('qa_id').references(() => qas.id, { onDelete: 'set null' }),
   qaTranslationId: integer('qa_translation_id').references(() => qaTranslations.id, { onDelete: 'set null' }),
-  languageId: integer('language_id')
-    .notNull()
-    .references(() => languages.id, { onDelete: 'cascade' }),
   ...timestamps,
 })
 
@@ -40,9 +36,5 @@ export const qaLogsRelations = relations(qaLogs, ({ one }) => ({
   qaTranslation: one(qaTranslations, {
     fields: [qaLogs.qaTranslationId],
     references: [qaTranslations.id],
-  }),
-  language: one(languages, {
-    fields: [qaLogs.languageId],
-    references: [languages.id],
   }),
 }))

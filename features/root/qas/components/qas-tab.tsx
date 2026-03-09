@@ -6,12 +6,10 @@ import type { SelectQa } from '@/features/root/qas/schema'
 import { clientDelete, clientFetch } from '@/lib/client-fetcher'
 import { rpc } from '@/lib/rpc'
 import { MessageCircleQuestion } from 'lucide-react'
-import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
 export const QasTab = () => {
-  const t = useTranslations()
   const [view, setView] = useState<'list' | 'form'>('list')
   const [editingQa, setEditingQa] = useState<SelectQa | undefined>(undefined)
   const [data, setData] = useState<SelectQa[]>([])
@@ -107,7 +105,7 @@ export const QasTab = () => {
           header={
             <div className="flex items-center gap-3">
               <MessageCircleQuestion className="size-7" />
-              <h1 className="text-2xl font-black uppercase tracking-widest text-foreground">{t('QAs')}</h1>
+              <h1 className="text-2xl font-black uppercase tracking-widest text-foreground">{'Q&A'}</h1>
             </div>
           }
           onNewClick={handleNewClick}

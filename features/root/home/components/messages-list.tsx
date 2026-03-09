@@ -1,11 +1,10 @@
 import { type AIResponse, type Message, useAvatar } from '@/hooks/avatar'
 import { Play, Square, Trash2 } from 'lucide-react'
-import { useTranslations } from 'next-intl'
+
 import { QRCodeSVG } from 'qrcode.react'
 import { type JSX, useCallback, useEffect, useRef, useState } from 'react'
 
 export const MessagesList = (): JSX.Element => {
-  const t = useTranslations()
   const { currentMessage } = useAvatar()
   const messages = useAvatar((state) => state.messages) as Message[]
   const clearAll = useAvatar((state) => state.clearAll)
@@ -59,13 +58,13 @@ export const MessagesList = (): JSX.Element => {
     (message: Message, action: 'play' | 'stop') => {
       if (action === 'play') {
         playMessage(message)
-        announceToScreenReader(t('NowPlaying', { question: message.question }))
+        announceToScreenReader(`再生中：${message.question}`)
       } else {
         stopMessage(message)
-        announceToScreenReader(t('AudioStopped'))
+        announceToScreenReader('音声停止')
       }
     },
-    [playMessage, stopMessage, t],
+    [playMessage, stopMessage],
   )
 
   const announceToScreenReader = (message: string) => {
@@ -94,8 +93,8 @@ export const MessagesList = (): JSX.Element => {
       console.warn('Could not clear localStorage conversation data:', error)
     }
 
-    announceToScreenReader(t('AllHistoryCleared'))
-  }, [clearAll, t])
+    announceToScreenReader('すべての会話履歴とメッセージがクリアされました')
+  }, [clearAll])
 
   const renderRecommendation = useCallback(
     (recommendation: AIResponse): JSX.Element => {
@@ -134,14 +133,14 @@ export const MessagesList = (): JSX.Element => {
       <div
         className={`${getBoardDimensions()} flex flex-col`}
         role="log"
-        aria-label={t('AIResponsesAndConversations')}
+        aria-label="AIの回答と会話"
         aria-live="polite"
       >
         {/* Accessibility controls and conversation history */}
         <div className="flex flex-wrap gap-2 p-2 border-b-2 border-border/40 mb-4">
           <div className="flex items-center gap-2">
             <label htmlFor="font-size-select" className="text-foreground/70 text-xs">
-              {t('TextSize')}:
+              {'文字サイズ'}:
             </label>
             <select
               id="font-size-select"
@@ -156,9 +155,9 @@ export const MessagesList = (): JSX.Element => {
               }}
               className="bg-muted/80 backdrop-blur-sm text-foreground border border-border px-2 py-1 text-xs font-bold rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
             >
-              <option value="small">{t('Small')}</option>
-              <option value="normal">{t('Normal')}</option>
-              <option value="large">{t('Large')}</option>
+              <option value="small">{'小'}</option>
+              <option value="normal">{'標準'}</option>
+              <option value="large">{'大'}</option>
             </select>
           </div>
 
@@ -166,10 +165,10 @@ export const MessagesList = (): JSX.Element => {
             <button
               onClick={handleClearHistory}
               className="flex items-center gap-1 bg-destructive/20 text-destructive border border-destructive/30 hover:bg-destructive/30 px-2 py-1 text-xs font-bold rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-              title={t('ClearAllConversationHistoryAndMessages')}
+              title="すべての会話履歴とメッセージをクリア"
             >
               <Trash2 className="w-3 h-3" />
-              {t('ClearAll')}
+              {'すべてクリア'}
             </button>
           )}
         </div>
@@ -178,7 +177,7 @@ export const MessagesList = (): JSX.Element => {
         <div
           className="flex-1 p-4 md:p-6 overflow-y-auto space-y-4 md:space-y-6 focus:outline-none"
           ref={container}
-          aria-label={t('AIResponsesList')}
+          aria-label="AIの回答リスト"
         >
           {messages.length === 0 && (
             <div className="h-full w-full grid place-content-center text-center">
@@ -188,7 +187,7 @@ export const MessagesList = (): JSX.Element => {
                   ${fontSize === 'large' ? 'text-4xl md:text-6xl lg:text-7xl' : fontSize === 'small' ? 'text-2xl md:text-4xl lg:text-5xl' : 'text-3xl md:text-5xl lg:text-6xl'}
                 `}
               >
-                {t('WelcomeTo')}
+                {'ようこそ'}
               </h2>
               <h2
                 className={`
@@ -196,7 +195,7 @@ export const MessagesList = (): JSX.Element => {
                   ${fontSize === 'large' ? 'text-4xl md:text-6xl lg:text-7xl' : fontSize === 'small' ? 'text-2xl md:text-4xl lg:text-5xl' : 'text-3xl md:text-5xl lg:text-6xl'}
                 `}
               >
-                {t('AppName')}
+                {'Next AI Agent'}
               </h2>
               <p
                 className={`
@@ -204,7 +203,7 @@ export const MessagesList = (): JSX.Element => {
                   ${fontSize === 'large' ? 'text-xl md:text-2xl' : fontSize === 'small' ? 'text-base md:text-lg' : 'text-lg md:text-xl'}
                 `}
               >
-                {t('YourPersonalAIAssistant')}
+                {'あなた専用のエンジニアリングAIアシスタント'}
               </p>
             </div>
           )}
@@ -225,7 +224,7 @@ export const MessagesList = (): JSX.Element => {
                         ${fontSize === 'large' ? 'text-base md:text-lg' : fontSize === 'small' ? 'text-xs md:text-sm' : 'text-sm md:text-base'}
                       `}
                     >
-                      {t('Question')}
+                      {'質問'}
                     </span>
                     <span
                       id={`message-${i}-title`}
@@ -256,7 +255,7 @@ export const MessagesList = (): JSX.Element => {
                     <button
                       className="p-2 text-foreground/65 hover:text-foreground focus:ring-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-background"
                       onClick={() => handleAudioControl(message, 'stop')}
-                      aria-label={t('StopPlayingMessage', { question: message.question })}
+                      aria-label={`再生停止：${message.question}`}
                     >
                       <Square className="w-6 h-6 md:w-8 md:h-8" fill="currentColor" />
                     </button>
@@ -264,7 +263,7 @@ export const MessagesList = (): JSX.Element => {
                     <button
                       className="p-2 text-foreground/65 hover:text-foreground focus:ring-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-background disabled:opacity-50 disabled:cursor-not-allowed"
                       onClick={() => handleAudioControl(message, 'play')}
-                      aria-label={t('PlayAudioForMessage', { question: message.question })}
+                      aria-label={`音声再生：${message.question}`}
                     >
                       <Play className="w-6 h-6 md:w-8 md:h-8" fill="currentColor" />
                     </button>

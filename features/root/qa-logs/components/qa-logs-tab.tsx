@@ -5,7 +5,6 @@ import type { SelectManageQaLog } from '@/features/root/qa-logs/schema'
 import { clientFetch } from '@/lib/client-fetcher'
 import { rpc } from '@/lib/rpc'
 import { ScrollText } from 'lucide-react'
-import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
@@ -14,7 +13,6 @@ interface QaLogsTabProps {
 }
 
 export const QaLogsTab = ({ onQaEditClick }: QaLogsTabProps) => {
-  const t = useTranslations()
   const [data, setData] = useState<SelectManageQaLog[]>([])
   const [meta, setMeta] = useState({ page: 1, limit: 50, total: 0, totalPages: 0 })
   const [page, setPage] = useState(1)
@@ -59,7 +57,7 @@ export const QaLogsTab = ({ onQaEditClick }: QaLogsTabProps) => {
           header={
             <div className="flex items-center gap-3">
               <ScrollText className="size-7" />
-              <h1 className="text-2xl font-black uppercase tracking-widest text-foreground">{t('QALogs')}</h1>
+              <h1 className="text-2xl font-black uppercase tracking-widest text-foreground">{'Q&Aログ'}</h1>
             </div>
           }
           onSearchChange={setSearch}

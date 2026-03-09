@@ -3,7 +3,7 @@
 import { useAvatar } from '@/hooks/avatar'
 import { CameraControls, Environment, Float } from '@react-three/drei'
 import { Canvas } from '@react-three/fiber'
-import { useTranslations } from 'next-intl'
+
 import type React from 'react'
 import { Suspense, useCallback, useEffect, useRef, useState } from 'react'
 import { MathUtils } from 'three'
@@ -66,7 +66,6 @@ const Canvas3D: React.FC<{
   reduceMotion: boolean
   performanceMode: boolean
 }> = ({ children, fallback, reduceMotion, performanceMode }) => {
-  const t = useTranslations()
   const [hasError, setHasError] = useState(false)
 
   const handleError = useCallback(() => {
@@ -77,7 +76,7 @@ const Canvas3D: React.FC<{
     return (
       <div className="absolute inset-0 flex items-center justify-center bg-muted/50 backdrop-blur-sm">
         <div className="text-center p-6">
-          <p className="text-muted-foreground mb-4">{t('ThreeDContentLoadError')}</p>
+          <p className="text-muted-foreground mb-4">{'3Dコンテンツを読み込めませんでした。デバイスの制限による可能性があります。'}</p>
           {fallback}
         </div>
       </div>
@@ -113,12 +112,10 @@ const Canvas3D: React.FC<{
 }
 
 const StatusAnnouncer: React.FC<{ loading: boolean; speaking: boolean }> = ({ loading, speaking }) => {
-  const t = useTranslations()
-
   return (
     <div className="sr-only" aria-live="polite" aria-atomic="true">
-      {loading && t('AvatarThinking')}
-      {speaking && t('AvatarProvidingRecommendations')}
+      {loading && 'AIアバターがリクエストについて考えています'}
+      {speaking && 'AIアバターが回答を準備しています'}
     </div>
   )
 }
@@ -140,8 +137,6 @@ const useIntersectionObserver = (elementRef: React.RefObject<HTMLElement>) => {
 }
 
 export const Chat: React.FC = () => {
-  const t = useTranslations()
-
   // Avatar state
   const avatar = useAvatar((state) => state.avatar)
   const loading = useAvatar((state) => state.loading)
@@ -175,14 +170,14 @@ export const Chat: React.FC = () => {
   const boardBackground = 'bg-card/95 backdrop-blur-sm border-border'
 
   return (
-    <div ref={containerRef} className="relative w-full h-full overflow-hidden" aria-label={t('AIAvatarInterface')}>
+    <div ref={containerRef} className="relative w-full h-full overflow-hidden" aria-label="AIアバターインターフェース">
       <StatusAnnouncer loading={loading} speaking={!!currentMessage} />
 
       <a
         href="#main-content"
         className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 z-50 bg-blue-600 text-white px-4 py-2 rounded"
       >
-        {t('SkipToMainContent')}
+        {'メインコンテンツにスキップ'}
       </a>
 
       {/* 3D Canvas - Only load when visible and not in performance mode */}
@@ -196,7 +191,7 @@ export const Chat: React.FC = () => {
                 onClick={() => setPerformanceMode(false)}
                 className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 focus:ring-2 focus:ring-blue-500"
               >
-                {t('LoadThreeDAvatar')}
+                {'3Dアバターを読み込む'}
               </button>
             }
           >
@@ -215,12 +210,12 @@ export const Chat: React.FC = () => {
       {performanceMode && (
         <div className="absolute bottom-4 right-4 pointer-events-auto">
           <div className="bg-primary/10 border border-primary/30 rounded-lg p-4 max-w-sm">
-            <p className="text-sm text-foreground mb-2">{t('ThreeDDisabledForPerformance')}</p>
+            <p className="text-sm text-foreground mb-2">{'パフォーマンス向上のため3Dアバターを無効化'}</p>
             <button
               onClick={() => setPerformanceMode(false)}
               className="text-xs bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 focus:ring-2 focus:ring-blue-500"
             >
-              {t('EnableAnyway')}
+              {'とにかく有効にする'}
             </button>
           </div>
         </div>

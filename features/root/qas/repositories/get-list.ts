@@ -1,6 +1,6 @@
 import { count, desc, getDB, ilike, or } from '@/db'
-import { languages, qaTranslations, qas } from '@/db/schema/_index'
-import { and, eq, inArray } from 'drizzle-orm'
+import { qaTranslations, qas } from '@/db/schema/_index'
+import { eq, inArray } from 'drizzle-orm'
 
 export type GetQasListOptions = {
   locale: string
@@ -23,14 +23,6 @@ export async function getQasList(options: GetQasListOptions): Promise<GetQasList
   const db = getDB()
   const { locale, page, limit, search } = options
   const offset = (page - 1) * limit
-
-  const language = await db.query.languages.findFirst({
-    where: eq(languages.code, locale),
-  })
-
-  if (!language) {
-    return { data: [], meta: { page, limit, total: 0, totalPages: 0 } }
-  }
 
   let total = 0
   let qasData: {
@@ -78,7 +70,7 @@ export async function getQasList(options: GetQasListOptions): Promise<GetQasList
         answer: qaTranslations.answer,
       })
       .from(qas)
-      .leftJoin(qaTranslations, and(eq(qaTranslations.qaId, qas.id), eq(qaTranslations.languageId, language.id)))
+      .leftJoin(qaTranslations, eq(qaTranslations.qaId, qas.id))
       .where(whereConditions)
       .orderBy(desc(qas.createdAt))
       .limit(limit)
@@ -101,7 +93,7 @@ export async function getQasList(options: GetQasListOptions): Promise<GetQasList
         answer: qaTranslations.answer,
       })
       .from(qas)
-      .leftJoin(qaTranslations, and(eq(qaTranslations.qaId, qas.id), eq(qaTranslations.languageId, language.id)))
+      .leftJoin(qaTranslations, eq(qaTranslations.qaId, qas.id))
       .orderBy(desc(qas.createdAt))
       .limit(limit)
       .offset(offset)

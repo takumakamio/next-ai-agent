@@ -1,6 +1,6 @@
 import { count, desc, getDB, ilike, or } from '@/db'
-import { languages, qaLogs, qaTranslations } from '@/db/schema/_index'
-import { and, eq } from 'drizzle-orm'
+import { qaLogs, qaTranslations } from '@/db/schema/_index'
+import { eq } from 'drizzle-orm'
 
 export type GetQaLogsListOptions = {
   locale: string
@@ -24,14 +24,6 @@ export async function getQaLogsList(options: GetQaLogsListOptions): Promise<GetQ
   const { locale, page, limit, search } = options
   const offset = (page - 1) * limit
 
-  const language = await db.query.languages.findFirst({
-    where: eq(languages.code, locale),
-  })
-
-  if (!language) {
-    return { data: [], meta: { page, limit, total: 0, totalPages: 0 } }
-  }
-
   let total = 0
   let data: {
     id: string
@@ -44,7 +36,6 @@ export async function getQaLogsList(options: GetQaLogsListOptions): Promise<GetQ
     responseTime: number | null
     qaId: string | null
     qaTranslationId: number | null
-    languageId: number
     createdAt: Date
     updatedAt: Date | null
     qaQuestion: string | null
@@ -65,7 +56,7 @@ export async function getQaLogsList(options: GetQaLogsListOptions): Promise<GetQ
       .from(qaLogs)
       .leftJoin(
         qaTranslations,
-        and(eq(qaTranslations.id, qaLogs.qaTranslationId), eq(qaTranslations.languageId, language.id)),
+        eq(qaTranslations.id, qaLogs.qaTranslationId),
       )
       .where(whereConditions)
     total = countResult.total
@@ -82,7 +73,6 @@ export async function getQaLogsList(options: GetQaLogsListOptions): Promise<GetQ
         responseTime: qaLogs.responseTime,
         qaId: qaLogs.qaId,
         qaTranslationId: qaLogs.qaTranslationId,
-        languageId: qaLogs.languageId,
         createdAt: qaLogs.createdAt,
         updatedAt: qaLogs.updatedAt,
         qaQuestion: qaTranslations.question,
@@ -90,7 +80,7 @@ export async function getQaLogsList(options: GetQaLogsListOptions): Promise<GetQ
       .from(qaLogs)
       .leftJoin(
         qaTranslations,
-        and(eq(qaTranslations.id, qaLogs.qaTranslationId), eq(qaTranslations.languageId, language.id)),
+        eq(qaTranslations.id, qaLogs.qaTranslationId),
       )
       .where(whereConditions)
       .orderBy(desc(qaLogs.createdAt))
@@ -112,7 +102,6 @@ export async function getQaLogsList(options: GetQaLogsListOptions): Promise<GetQ
         responseTime: qaLogs.responseTime,
         qaId: qaLogs.qaId,
         qaTranslationId: qaLogs.qaTranslationId,
-        languageId: qaLogs.languageId,
         createdAt: qaLogs.createdAt,
         updatedAt: qaLogs.updatedAt,
         qaQuestion: qaTranslations.question,
@@ -120,7 +109,7 @@ export async function getQaLogsList(options: GetQaLogsListOptions): Promise<GetQ
       .from(qaLogs)
       .leftJoin(
         qaTranslations,
-        and(eq(qaTranslations.id, qaLogs.qaTranslationId), eq(qaTranslations.languageId, language.id)),
+        eq(qaTranslations.id, qaLogs.qaTranslationId),
       )
       .orderBy(desc(qaLogs.createdAt))
       .limit(limit)

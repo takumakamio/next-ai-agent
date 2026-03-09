@@ -49,22 +49,6 @@ async function cleanupDatabase() {
       console.log('No custom types found to drop')
     }
 
-    // Step 5: Revoke all privileges from public role
-    await sql.unsafe(`
-      DO $$
-      BEGIN
-        EXECUTE 'REVOKE ALL PRIVILEGES ON DATABASE ' || current_database() || ' FROM public';
-        EXECUTE 'REVOKE ALL PRIVILEGES ON SCHEMA public FROM public';
-        EXECUTE 'REVOKE ALL PRIVILEGES ON ALL TABLES IN SCHEMA public FROM public';
-        EXECUTE 'REVOKE ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public FROM public';
-        EXECUTE 'REVOKE ALL PRIVILEGES ON ALL FUNCTIONS IN SCHEMA public FROM public';
-      EXCEPTION
-        WHEN OTHERS THEN
-          RAISE NOTICE 'Error revoking privileges: %', SQLERRM;
-      END $$;
-    `)
-    console.log('Revoked all privileges from public role')
-
     // Final verification
     const remainingTables = await sql`
       SELECT tablename FROM pg_tables 
@@ -102,26 +86,14 @@ async function cleanupDatabase() {
 
 async function deleteDrizzleFiles() {
   try {
-    // Path to your drizzle directory - adjust this to your project structure
-    const drizzleMigrationsDir = path.join(process.cwd(), 'drizzle')
+    // Migration output directory matching drizzle.config.ts: out: './db/migrations/dev'
+    const migrationsDir = path.join(process.cwd(), 'db', 'migrations', 'dev')
 
-    // Path to dev migrations directory from your error message
-    const devMigrationsDir = path.join(process.cwd(), 'db', 'dev', 'drizzle')
-
-    if (fs.existsSync(drizzleMigrationsDir)) {
-      // Remove the entire drizzle directory
-      fs.rmSync(drizzleMigrationsDir, { recursive: true, force: true })
-      console.log('Deleted Drizzle migration files from:', drizzleMigrationsDir)
+    if (fs.existsSync(migrationsDir)) {
+      fs.rmSync(migrationsDir, { recursive: true, force: true })
+      console.log('Deleted migration files from:', migrationsDir)
     } else {
-      console.log('No Drizzle migration files found at:', drizzleMigrationsDir)
-    }
-
-    if (fs.existsSync(devMigrationsDir)) {
-      // Remove the dev migrations directory
-      fs.rmSync(devMigrationsDir, { recursive: true, force: true })
-      console.log('Deleted Drizzle migration files from:', devMigrationsDir)
-    } else {
-      console.log('No Drizzle migration files found at:', devMigrationsDir)
+      console.log('No migration files found at:', migrationsDir)
     }
   } catch (error) {
     console.error('Error deleting Drizzle files:', error)

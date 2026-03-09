@@ -1,73 +1,9 @@
 {
-  "id": "ef87be1f-e0cf-46db-a5bb-6b78ffc88c96",
+  "id": "db0d6307-a9a8-4dcc-aef6-746fcecca30c",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
-    "public.languages": {
-      "name": "languages",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "code": {
-          "name": "code",
-          "type": "varchar(10)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "name": {
-          "name": "name",
-          "type": "varchar(100)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "is_default": {
-          "name": "is_default",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": false,
-          "default": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "now()"
-        },
-        "deleted_at": {
-          "name": "deleted_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "languages_code_unique": {
-          "name": "languages_code_unique",
-          "nullsNotDistinct": false,
-          "columns": ["code"]
-        }
-      },
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
     "public.qa_logs": {
       "name": "qa_logs",
       "schema": "",
@@ -145,12 +81,6 @@
           "primaryKey": false,
           "notNull": false
         },
-        "language_id": {
-          "name": "language_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
         "created_at": {
           "name": "created_at",
           "type": "timestamp with time zone",
@@ -178,8 +108,12 @@
           "name": "qa_logs_qa_id_qas_id_fk",
           "tableFrom": "qa_logs",
           "tableTo": "qas",
-          "columnsFrom": ["qa_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "qa_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "set null",
           "onUpdate": "no action"
         },
@@ -187,18 +121,13 @@
           "name": "qa_logs_qa_translation_id_qa_translations_id_fk",
           "tableFrom": "qa_logs",
           "tableTo": "qa_translations",
-          "columnsFrom": ["qa_translation_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "qa_translation_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "set null",
-          "onUpdate": "no action"
-        },
-        "qa_logs_language_id_languages_id_fk": {
-          "name": "qa_logs_language_id_languages_id_fk",
-          "tableFrom": "qa_logs",
-          "tableTo": "languages",
-          "columnsFrom": ["language_id"],
-          "columnsTo": ["id"],
-          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
@@ -207,7 +136,9 @@
         "qa_logs_id_unique": {
           "name": "qa_logs_id_unique",
           "nullsNotDistinct": false,
-          "columns": ["id"]
+          "columns": [
+            "id"
+          ]
         }
       },
       "policies": {},
@@ -227,12 +158,6 @@
         "qa_id": {
           "name": "qa_id",
           "type": "varchar",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "language_id": {
-          "name": "language_id",
-          "type": "integer",
           "primaryKey": false,
           "notNull": true
         },
@@ -283,27 +208,6 @@
         }
       },
       "indexes": {
-        "qa_language_unique_idx": {
-          "name": "qa_language_unique_idx",
-          "columns": [
-            {
-              "expression": "qa_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "language_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": true,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
         "qa_translations_embedding_idx": {
           "name": "qa_translations_embedding_idx",
           "columns": [
@@ -326,17 +230,12 @@
           "name": "qa_translations_qa_id_qas_id_fk",
           "tableFrom": "qa_translations",
           "tableTo": "qas",
-          "columnsFrom": ["qa_id"],
-          "columnsTo": ["id"],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "qa_translations_language_id_languages_id_fk": {
-          "name": "qa_translations_language_id_languages_id_fk",
-          "tableFrom": "qa_translations",
-          "tableTo": "languages",
-          "columnsFrom": ["language_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "qa_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -424,7 +323,9 @@
         "qas_id_unique": {
           "name": "qas_id_unique",
           "nullsNotDistinct": false,
-          "columns": ["id"]
+          "columns": [
+            "id"
+          ]
         }
       },
       "policies": {},
@@ -444,12 +345,6 @@
         "tag_id": {
           "name": "tag_id",
           "type": "varchar",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "language_id": {
-          "name": "language_id",
-          "type": "integer",
           "primaryKey": false,
           "notNull": true
         },
@@ -480,45 +375,18 @@
           "notNull": false
         }
       },
-      "indexes": {
-        "tag_language_unique_idx": {
-          "name": "tag_language_unique_idx",
-          "columns": [
-            {
-              "expression": "tag_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "language_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": true,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
+      "indexes": {},
       "foreignKeys": {
         "tag_translations_tag_id_tags_id_fk": {
           "name": "tag_translations_tag_id_tags_id_fk",
           "tableFrom": "tag_translations",
           "tableTo": "tags",
-          "columnsFrom": ["tag_id"],
-          "columnsTo": ["id"],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "tag_translations_language_id_languages_id_fk": {
-          "name": "tag_translations_language_id_languages_id_fk",
-          "tableFrom": "tag_translations",
-          "tableTo": "languages",
-          "columnsFrom": ["language_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "tag_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -567,7 +435,9 @@
         "tags_id_unique": {
           "name": "tags_id_unique",
           "nullsNotDistinct": false,
-          "columns": ["id"]
+          "columns": [
+            "id"
+          ]
         }
       },
       "policies": {},

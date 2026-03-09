@@ -1,6 +1,5 @@
 import { getDB } from '@/db'
-import { languages, qaLogs, qaTranslations, qas } from '@/db/schema/_index'
-import { getLanguageName } from '@/i18n/routing'
+import { qaLogs, qaTranslations, qas } from '@/db/schema/_index'
 import { generateEmbedding } from '@/lib/google-ai'
 import type { Bindings } from '@/type'
 import { GoogleGenAI } from '@google/genai'
@@ -131,7 +130,7 @@ export const conversationRoute = new OpenAPIHono<{ Variables: Bindings }>().open
       const requestLocale = c.get('locale')
       const limitedHistory = history.slice(-5)
       const relevantQAs = await searchRelevantQAs(question, requestLocale, 3)
-      const languageName = getLanguageName(requestLocale)
+      const languageName = '日本語'
       const baseSystemPrompt = `You are Tsumugi, a friendly engineering mentor AI. Focus on maintaining continuous conversation and provide natural, helpful responses based on previous conversation history.
 Important instructions:
 - Respond in ${languageName} language
@@ -232,21 +231,6 @@ async function searchRelevantQAs(question: string, locale: string, limit = 5): P
 
     console.log(`Generated embedding for question: "${question}", length: ${questionEmbedding.length}`)
 
-    const languageResult = await db
-      .select({ id: languages.id })
-      .from(languages)
-      .where(eq(languages.code, locale))
-      .limit(1)
-
-    const languageId = languageResult[0]?.id
-
-    if (!languageId) {
-      console.log(`Language not found for locale: ${locale}`)
-      return []
-    }
-
-    console.log(`Found language ID: ${languageId} for locale: ${locale}`)
-
     const embeddingString = `[${questionEmbedding.join(',')}]`
 
     console.log('🔍 Executing vector search query...')
@@ -284,7 +268,6 @@ async function searchRelevantQAs(question: string, locale: string, limit = 5): P
         .innerJoin(qas, eq(qaTranslations.qaId, qas.id))
         .where(
           and(
-            eq(qaTranslations.languageId, languageId),
             eq(qas.isActive, true),
             sql`${qaTranslations.embedding} IS NOT NULL`,
           ),
@@ -377,18 +360,6 @@ async function logQAInteraction({
   try {
     const questionEmbedding = await generateEmbedding(userQuestion)
 
-    const languageResult = await db
-      .select({ id: languages.id })
-      .from(languages)
-      .where(eq(languages.code, requestLocale))
-      .limit(1)
-
-    const languageId = languageResult[0]?.id
-
-    if (!languageId) {
-      throw new Error(`Language not found for locale: ${requestLocale}`)
-    }
-
     const bestQA = relevantQAs.length > 0 ? relevantQAs[0] : null
 
     const logData = {
@@ -402,7 +373,6 @@ async function logQAInteraction({
       embeddingModel: 'gemini-embedding-001',
       qaId: bestQA?.id || null,
       qaTranslationId: bestQA?.translationId || null,
-      languageId,
     }
 
     const [insertedLog] = await db.insert(qaLogs).values(logData).returning({ id: qaLogs.id })

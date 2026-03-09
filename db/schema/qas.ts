@@ -1,8 +1,7 @@
 import { relations } from 'drizzle-orm'
-import { boolean, index, integer, pgTable, serial, text, uniqueIndex, varchar, vector } from 'drizzle-orm/pg-core'
+import { boolean, index, integer, pgTable, serial, text, varchar, vector } from 'drizzle-orm/pg-core'
 import { nanoid } from 'nanoid'
 import { timestamps } from '../utils'
-import { languages } from './languages'
 import { qaLogs } from './qa-logs'
 
 export const qas = pgTable('qas', {
@@ -37,10 +36,6 @@ export const qaTranslations = pgTable(
     qaId: varchar('qa_id')
       .notNull()
       .references(() => qas.id, { onDelete: 'cascade' }),
-    languageId: integer('language_id')
-      .notNull()
-      .references(() => languages.id, { onDelete: 'cascade' }),
-
     question: text('question'),
     answer: text('answer'),
 
@@ -50,7 +45,6 @@ export const qaTranslations = pgTable(
     ...timestamps,
   },
   (table) => [
-    uniqueIndex('qa_language_unique_idx').on(table.qaId, table.languageId),
     index('qa_translations_embedding_idx').using('hnsw', table.embedding.op('vector_cosine_ops')),
   ],
 )
@@ -59,9 +53,5 @@ export const qaTranslationsRelations = relations(qaTranslations, ({ one }) => ({
   qa: one(qas, {
     fields: [qaTranslations.qaId],
     references: [qas.id],
-  }),
-  language: one(languages, {
-    fields: [qaTranslations.languageId],
-    references: [languages.id],
   }),
 }))

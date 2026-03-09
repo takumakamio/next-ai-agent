@@ -10,23 +10,21 @@ import {
 import { TextInput } from '@/features/root/home/components/text-input'
 import { AI_MODEL_OPTIONS, type AiModel, type TtsEngine } from '@/hooks/avatar'
 import { useAvatar } from '@/hooks/avatar'
-import { LANGUAGES } from '@/i18n/routing'
 import { VOICEVOX_SPEAKERS } from '@/lib/tts/voicevox'
-import { type Locale, useLocale, useTranslations } from 'next-intl'
-import { useCallback, useEffect, useState, useTransition } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { QaListModal } from '../../qas/components/list-modal'
 
 const VOICEVOX_SPEAKER_OPTIONS = [
-  { id: VOICEVOX_SPEAKERS.ZUNDAMON.NORMAL, labelKey: 'SpeakerZundamon' },
-  { id: VOICEVOX_SPEAKERS.SHIKOKU_METAN.NORMAL, labelKey: 'SpeakerShikokuMetan' },
-  { id: VOICEVOX_SPEAKERS.KASUKABE_TSUMUGI.NORMAL, labelKey: 'SpeakerTsumugi' },
-  { id: VOICEVOX_SPEAKERS.NAMINE_RITSU.NORMAL, labelKey: 'SpeakerRitsu' },
+  { id: VOICEVOX_SPEAKERS.ZUNDAMON.NORMAL, label: 'ずんだもん' },
+  { id: VOICEVOX_SPEAKERS.SHIKOKU_METAN.NORMAL, label: '四国めたん' },
+  { id: VOICEVOX_SPEAKERS.KASUKABE_TSUMUGI.NORMAL, label: '春日部つむぎ' },
+  { id: VOICEVOX_SPEAKERS.NAMINE_RITSU.NORMAL, label: '波音リツ' },
 ] as const
 
-const TTS_ENGINE_OPTIONS: { value: TtsEngine; labelKey: string }[] = [
-  { value: 'auto', labelKey: 'TTSEngineAuto' },
-  { value: 'gemini', labelKey: 'TTSEngineGemini' },
-  { value: 'voicevox', labelKey: 'TTSEngineVoicevox' },
+const TTS_ENGINE_OPTIONS: { value: TtsEngine; label: string }[] = [
+  { value: 'auto', label: '自動' },
+  { value: 'gemini', label: 'Gemini' },
+  { value: 'voicevox', label: 'VOICEVOX' },
 ]
 
 export const Menus = () => {
@@ -43,19 +41,10 @@ export const Menus = () => {
   const aiModel = useAvatar((state) => state.aiModel)
   const setAiModel = useAvatar((state) => state.setAiModel)
 
-  const locale = useLocale()
-  const t = useTranslations()
-  const [isPending, startTransition] = useTransition()
   const [isTypingBoxVisible, setIsTypingBoxVisible] = useState(false)
   const [isQAListModalOpen, setIsQAListModalOpen] = useState(false)
   const [voiceInputError, setVoiceInputError] = useState<string | null>(null)
   const [wasRecording, setWasRecording] = useState(false)
-  const [currentLanguage, setCurrentLanguage] = useState<Locale>(locale as Locale)
-
-  // Update current language when locale changes
-  useEffect(() => {
-    setCurrentLanguage(locale as Locale)
-  }, [locale])
 
   // Track recording state
   useEffect(() => {
@@ -102,39 +91,6 @@ export const Menus = () => {
     }
   }, [recording, startVoiceInput, stopVoiceInput])
 
-  const handleLanguageChange = useCallback(
-    (language: Locale) => {
-      try {
-        // Set locale cookie
-        document.cookie = `NEXT_LOCALE=${language}; path=/; max-age=${60 * 60 * 24 * 365}`
-        setCurrentLanguage(language)
-
-        // Clear avatar messages
-        const clearMessages = useAvatar.getState().clearMessages
-        if (clearMessages) clearMessages()
-
-        announceToScreenReader(
-          `Language changed to ${LANGUAGES.find((l) => l.code === language)?.name}. Chat history has been reset.`,
-        )
-
-        // Reload the current page to apply locale from cookie
-        startTransition(() => {
-          window.location.reload()
-        })
-      } catch (error) {
-        console.error('Failed to change language:', error)
-      }
-    },
-    [startTransition],
-  )
-
-  // Cycle to next language
-  const handleLanguageButtonClick = useCallback(() => {
-    const currentIndex = LANGUAGES.findIndex((l) => l.code === currentLanguage)
-    const nextIndex = (currentIndex + 1) % LANGUAGES.length
-    handleLanguageChange(LANGUAGES[nextIndex].code)
-  }, [currentLanguage, handleLanguageChange])
-
   const handleCloseTypingBox = useCallback(() => {
     setIsTypingBoxVisible(false)
     announceToScreenReader('Typing box closed')
@@ -177,8 +133,6 @@ export const Menus = () => {
     }, 1000)
   }
 
-  const currentLang = LANGUAGES.find((l) => l.code === currentLanguage)
-
   const menuButtonClass =
     'group flex flex-col items-center justify-center gap-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/50 disabled:opacity-50 disabled:cursor-not-allowed hover:-translate-y-0.5 active:translate-y-0'
 
@@ -191,14 +145,11 @@ export const Menus = () => {
             onSubmit={handleSubmitQuestion}
             loading={loading}
             recording={recording}
-            currentLanguage={currentLanguage}
-            onLanguageChange={handleLanguageChange}
             voiceInputError={voiceInputError}
             onVoiceInputErrorDismiss={handleVoiceInputErrorDismiss}
             isVisible={isTypingBoxVisible}
             onClose={handleCloseTypingBox}
             wasRecording={wasRecording}
-            isPending={isPending}
           />
 
           {/* Horizontal Menu Bar */}
@@ -209,8 +160,8 @@ export const Menus = () => {
                 <button
                   className={`${menuButtonClass} w-28 h-36 bg-secondary rounded-l-xl border-r border-border/40 hover:bg-secondary/80`}
                   disabled={loading || isSpeaking}
-                  aria-label={t('AIModel')}
-                  title={isSpeaking ? 'Avatar is speaking...' : t('AIModel')}
+                  aria-label="AIモデル"
+                  title={isSpeaking ? 'Avatar is speaking...' : 'AIモデル'}
                 >
                   <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
                     <path
@@ -219,17 +170,17 @@ export const Menus = () => {
                     />
                   </svg>
                   <span className="text-[10px] font-black uppercase tracking-widest text-foreground">
-                    {t(AI_MODEL_OPTIONS.find((o) => o.value === aiModel)?.labelKey as any)}
+                    {AI_MODEL_OPTIONS.find((o) => o.value === aiModel)?.label}
                   </span>
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent side="top" align="start" className="w-56">
-                <DropdownMenuLabel>{t('AIModel')}</DropdownMenuLabel>
+                <DropdownMenuLabel>{'AIモデル'}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuRadioGroup value={aiModel} onValueChange={(value) => setAiModel(value as AiModel)}>
                   {AI_MODEL_OPTIONS.map((opt) => (
                     <DropdownMenuRadioItem key={opt.value} value={opt.value}>
-                      {t(opt.labelKey as any)}
+                      {opt.label}
                     </DropdownMenuRadioItem>
                   ))}
                 </DropdownMenuRadioGroup>
@@ -242,8 +193,8 @@ export const Menus = () => {
                 <button
                   className={`${menuButtonClass} w-28 h-36 bg-secondary border-r border-border/40 hover:bg-secondary/80`}
                   disabled={loading || isSpeaking}
-                  aria-label={t('TTSEngine')}
-                  title={isSpeaking ? 'Avatar is speaking...' : t('TTSEngine')}
+                  aria-label="音声エンジン"
+                  title={isSpeaking ? 'Avatar is speaking...' : '音声エンジン'}
                 >
                   <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
                     <path
@@ -252,12 +203,12 @@ export const Menus = () => {
                     />
                   </svg>
                   <span className="text-[10px] font-black uppercase tracking-widest text-foreground">
-                    {t(TTS_ENGINE_OPTIONS.find((o) => o.value === ttsEngine)?.labelKey as any)}
+                    {TTS_ENGINE_OPTIONS.find((o) => o.value === ttsEngine)?.label}
                   </span>
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent side="top" align="start" className="w-56">
-                <DropdownMenuLabel>{t('TTSEngine')}</DropdownMenuLabel>
+                <DropdownMenuLabel>{'音声エンジン'}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuRadioGroup
                   value={ttsEngine}
@@ -272,21 +223,21 @@ export const Menus = () => {
                 >
                   {TTS_ENGINE_OPTIONS.map((opt) => (
                     <DropdownMenuRadioItem key={opt.value} value={opt.value}>
-                      {t(opt.labelKey as any)}
+                      {opt.label}
                     </DropdownMenuRadioItem>
                   ))}
                 </DropdownMenuRadioGroup>
                 {ttsEngine === 'voicevox' && (
                   <>
                     <DropdownMenuSeparator />
-                    <DropdownMenuLabel>{t('TTSSpeaker')}</DropdownMenuLabel>
+                    <DropdownMenuLabel>{'話者'}</DropdownMenuLabel>
                     <DropdownMenuRadioGroup
                       value={String(ttsSpeakerId ?? VOICEVOX_SPEAKERS.ZUNDAMON.NORMAL)}
                       onValueChange={(value) => setTtsSpeakerId(Number(value))}
                     >
                       {VOICEVOX_SPEAKER_OPTIONS.map((speaker) => (
                         <DropdownMenuRadioItem key={speaker.id} value={String(speaker.id)}>
-                          {t(speaker.labelKey as any)}
+                          {speaker.label}
                         </DropdownMenuRadioItem>
                       ))}
                     </DropdownMenuRadioGroup>
@@ -294,20 +245,6 @@ export const Menus = () => {
                 )}
               </DropdownMenuContent>
             </DropdownMenu>
-
-            {/* Language */}
-            <button
-              onClick={handleLanguageButtonClick}
-              className={`${menuButtonClass} w-28 h-36 bg-primary border-r border-border/40 hover:bg-primary/80`}
-              disabled={loading || isPending || isSpeaking}
-              aria-label={`Change language. Current: ${currentLang?.name}`}
-              title={isSpeaking ? 'Avatar is speaking...' : `Change language. Current: ${currentLang?.name}`}
-            >
-              <span className="text-4xl">{currentLang?.flag}</span>
-              <span className="text-[10px] font-black uppercase tracking-widest text-primary-foreground">
-                {currentLang?.code.toUpperCase()}
-              </span>
-            </button>
 
             {/* Voice (center, wider) */}
             <button
@@ -345,7 +282,7 @@ export const Menus = () => {
               <span
                 className={`text-sm font-black uppercase tracking-widest ${recording ? 'text-destructive-foreground' : 'text-accent-foreground'}`}
               >
-                {recording ? t('MenuButtonStop') : t('MenuButtonTalk')}
+                {recording ? '停止' : '話す'}
               </span>
             </button>
 
@@ -356,9 +293,9 @@ export const Menus = () => {
                 isTypingBoxVisible ? 'bg-primary hover:bg-primary/80' : 'bg-muted hover:bg-muted/80'
               }`}
               disabled={loading || isSpeaking}
-              aria-label={t('MenuButtonType')}
+              aria-label="入力"
               aria-pressed={isTypingBoxVisible}
-              title={isSpeaking ? 'Avatar is speaking...' : t('MenuButtonType')}
+              title={isSpeaking ? 'Avatar is speaking...' : '入力'}
             >
               <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
                 <rect x="2" y="4" width="20" height="16" rx="2" stroke="currentColor" strokeWidth="2" fill="none" />
@@ -370,7 +307,7 @@ export const Menus = () => {
               <span
                 className={`text-[10px] font-black uppercase tracking-widest ${isTypingBoxVisible ? 'text-primary-foreground' : 'text-foreground'}`}
               >
-                {t('MenuButtonType')}
+                {'入力'}
               </span>
             </button>
 
@@ -393,7 +330,7 @@ export const Menus = () => {
                 </text>
               </svg>
               <span className="text-[10px] font-black uppercase tracking-widest text-foreground">
-                {t('MenuButtonFAQ')}
+                {'QA'}
               </span>
             </button>
           </div>

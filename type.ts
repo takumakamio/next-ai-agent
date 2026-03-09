@@ -1,19 +1,10 @@
-import type { Locale } from 'next-intl'
-import type { routing } from './i18n/routing'
-
-declare module 'next-intl' {
-  interface AppConfig {
-    Locale: (typeof routing.locales)[number]
-  }
-}
-
 export type Bindings = {
-  locale: Locale
+  locale: string
   requestId: string
 }
 
 export type PageProps = {
-  params: Promise<{ id: string; locale: Locale }>
+  params: Promise<{ id: string }>
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }
 

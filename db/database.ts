@@ -48,26 +48,17 @@ export async function withTransaction<T>(callback: (tx: PostgresJsDatabase<typeo
 }
 
 export const asTranslations = {
-  translations: {
-    with: {
-      language: true,
-    },
-  },
+  translations: true,
 } as const
 
 export const withTranslations = {
   with: {
-    translations: {
-      with: {
-        language: true,
-      },
-    },
+    translations: true,
   },
 } as const
 
-export const getTranslation = <T extends { translations: Array<{ language: { code: string } } & Record<string, any>> }>(
+export const getTranslation = <T extends { translations: Array<Record<string, any>> }>(
   entity: T,
-  locale: string,
 ): T['translations'][0] | null => {
-  return entity.translations.find((t) => t.language.code === locale) || null
+  return entity.translations[0] || null
 }

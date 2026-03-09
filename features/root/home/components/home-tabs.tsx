@@ -1,6 +1,6 @@
 'use client'
 
-import { useTranslations } from 'next-intl'
+
 import { useCallback, useState } from 'react'
 import { QaLogsTab } from '../../qa-logs/components/qa-logs-tab'
 import { QasTab } from '../../qas/components/qas-tab'
@@ -10,7 +10,6 @@ import { Chat } from './chat'
 type TabKey = 'chat' | 'qas' | 'qa-logs'
 
 export const HomeTabs = () => {
-  const t = useTranslations()
   const [activeTab, setActiveTab] = useState<TabKey>('chat')
 
   const tabs: { key: TabKey; label: string }[] = [

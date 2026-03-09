@@ -1,7 +1,6 @@
 import { Button } from '@/components/ui'
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
 import { X } from 'lucide-react'
-import { useLocale, useTranslations } from 'next-intl'
 import type React from 'react'
 import type { RootQa } from '../schema'
 import { QA_CATEGORIES } from '../schema'
@@ -13,9 +12,6 @@ interface QaDetailModalProps {
 }
 
 export const QaDetailModal: React.FC<QaDetailModalProps> = ({ qa, isOpen, onClose }) => {
-  const t = useTranslations()
-  const locale = useLocale()
-
   if (!qa) return null
 
   const categoryInfo = QA_CATEGORIES.find((cat) => cat.id === qa.category) || QA_CATEGORIES[0]
@@ -32,7 +28,7 @@ export const QaDetailModal: React.FC<QaDetailModalProps> = ({ qa, isOpen, onClos
             {/* Category Badge */}
             <div className="flex flex-wrap items-center gap-2">
               <span className={`px-3 py-1 text-sm font-bold text-white ${categoryInfo.color}`}>
-                {t(categoryInfo.nameKey)}
+                {categoryInfo.name}
               </span>
             </div>
             <Button
@@ -58,7 +54,7 @@ export const QaDetailModal: React.FC<QaDetailModalProps> = ({ qa, isOpen, onClos
               <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
                 <span className="text-white text-sm font-bold">A</span>
               </div>
-              <h3 className="font-semibold text-foreground text-lg">{t('Answer')}</h3>
+              <h3 className="font-semibold text-foreground text-lg">{'回答'}</h3>
             </div>
             <div className="bg-primary/5 border border-primary/30 rounded-lg p-6">
               <p className="text-foreground whitespace-pre-wrap leading-relaxed text-base">{qa.answer}</p>
@@ -73,7 +69,7 @@ export const QaDetailModal: React.FC<QaDetailModalProps> = ({ qa, isOpen, onClos
                     <path d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z" />
                   </svg>
                 </div>
-                <h3 className="font-semibold text-foreground text-lg">{t('WebsiteLink')}</h3>
+                <h3 className="font-semibold text-foreground text-lg">{'ウェブサイトリンク'}</h3>
               </div>
               <div className="bg-accent/10 border border-accent/30 rounded-lg p-6">
                 <div className="flex flex-col items-center gap-4">

@@ -1,13 +1,11 @@
 'use client'
 
 import type { ColumnDef } from '@tanstack/react-table'
-import { useTranslations } from 'next-intl'
 import type { SelectManageQaLog } from '../schema'
 
 export const useManageQaLogColumns = ({
   onQaEditClick,
 }: { onQaEditClick?: (id: string) => void } = {}): ColumnDef<SelectManageQaLog>[] => {
-  const t = useTranslations()
   const formatResponseTime = (responseTime: number) => {
     if (responseTime && responseTime > 0) {
       return (responseTime / 1000).toFixed(2)
@@ -18,7 +16,7 @@ export const useManageQaLogColumns = ({
   return [
     {
       accessorKey: 'userQuestion',
-      header: t('UserQuestion'),
+      header: 'ユーザーの質問',
       cell: ({ row }) => (
         <div className="flex gap-4 items-center">
           <p>{row.original.userQuestion}</p>
@@ -27,7 +25,7 @@ export const useManageQaLogColumns = ({
     },
     {
       accessorKey: 'aiAnswer',
-      header: t('AiAnswer'),
+      header: 'AIの回答',
       cell: ({ row }) => (
         <div className="flex gap-4 items-center">
           <p>{row.original.aiAnswer}</p>
@@ -36,7 +34,7 @@ export const useManageQaLogColumns = ({
     },
     {
       accessorKey: 'qaQuestion',
-      header: t('QaQuestion'),
+      header: 'Q&A質問',
       cell: ({ row }) => (
         <div className="flex gap-4 items-center">
           {row.original.qaId ? (
@@ -59,7 +57,7 @@ export const useManageQaLogColumns = ({
     },
     {
       accessorKey: 'similarityScore',
-      header: t('SimilarityScore') + '%',
+      header: '類似度スコア' + '%',
       cell: ({ row }) => (
         <div className="flex gap-4 items-center">
           {row.original.similarityScore && row.original.similarityScore > 0 ? (
@@ -70,7 +68,7 @@ export const useManageQaLogColumns = ({
     },
     {
       accessorKey: 'userRating',
-      header: t('UserRating'),
+      header: 'ユーザー評価',
       cell: ({ row }) => (
         <div className="flex gap-4 items-center">
           <p>{row.original.userRating}</p>
@@ -79,7 +77,7 @@ export const useManageQaLogColumns = ({
     },
     {
       accessorKey: 'userFeedback',
-      header: t('UserFeedback'),
+      header: 'ユーザーフィードバック',
       cell: ({ row }) => (
         <div className="flex gap-4 items-center">
           <p>{row.original.userFeedback}</p>
@@ -88,7 +86,7 @@ export const useManageQaLogColumns = ({
     },
     {
       accessorKey: 'responseTime',
-      header: t('ResponseTime') + '(' + t('Seconds') + ')',
+      header: '応答時間' + '(' + '秒' + ')',
       cell: ({ row }) => (
         <div className="flex gap-4 items-center">
           {row.original.responseTime && row.original.responseTime > 0 ? (

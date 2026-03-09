@@ -1,10 +1,9 @@
 import { useAvatar } from '@/hooks/avatar'
 import { DollarSign, Palette, Settings, User, X } from 'lucide-react'
-import { useTranslations } from 'next-intl'
+
 import { useEffect, useRef, useState } from 'react'
 
 export const BoardSettings = () => {
-  const t = useTranslations()
   const avatar = useAvatar((state) => state.avatar)
   const setAvatar = useAvatar((state) => state.setAvatar)
   const expertiseLevel = useAvatar((state) => state.expertiseLevel)
@@ -67,36 +66,36 @@ export const BoardSettings = () => {
     {
       id: 'Tsumugi',
       name: 'Tsumugi',
-      specialty: t('EngineeringExpert'),
+      specialty: 'エンジニアリングエキスパート',
       flag: '💻',
-      description: t('EngineeringAIAgent'),
+      description: 'エンジニアリングAIエージェント',
     },
   ]
 
   const expertiseLevels = [
     {
       id: 'beginner',
-      name: t('Beginner'),
+      name: '初心者',
       icon: '🌱',
-      description: t('BeginnerFriendlyExplanations'),
+      description: '初心者向けのわかりやすい解説',
     },
     {
       id: 'advanced',
-      name: t('Advanced'),
+      name: '上級者',
       icon: '🚀',
-      description: t('AdvancedTechnicalDetails'),
+      description: '上級テクニカル詳細',
     },
     {
       id: 'fullstack',
-      name: t('FullStack'),
+      name: 'フルスタック',
       icon: '🔧',
-      description: t('FullStackDevelopment'),
+      description: 'フルスタック開発',
     },
     {
       id: 'specialist',
-      name: t('Specialist'),
+      name: 'スペシャリスト',
       icon: '🎯',
-      description: t('DeepDiveSpecialist'),
+      description: '深掘りスペシャリスト',
     },
   ]
 
@@ -126,7 +125,7 @@ export const BoardSettings = () => {
           ${reduceMotion ? '' : 'transition-all duration-200 hover:scale-105'}
           md:hidden
         `}
-        aria-label={isExpanded ? t('ClosePreferences') : t('OpenPreferences')}
+        aria-label={isExpanded ? '設定を閉じる' : '設定を開く'}
         aria-expanded={isExpanded}
         aria-controls="preferences-panel"
       >
@@ -155,12 +154,12 @@ export const BoardSettings = () => {
             className="text-white font-black uppercase tracking-widest text-lg flex items-center gap-2"
           >
             <Palette className="w-5 h-5" aria-hidden="true" />
-            {t('Preferences')}
+            {'設定'}
           </h3>
           <button
             onClick={() => setIsExpanded(false)}
             className="md:hidden p-1 text-white/70 hover:text-white focus:outline-none focus:ring-2 focus:ring-white"
-            aria-label={t('ClosePreferencesPanel')}
+            aria-label="設定パネルを閉じる"
           >
             <X className="w-4 h-4" />
           </button>
@@ -170,7 +169,7 @@ export const BoardSettings = () => {
         <fieldset className="mb-6">
           <legend className="text-white/80 font-bold uppercase tracking-wider text-xs mb-3 flex items-center gap-2">
             <User className="w-4 h-4" aria-hidden="true" />
-            {t('YourAIAvatar')}
+            {'あなたのAIアバター'}
           </legend>
           <div className="space-y-2" role="radiogroup" aria-labelledby="avatar-legend">
             {avatars.map((adv) => (
@@ -182,11 +181,11 @@ export const BoardSettings = () => {
                 aria-describedby={`avatar-${adv.id}-desc`}
               >
                 <div className="font-medium text-base flex items-center gap-2">
-                  <span role="img" aria-label={t('Flag')}>
+                  <span role="img" aria-label="フラグ">
                     {adv.flag}
                   </span>
                   {adv.name}
-                  {avatar === adv.id && <span className="sr-only">({t('Selected')})</span>}
+                  {avatar === adv.id && <span className="sr-only">({'選択済み'})</span>}
                 </div>
                 <div id={`avatar-${adv.id}-desc`} className="text-sm opacity-75">
                   {adv.description}
@@ -200,7 +199,7 @@ export const BoardSettings = () => {
         <fieldset className="mb-6">
           <legend className="text-white/80 font-bold uppercase tracking-wider text-xs mb-3 flex items-center gap-2">
             <DollarSign className="w-4 h-4" aria-hidden="true" />
-            {t('ExpertiseLevel')}
+            {'専門レベル'}
           </legend>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2" role="radiogroup">
             {expertiseLevels.map((style) => (
@@ -216,7 +215,7 @@ export const BoardSettings = () => {
                     {style.icon}
                   </span>
                   {style.name}
-                  {expertiseLevel === style.id && <span className="sr-only">({t('Selected')})</span>}
+                  {expertiseLevel === style.id && <span className="sr-only">({'選択済み'})</span>}
                 </div>
                 <div id={`style-${style.id}-desc`} className="text-xs opacity-75">
                   {style.description}
@@ -227,18 +226,18 @@ export const BoardSettings = () => {
         </fieldset>
 
         {/* Current Configuration Summary */}
-        <div className="bg-black/30 border-2 border-white/20 p-3" aria-label={t('CurrentPreferencesSummary')}>
+        <div className="bg-black/30 border-2 border-white/20 p-3" aria-label="現在の設定概要">
           <div className="text-sm">
-            <div className="font-medium mb-2">{t('ActiveConfiguration')}:</div>
+            <div className="font-medium mb-2">{'アクティブな構成'}:</div>
             <div className="space-y-1 text-xs">
               <div className="flex items-center gap-2">
-                <span className="font-medium">{t('Avatar')}:</span>
+                <span className="font-medium">{'アバター'}:</span>
                 <span className="text-primary">
                   {avatars.find((adv) => adv.id === avatar)?.flag} {avatars.find((adv) => adv.id === avatar)?.name}
                 </span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="font-medium">{t('Style')}:</span>
+                <span className="font-medium">{'スタイル'}:</span>
                 <span className="text-accent">
                   {expertiseLevels.find((style) => style.id === expertiseLevel)?.name}
                 </span>
@@ -249,11 +248,7 @@ export const BoardSettings = () => {
 
         {/* Accessibility note for screen readers */}
         <div className="sr-only" aria-live="polite">
-          {t('PreferencesPanelStatus', {
-            status: isExpanded ? t('Open') : t('Closed'),
-            avatar: avatars.find((adv) => adv.id === avatar)?.name || '',
-            expertiseLevel: expertiseLevels.find((style) => style.id === expertiseLevel)?.name || '',
-          })}
+          {`設定パネルは${isExpanded ? '開く' : '閉じる'}です。現在のアバター：${avatars.find((adv) => adv.id === avatar)?.name || ''}。現在の専門レベル：${expertiseLevels.find((style) => style.id === expertiseLevel)?.name || ''}。`}
         </div>
       </div>
 

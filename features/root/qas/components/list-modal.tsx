@@ -3,9 +3,8 @@ import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } f
 import { clientFetch } from '@/lib/client-fetcher'
 import { rpc } from '@/lib/rpc'
 import { Calendar, ChevronRight, Eye, X } from 'lucide-react'
-import { useLocale, useTranslations } from 'next-intl'
 import type React from 'react'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import type { QaCategory, QaContentType, RootQa } from '../schema'
 import { QA_CATEGORIES, QA_CONTENT_TYPES } from '../schema'
 import { QaDetailModal } from './detail-modal'
@@ -16,23 +15,11 @@ interface QaListModalProps {
 }
 
 export const QaListModal: React.FC<QaListModalProps> = ({ isOpen, onClose }) => {
-  const t = useTranslations()
-  const locale = useLocale()
-  const prevLocaleRef = useRef(locale)
   const [qas, setQas] = useState<RootQa[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
   const [selectedQa, setSelectedQa] = useState<RootQa | null>(null)
-
-  // Clear cache when locale changes (after router.refresh())
-  useEffect(() => {
-    if (prevLocaleRef.current !== locale) {
-      setQas([])
-      setSelectedCategory('all')
-      prevLocaleRef.current = locale
-    }
-  }, [locale])
 
   useEffect(() => {
     if (isOpen && qas.length === 0) {
@@ -44,10 +31,10 @@ export const QaListModal: React.FC<QaListModalProps> = ({ isOpen, onClose }) => 
     setLoading(true)
     setError(null)
     try {
-      const response = await clientFetch(rpc.api.root.qas, {})
+      const response = await clientFetch(rpc.api.root.qas, { query: {} })
       setQas(response.data)
     } catch (err) {
-      setError(t('ContentGenerationError') || 'Failed to load Q&As. Please try again.')
+      setError('コンテンツ生成エラー')
       console.error('Error fetching Q&As:', err)
     } finally {
       setLoading(false)
@@ -77,25 +64,19 @@ export const QaListModal: React.FC<QaListModalProps> = ({ isOpen, onClose }) => 
   }, [onClose])
 
   const getCategoryInfo = useCallback(
-    (categoryId: string): QaCategory & { name: string } => {
+    (categoryId: string): QaCategory => {
       const category = QA_CATEGORIES.find((cat) => cat.id === categoryId) || QA_CATEGORIES[0]
-      return {
-        ...category,
-        name: t(category.nameKey),
-      }
+      return category
     },
-    [t],
+    [],
   )
 
   const getContentTypeInfo = useCallback(
-    (typeId: string): QaContentType & { name: string } => {
+    (typeId: string): QaContentType => {
       const type = QA_CONTENT_TYPES.find((type) => type.id === typeId) || QA_CONTENT_TYPES[0]
-      return {
-        ...type,
-        name: t(type.nameKey),
-      }
+      return type
     },
-    [t],
+    [],
   )
 
   return (
@@ -106,10 +87,10 @@ export const QaListModal: React.FC<QaListModalProps> = ({ isOpen, onClose }) => 
             <div className="flex items-center justify-between">
               <div>
                 <DrawerTitle className="text-2xl font-black uppercase tracking-widest text-foreground">
-                  {t('FrequentlyAskedQuestions')}
+                  {'よくある質問'}
                 </DrawerTitle>
                 <DrawerDescription className="text-muted-foreground">
-                  {t('BrowseCommonQuestionsAndAnswers')}
+                  {'よくある質問と回答を閲覧する'}
                 </DrawerDescription>
               </div>
               <Button
@@ -126,7 +107,7 @@ export const QaListModal: React.FC<QaListModalProps> = ({ isOpen, onClose }) => 
           <div className="flex flex-col h-[calc(100vh-120px)] overflow-hidden">
             <div className="flex-shrink-0 p-6 border-b space-y-4">
               <div>
-                <h3 className="text-sm font-medium text-muted-foreground mb-2">{t('Category')}</h3>
+                <h3 className="text-sm font-medium text-muted-foreground mb-2">{'カテゴリ'}</h3>
                 <div className="flex flex-wrap gap-2">
                   {QA_CATEGORIES.map((category) => (
                     <Button
@@ -137,7 +118,7 @@ export const QaListModal: React.FC<QaListModalProps> = ({ isOpen, onClose }) => 
                       className={`text-sm transition-colors duration-200 rounded-lg ${selectedCategory === category.id ? 'bg-primary text-primary-foreground border border-primary' : 'border border-border'}`}
                     >
                       <span className={`inline-block w-2 h-2 rounded-full mr-2 ${category.color}`} />
-                      {t(category.nameKey)}
+                      {category.name}
                     </Button>
                   ))}
                 </div>
@@ -152,7 +133,7 @@ export const QaListModal: React.FC<QaListModalProps> = ({ isOpen, onClose }) => 
                     onClick={clearAllFilters}
                     className="text-sm text-destructive hover:text-destructive/80"
                   >
-                    {t('ClearAllFilters')}
+                    {'すべてのフィルターをクリア'}
                   </Button>
                 )}
               </div>
@@ -163,7 +144,7 @@ export const QaListModal: React.FC<QaListModalProps> = ({ isOpen, onClose }) => 
               {loading && (
                 <div className="flex items-center justify-center py-12">
                   <div className="animate-spin rounded-full h-8 w-8 border-4 border-muted border-t-primary"></div>
-                  <span className="ml-2 text-muted-foreground">{t('LoadingQAs')}...</span>
+                  <span className="ml-2 text-muted-foreground">{'Q&Aを読み込み中'}...</span>
                 </div>
               )}
 
@@ -171,7 +152,7 @@ export const QaListModal: React.FC<QaListModalProps> = ({ isOpen, onClose }) => 
                 <div className="p-6 text-center">
                   <p className="text-red-600 mb-4">{error}</p>
                   <Button onClick={fetchQas} variant="default">
-                    {t('Retry')}
+                    {'再試行'}
                   </Button>
                 </div>
               )}
@@ -180,11 +161,11 @@ export const QaListModal: React.FC<QaListModalProps> = ({ isOpen, onClose }) => 
                 <div className="p-6 text-center text-muted-foreground">
                   {selectedCategory !== 'all' ? (
                     <div>
-                      <p className="mb-2">{t('NoQAsFoundWithFilters')}</p>
-                      <p className="text-sm">{t('TryAdjustingFilters')}</p>
+                      <p className="mb-2">{'フィルター条件に一致するQ&Aが見つかりません'}</p>
+                      <p className="text-sm">{'フィルター条件を調整してみてください'}</p>
                     </div>
                   ) : (
-                    t('NoQAsAvailable')
+                    '利用可能なQ&Aがありません'
                   )}
                 </div>
               )}
@@ -226,7 +207,7 @@ export const QaListModal: React.FC<QaListModalProps> = ({ isOpen, onClose }) => 
                               <div className="flex items-center gap-1.5">
                                 <Eye className="h-3 w-3" />
                                 <span className="font-medium">
-                                  {qa.viewCount} {t('Views')}
+                                  {qa.viewCount} {'閲覧数'}
                                 </span>
                               </div>
                               <div className="flex items-center gap-1.5">

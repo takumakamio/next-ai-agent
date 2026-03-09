@@ -70,23 +70,23 @@ export type RootQa = InferResponseType<typeof rpc.api.root.qas.$get, 200>['data'
 // Category / ContentType metadata
 export interface QaCategory {
   id: (typeof categoriesWithAll)[number]
-  nameKey: string
+  name: string
   color: string
 }
 
 export interface QaContentType {
   id: (typeof contentTypes)[number]
-  nameKey: string
+  name: string
 }
 
 export const QA_CATEGORIES: QaCategory[] = [
-  { id: 'all', nameKey: 'All', color: 'bg-gray-500' },
-  { id: 'programming', nameKey: 'Programming', color: 'bg-blue-500' },
-  { id: 'architecture', nameKey: 'Architecture', color: 'bg-green-500' },
-  { id: 'devops', nameKey: 'DevOps', color: 'bg-purple-500' },
-  { id: 'debugging', nameKey: 'Debugging', color: 'bg-orange-500' },
-  { id: 'security', nameKey: 'Security', color: 'bg-pink-500' },
-  { id: 'general', nameKey: 'GeneralInfo', color: 'bg-indigo-500' },
+  { id: 'all', name: 'すべて', color: 'bg-gray-500' },
+  { id: 'programming', name: 'プログラミング', color: 'bg-blue-500' },
+  { id: 'architecture', name: 'アーキテクチャ', color: 'bg-green-500' },
+  { id: 'devops', name: 'DevOps', color: 'bg-purple-500' },
+  { id: 'debugging', name: 'デバッグ', color: 'bg-orange-500' },
+  { id: 'security', name: 'セキュリティ', color: 'bg-pink-500' },
+  { id: 'general', name: '一般情報', color: 'bg-indigo-500' },
 ]
 
-export const QA_CONTENT_TYPES: QaContentType[] = [{ id: 'general', nameKey: 'General' }]
+export const QA_CONTENT_TYPES: QaContentType[] = [{ id: 'general', name: '一般' }]

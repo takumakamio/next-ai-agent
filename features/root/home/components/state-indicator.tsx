@@ -2,7 +2,7 @@
 
 import { useAvatar } from '@/hooks/avatar'
 import { Brain, Loader2, Mic, Volume2 } from 'lucide-react'
-import { useTranslations } from 'next-intl'
+
 import type React from 'react'
 
 export const StateIndicator = () => {
@@ -12,8 +12,6 @@ export const StateIndicator = () => {
   const isSpeaking = useAvatar((state) => state.isSpeaking)
   const stopVoiceInput = useAvatar((state) => state.stopVoiceInput)
 
-  const t = useTranslations()
-
   // Determine current state and message
   let stateMessage = ''
   let StateIcon: React.ComponentType<{ className?: string }> | null = null
@@ -21,22 +19,22 @@ export const StateIndicator = () => {
   let isActive = false
 
   if (recording) {
-    stateMessage = t('RecordingYourVoice')
+    stateMessage = '音声を録音中...'
     StateIcon = Mic
     iconClassName = 'animate-pulse'
     isActive = true
   } else if (loading) {
-    stateMessage = t('ThinkingAboutYourQuestion')
+    stateMessage = '質問について考え中...'
     StateIcon = Brain
     iconClassName = 'animate-pulse'
     isActive = true
   } else if (loadingTTS) {
-    stateMessage = t('PreparingSpeech')
+    stateMessage = '音声を準備中...'
     StateIcon = Loader2
     iconClassName = 'animate-spin'
     isActive = true
   } else if (isSpeaking) {
-    stateMessage = t('Speaking')
+    stateMessage = '話し中...'
     StateIcon = Volume2
     iconClassName = 'animate-pulse'
     isActive = true
@@ -68,9 +66,9 @@ export const StateIndicator = () => {
             <button
               onClick={stopVoiceInput}
               className="mt-4 bg-destructive hover:bg-destructive/90 text-destructive-foreground font-bold uppercase tracking-wider border border-border rounded-lg px-6 py-3 dmp-shadow pointer-events-auto focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background"
-              aria-label={t('StopRecording')}
+              aria-label="会話を停止"
             >
-              {t('StopRecording')}
+              {'会話を停止'}
             </button>
           )}
         </div>

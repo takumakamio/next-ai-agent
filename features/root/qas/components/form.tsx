@@ -7,8 +7,6 @@ import { clientPost } from '@/lib/client-fetcher'
 import { rpc } from '@/lib/rpc'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader, Send } from 'lucide-react'
-import { useTranslations } from 'next-intl'
-import { useLocale } from 'next-intl'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -27,8 +25,6 @@ export const ManageQaForm = ({
   onCancel?: () => void
 }) => {
   const router = useRouter()
-  const t = useTranslations()
-  const locale = useLocale()
 
   const defaultValues: FV = {
     id: qa?.id ?? '',
@@ -39,7 +35,7 @@ export const ManageQaForm = ({
     question: qa?.question ?? '',
     answer: qa?.answer ?? '',
     websiteLink: qa?.websiteLink ?? '',
-    locale,
+    locale: 'ja',
     // For create mode, always translate; for update mode, default to false (user can opt-in)
     shouldTranslate: !qa?.id,
   }
@@ -75,15 +71,15 @@ export const ManageQaForm = ({
     defaultValues,
   })
 
-  const contentTypeOptions = [{ value: 'general', label: t('General') }]
+  const contentTypeOptions = [{ value: 'general', label: '一般' }]
 
   const categoryOptions = [
-    { value: 'programming', label: t('Programming') },
-    { value: 'architecture', label: t('Architecture') },
-    { value: 'devops', label: t('DevOps') },
-    { value: 'debugging', label: t('Debugging') },
-    { value: 'security', label: t('Security') },
-    { value: 'general', label: t('General') },
+    { value: 'programming', label: 'プログラミング' },
+    { value: 'architecture', label: 'アーキテクチャ' },
+    { value: 'devops', label: 'DevOps' },
+    { value: 'debugging', label: 'デバッグ' },
+    { value: 'security', label: 'セキュリティ' },
+    { value: 'general', label: '一般' },
   ]
 
   return (
@@ -93,12 +89,12 @@ export const ManageQaForm = ({
           {/* Classification */}
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col">
-              <h3 className="text-sm font-black uppercase tracking-wider text-foreground">{t('Classification')}</h3>
-              <p className="text-sm text-muted-foreground">{t('SetQaClassification')}</p>
+              <h3 className="text-sm font-black uppercase tracking-wider text-foreground">{'分類'}</h3>
+              <p className="text-sm text-muted-foreground">{'Q&Aの分類を設定'}</p>
             </div>
             <div className="flex flex-col gap-4">
-              <ComboboxControl<FV> fieldName="contentType" label={t('ContentType')} options={contentTypeOptions} />
-              <ComboboxControl<FV> fieldName="category" label={t('Category')} options={categoryOptions} />
+              <ComboboxControl<FV> fieldName="contentType" label={'コンテンツタイプ'} options={contentTypeOptions} />
+              <ComboboxControl<FV> fieldName="category" label={'カテゴリ'} options={categoryOptions} />
             </div>
           </div>
 
@@ -107,12 +103,12 @@ export const ManageQaForm = ({
           {/* Question & Answer */}
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col">
-              <h3 className="text-sm font-black uppercase tracking-wider text-foreground">{t('QuestionAndAnswer')}</h3>
-              <p className="text-sm text-muted-foreground">{t('EnterQaContent')}</p>
+              <h3 className="text-sm font-black uppercase tracking-wider text-foreground">{'質問と回答'}</h3>
+              <p className="text-sm text-muted-foreground">{'Q&Aの内容を入力'}</p>
             </div>
             <div className="flex flex-col gap-4">
-              <InputControl<FV> fieldName="question" label={t('Question')} />
-              <TextAreaControl<FV> fieldName="answer" label={t('Answer')} rows={20} />
+              <InputControl<FV> fieldName="question" label={'質問'} />
+              <TextAreaControl<FV> fieldName="answer" label={'回答'} rows={20} />
             </div>
           </div>
 
@@ -121,11 +117,11 @@ export const ManageQaForm = ({
           {/* Website Link */}
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col">
-              <h3 className="text-sm font-black uppercase tracking-wider text-foreground">{t('WebsiteLink')}</h3>
-              <p className="text-sm text-muted-foreground">{t('EnterWebsiteLinkForQrCode')}</p>
+              <h3 className="text-sm font-black uppercase tracking-wider text-foreground">{'ウェブサイトリンク'}</h3>
+              <p className="text-sm text-muted-foreground">{'QRコード用のウェブサイトリンクを入力'}</p>
             </div>
             <div className="flex flex-col gap-4">
-              <InputControl<FV> fieldName="websiteLink" label={t('WebsiteLink')} placeholder="https://example.com" />
+              <InputControl<FV> fieldName="websiteLink" label={'ウェブサイトリンク'} placeholder="https://example.com" />
             </div>
           </div>
 
@@ -135,7 +131,7 @@ export const ManageQaForm = ({
           <div className="mt-auto flex items-center justify-between gap-2 border-t border-border pt-4">
             {/* Translation option - only show in update mode */}
             <div className="flex items-center">
-              {qa?.id && <SwitchControl<FV> fieldName="shouldTranslate" label={t('TranslateOnSave')} />}
+              {qa?.id && <SwitchControl<FV> fieldName="shouldTranslate" label={'保存時に翻訳'} />}
             </div>
             <div className="flex items-center gap-2">
               <Button
@@ -144,7 +140,7 @@ export const ManageQaForm = ({
                 onClick={() => (onCancel ? onCancel() : router.back())}
                 className="h-8 rounded-lg border border-border px-3 text-sm hover:bg-destructive hover:text-destructive-foreground hover:border-destructive"
               >
-                {t('Cancel')}
+                {'キャンセル'}
               </Button>
               <Button
                 type="submit"
@@ -156,7 +152,7 @@ export const ManageQaForm = ({
                 ) : (
                   <>
                     <Send className="size-4" />
-                    {qa?.id ? t('Save') : t('Create')}
+                    {qa?.id ? '保存' : '作成'}
                   </>
                 )}
               </Button>

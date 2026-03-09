@@ -7,9 +7,9 @@ export type ExpertiseLevel = 'beginner' | 'advanced' | 'fullstack' | 'specialist
 export type TtsEngine = 'auto' | 'gemini' | 'voicevox'
 export type AiModel = 'gemini-2.5-flash' | 'gemini-2.5-pro'
 
-export const AI_MODEL_OPTIONS: { value: AiModel; labelKey: string }[] = [
-  { value: 'gemini-2.5-flash', labelKey: 'AIModelGemini25Flash' },
-  { value: 'gemini-2.5-pro', labelKey: 'AIModelGemini25Pro' },
+export const AI_MODEL_OPTIONS: { value: AiModel; label: string }[] = [
+  { value: 'gemini-2.5-flash', label: 'Gemini 2.5 Flash' },
+  { value: 'gemini-2.5-pro', label: 'Gemini 2.5 Pro' },
 ]
 
 export interface ConversationExchange {

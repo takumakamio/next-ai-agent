@@ -15,7 +15,7 @@ export async function getQaById(id: string, locale: string) {
     return null
   }
 
-  const qaTranslation = getTranslation(data, locale)
+  const qaTranslation = getTranslation(data)
 
   return {
     ...data,

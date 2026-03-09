@@ -1,6 +1,4 @@
-import { LANGUAGES, type Language } from '@/i18n/routing'
 import { BookOpen, ChevronDown, ChevronUp, Code, MapPin, Plus, Send, Settings, X } from 'lucide-react'
-import { useTranslations } from 'next-intl'
 import type React from 'react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
@@ -8,29 +6,23 @@ interface TextInputProps {
   onSubmit: (question: string) => void
   loading: boolean
   recording: boolean
-  currentLanguage: Language
-  onLanguageChange: (language: Language) => void
   voiceInputError: string | null
   onVoiceInputErrorDismiss: () => void
   isVisible: boolean
   onClose: () => void
   wasRecording: boolean
-  isPending?: boolean
 }
 
 export const TextInput: React.FC<TextInputProps> = ({
   onSubmit,
   loading,
   recording,
-  currentLanguage,
-  onLanguageChange,
   voiceInputError,
   onVoiceInputErrorDismiss,
   isVisible,
   onClose,
   wasRecording,
 }) => {
-  const t = useTranslations()
   const [question, setQuestion] = useState('')
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const [showSuggestions, setShowSuggestions] = useState(false)
@@ -47,38 +39,38 @@ export const TextInput: React.FC<TextInputProps> = ({
   const quickSuggestions = [
     {
       icon: <Code className="w-3 h-3" />,
-      text: t('ShowBestPractices'),
-      category: t('Programming'),
+      text: 'ベストプラクティスを教えて',
+      category: 'プログラミング',
       keywords: 'best practices coding clean code patterns',
     },
     {
       icon: <BookOpen className="w-3 h-3" />,
-      text: t('ShowLearningRoadmap'),
-      category: t('Learning'),
+      text: '学習ロードマップを教えて',
+      category: '学習',
       keywords: 'learning roadmap study path curriculum',
     },
     {
       icon: <Settings className="w-3 h-3" />,
-      text: t('DebuggingTips'),
-      category: t('Debugging'),
+      text: 'デバッグのコツを教えて',
+      category: 'デバッグ',
       keywords: 'debugging troubleshooting error fixing',
     },
     {
       icon: <Code className="w-3 h-3" />,
-      text: t('CodingConventions'),
-      category: t('Architecture'),
+      text: 'コーディング規約について',
+      category: 'アーキテクチャ',
       keywords: 'coding conventions style guide standards',
     },
     {
       icon: <Settings className="w-3 h-3" />,
-      text: t('HowToSetupCICD'),
-      category: t('DevOps'),
+      text: 'CI/CDの設定方法を教えて',
+      category: 'DevOps',
       keywords: 'ci cd pipeline deployment infrastructure',
     },
     {
       icon: <BookOpen className="w-3 h-3" />,
-      text: t('RecommendLibrary'),
-      category: t('Libraries'),
+      text: 'おすすめのライブラリを教えて',
+      category: 'ライブラリ',
       keywords: 'library framework package recommendation',
     },
   ]
@@ -130,9 +122,9 @@ export const TextInput: React.FC<TextInputProps> = ({
     setSelectedSuggestionIndex(-1)
 
     // Announce to screen readers
-    const announcement = t('AskingAbout', { question: question.trim() })
+    const announcement = `質問中: ${question.trim()}`
     announceToScreenReader(announcement)
-  }, [question, loading, onSubmit, t])
+  }, [question, loading, onSubmit])
 
   const handleSuggestionClick = useCallback(
     (suggestionText: string) => {
@@ -140,9 +132,9 @@ export const TextInput: React.FC<TextInputProps> = ({
       setCharacterCount(suggestionText.length)
       setShowSuggestions(false)
       textareaRef.current?.focus()
-      announceToScreenReader(t('SelectedSuggestion', { suggestion: suggestionText }))
+      announceToScreenReader(`提案を選択: ${suggestionText}`)
     },
-    [t],
+    [],
   )
 
   const handleCloseTypingBox = useCallback(() => {
@@ -151,8 +143,8 @@ export const TextInput: React.FC<TextInputProps> = ({
     setQuestion('')
     setCharacterCount(0)
     onClose()
-    announceToScreenReader(t('TypingBoxClosed'))
-  }, [onClose, t])
+    announceToScreenReader('入力ボックスを閉じました')
+  }, [onClose])
 
   // Keyboard navigation for suggestions
   const handleKeyDown = useCallback(
@@ -216,7 +208,7 @@ export const TextInput: React.FC<TextInputProps> = ({
           <button
             onClick={() => setIsDrawerOpen(!isDrawerOpen)}
             className={`${buttonClass} p-2 bg-muted/30 hover:bg-muted/50 text-foreground flex-shrink-0`}
-            aria-label={isDrawerOpen ? t('CollapseDrawer') : t('ExpandDrawer')}
+            aria-label={isDrawerOpen ? 'ドロワーを閉じる' : 'ドロワーを開く'}
             aria-expanded={isDrawerOpen}
           >
             {isDrawerOpen ? <ChevronDown className="w-5 h-5" /> : <Plus className="w-5 h-5" />}
@@ -226,7 +218,7 @@ export const TextInput: React.FC<TextInputProps> = ({
           <input
             ref={inputRef}
             className="flex-1 bg-transparent text-foreground placeholder:text-muted-foreground border-none outline-none px-2 py-1 text-sm"
-            placeholder={t('AskAI')}
+            placeholder="AIに質問..."
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
             onKeyDown={handleKeyDown}
@@ -242,13 +234,13 @@ export const TextInput: React.FC<TextInputProps> = ({
               {loading && (
                 <>
                   <div className="w-3 h-3 border border-border/50 border-t-white rounded-full animate-spin" />
-                  <span>{t('Processing')}</span>
+                  <span>{'処理中...'}</span>
                 </>
               )}
               {recording && (
                 <>
                   <div className="w-3 h-3 bg-red-400 rounded-full animate-pulse" />
-                  <span>{t('Recording')}</span>
+                  <span>{'録音中...'}</span>
                 </>
               )}
             </div>
@@ -259,7 +251,7 @@ export const TextInput: React.FC<TextInputProps> = ({
             onClick={ask}
             disabled={loading || !isInputValid}
             className={`${buttonClass} p-2 bg-primary/80 hover:bg-primary focus:ring-primary text-primary-foreground flex-shrink-0`}
-            aria-label={t('SendMessage')}
+            aria-label="メッセージを送信"
           >
             {loading ? (
               <div className="w-5 h-5 border-2 border-border/50 border-t-white rounded-full animate-spin" />
@@ -272,7 +264,7 @@ export const TextInput: React.FC<TextInputProps> = ({
           <button
             onClick={handleCloseTypingBox}
             className={`${buttonClass} p-2 bg-muted/30 hover:bg-muted/50 text-foreground flex-shrink-0`}
-            aria-label={t('CloseTypingBox')}
+            aria-label="入力ボックスを閉じる"
           >
             <X className="w-5 h-5" />
           </button>
@@ -294,7 +286,7 @@ export const TextInput: React.FC<TextInputProps> = ({
                 <button
                   onClick={onVoiceInputErrorDismiss}
                   className="ml-2 text-red-200 hover:text-foreground"
-                  aria-label={t('DismissError')}
+                  aria-label="エラーを閉じる"
                 >
                   ×
                 </button>
@@ -315,41 +307,18 @@ export const TextInput: React.FC<TextInputProps> = ({
             <div className="flex items-center justify-between">
               <h3 className="text-foreground font-medium text-sm flex items-center gap-2">
                 <MapPin className="w-4 h-4" aria-hidden="true" />
-                {t('WhatCanIHelpYouPlanToday')}
+                {'今日は何をお手伝いしましょうか？'}
               </h3>
               <button
                 onClick={() => setIsDrawerOpen(false)}
                 className="p-1 rounded text-muted-foreground hover:text-foreground hover:bg-muted/30 transition-colors"
-                aria-label={t('CloseDrawer')}
+                aria-label="ドロワーを閉じる"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <p className="text-muted-foreground text-xs">{t('AskMeAnythingDescription')}</p>
-
-            {/* Language Selection in Drawer */}
-            <div className="space-y-2">
-              <div className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">
-                {t('Language')}
-              </div>
-              <div className="flex border-2 border-border/50 p-0.5 gap-0.5 bg-muted/40">
-                {LANGUAGES.map((lang) => (
-                  <button
-                    key={lang.code}
-                    onClick={() => onLanguageChange(lang.code)}
-                    className={`flex-1 py-1.5 text-[10px] font-black uppercase tracking-widest transition-all duration-200 ${
-                      currentLanguage === lang.code
-                        ? 'bg-primary text-primary-foreground'
-                        : 'text-muted-foreground hover:text-foreground hover:bg-muted/30'
-                    }`}
-                    disabled={loading}
-                  >
-                    {lang.code}
-                  </button>
-                ))}
-              </div>
-            </div>
+            <p className="text-muted-foreground text-xs">{'何でもお気軽にご質問ください。Q&Aデータに基づいて回答します。'}</p>
 
             {/* Quick Suggestions Toggle */}
             <div className="space-y-2">
@@ -359,13 +328,13 @@ export const TextInput: React.FC<TextInputProps> = ({
                 aria-expanded={showSuggestions}
                 aria-controls="suggestions-panel"
               >
-                <span>{t('QuickSuggestions')}</span>
+                <span>{'クイック提案'}</span>
                 {showSuggestions ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
               </button>
 
               {/* Compact Suggestions Grid */}
               {showSuggestions && (
-                <div id="suggestions-panel" className="grid grid-cols-1 gap-1" aria-label={t('SuggestionOptions')}>
+                <div id="suggestions-panel" className="grid grid-cols-1 gap-1" aria-label="提案オプション">
                   {quickSuggestions.map((suggestion, index) => (
                     <button
                       key={index}
@@ -406,7 +375,7 @@ export const TextInput: React.FC<TextInputProps> = ({
                 <button
                   onClick={onVoiceInputErrorDismiss}
                   className="ml-2 text-red-200 hover:text-foreground"
-                  aria-label={t('DismissError')}
+                  aria-label="エラーを閉じる"
                 >
                   <X className="w-4 h-4 inline" />
                 </button>
@@ -418,7 +387,7 @@ export const TextInput: React.FC<TextInputProps> = ({
               <textarea
                 ref={textareaRef}
                 className="w-full text-foreground placeholder:text-muted-foreground border rounded-lg p-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-ring/80 focus:border-ring/50 disabled:opacity-50 disabled:cursor-not-allowed bg-muted/20 border-border/30"
-                placeholder={t('TypeYourQuestionPlaceholder')}
+                placeholder="質問を入力するか、ヘルプを求めてください..."
                 value={question}
                 onChange={(e) => setQuestion(e.target.value)}
                 onKeyDown={handleKeyDown}
@@ -437,7 +406,7 @@ export const TextInput: React.FC<TextInputProps> = ({
                   </span>
                   {!isInputValid && question.length > 0 && (
                     <span className="text-red-300" role="alert">
-                      {question.length > MAX_CHARACTERS ? t('TooLong') : t('Required')}
+                      {question.length > MAX_CHARACTERS ? '文字数が多すぎます' : '必須項目'}
                     </span>
                   )}
                   {question && (
@@ -448,9 +417,9 @@ export const TextInput: React.FC<TextInputProps> = ({
                         textareaRef.current?.focus()
                       }}
                       className="text-muted-foreground hover:text-foreground/80 underline"
-                      aria-label={t('ClearInput')}
+                      aria-label="入力をクリア"
                     >
-                      {t('Clear')}
+                      {'クリア'}
                     </button>
                   )}
                 </div>
@@ -467,12 +436,12 @@ export const TextInput: React.FC<TextInputProps> = ({
                         className="w-4 h-4 border-2 border-border/50 border-t-white rounded-full animate-spin"
                         aria-hidden="true"
                       />
-                      {t('Planning')}
+                      {'学習'}
                     </>
                   ) : (
                     <>
                       <Send className="w-4 h-4" aria-hidden="true" />
-                      {t('AskAdvisor')}
+                      {'AIに質問'}
                     </>
                   )}
                 </button>
@@ -481,16 +450,16 @@ export const TextInput: React.FC<TextInputProps> = ({
 
             {/* Help Text */}
             <div className="text-xs text-muted-foreground/60 text-center space-y-1">
-              <p>{t('TryAskingAboutHelpText')}</p>
-              <p className="md:hidden">{t('TapSuggestionsHelpText')}</p>
+              <p>{'エンジニアリングについて何でもお気軽にご質問ください'}</p>
+              <p className="md:hidden">{'提案をタップして使用するか、独自の質問を入力してください'}</p>
             </div>
 
             {/* Screen reader only helper text */}
             <div id="input-help" className="sr-only">
-              {t('TypeYourQuestionHelperText')}
+              {'質問を入力するか、上記の提案を使用してください。Enterキーで送信、矢印キーで提案をナビゲートできます。'}
             </div>
             <div id="submit-help" className="sr-only">
-              {loading ? t('YourQuestionIsBeingProcessed') : t('SubmitYourQuestion')}
+              {loading ? '質問を処理中です' : 'AIに質問を送信'}
             </div>
           </div>
         </div>
