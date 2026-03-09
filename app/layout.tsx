@@ -10,7 +10,7 @@ export default function RootLayout({
 }>): React.ReactElement {
   return (
     <html lang="ja" className="dark">
-      <body className={`antialiased min-h-dvh w-dvw w-full text-foreground`}>
+      <body className={`antialiased min-h-dvh w-dvw w-full bg-background text-foreground`}>
         <Providers>{children}</Providers>
       </body>
     </html>

@@ -4,7 +4,6 @@
 import { useCallback, useState } from 'react'
 import { QaLogsTab } from '../../qa-logs/components/qa-logs-tab'
 import { QasTab } from '../../qas/components/qas-tab'
-import { BackgroundSelector } from './background-selector'
 import { Chat } from './chat'
 
 type TabKey = 'chat' | 'qas' | 'qa-logs'
@@ -40,9 +39,6 @@ export const HomeTabs = () => {
               {tab.label}
             </button>
           ))}
-        </div>
-        <div className="px-2">
-          <BackgroundSelector />
         </div>
       </div>
 
