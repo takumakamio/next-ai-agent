@@ -1,5 +1,4 @@
 export type { TTSResult } from './types'
-export { generateElevenLabsTTS } from './elevenlabs'
 export { generateGeminiTTS } from './gemini'
 export {
   generateVoicevoxTTS,

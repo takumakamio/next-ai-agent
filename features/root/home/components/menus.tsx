@@ -25,7 +25,6 @@ const VOICEVOX_SPEAKER_OPTIONS = [
 
 const TTS_ENGINE_OPTIONS: { value: TtsEngine; labelKey: string }[] = [
   { value: 'auto', labelKey: 'TTSEngineAuto' },
-  { value: 'elevenlabs', labelKey: 'TTSEngineElevenLabs' },
   { value: 'gemini', labelKey: 'TTSEngineGemini' },
   { value: 'voicevox', labelKey: 'TTSEngineVoicevox' },
 ]

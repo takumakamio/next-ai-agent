@@ -4,7 +4,7 @@ import { create } from 'zustand'
 
 export type Avatar = 'Tsumugi'
 export type ExpertiseLevel = 'beginner' | 'advanced' | 'fullstack' | 'specialist'
-export type TtsEngine = 'auto' | 'elevenlabs' | 'gemini' | 'voicevox'
+export type TtsEngine = 'auto' | 'gemini' | 'voicevox'
 export type AiModel = 'gemini-2.5-flash' | 'gemini-2.5-pro'
 
 export const AI_MODEL_OPTIONS: { value: AiModel; labelKey: string }[] = [

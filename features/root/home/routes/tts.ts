@@ -2,14 +2,14 @@ import type { Bindings } from '@/type'
 import { OpenAPIHono, createRoute } from '@hono/zod-openapi'
 
 import type { TTSResult } from '@/lib/tts'
-import { generateElevenLabsTTS, generateGeminiTTS, generateVoicevoxTTS } from '@/lib/tts'
+import { generateGeminiTTS, generateVoicevoxTTS } from '@/lib/tts'
 import { z } from 'zod'
 
 const ttsRequestSchema = z.object({
   text: z.string().min(1, 'Text is required'),
   avatar: z.string().optional().default('Tsumugi'),
   language: z.enum(['japanese', 'korean', 'chinese', 'english', 'spanish']).optional().default('japanese'),
-  engine: z.enum(['auto', 'elevenlabs', 'gemini', 'voicevox']).optional().default('auto'),
+  engine: z.enum(['auto', 'gemini', 'voicevox']).optional().default('auto'),
   speakerId: z.coerce.number().optional(),
 })
 
@@ -36,7 +36,7 @@ export const ttsRoute = new OpenAPIHono<{ Variables: Bindings }>().openapi(
     path: '/api/root/home/tts',
     tags: ['AI Speech'],
     summary: 'Convert text to speech',
-    description: 'Generate audio from text using ElevenLabs, Gemini, or VOICEVOX TTS',
+    description: 'Generate audio from text using Gemini or VOICEVOX TTS',
     request: {
       query: ttsRequestSchema,
     },
@@ -72,7 +72,6 @@ export const ttsRoute = new OpenAPIHono<{ Variables: Bindings }>().openapi(
   }),
   async (c) => {
     const { text, avatar, engine, speakerId } = c.req.valid('query')
-    const locale = c.get('locale')
 
     if (engine === 'voicevox') {
       try {
@@ -82,17 +81,6 @@ export const ttsRoute = new OpenAPIHono<{ Variables: Bindings }>().openapi(
       } catch (error) {
         console.error('VOICEVOX TTS failed:', error)
         return c.json({ error: 'VOICEVOX TTS failed. Is the engine running?' }, 500)
-      }
-    }
-
-    if (engine === 'elevenlabs') {
-      try {
-        const result = await generateElevenLabsTTS(process.env, text, locale)
-        console.log('Successfully generated audio using ElevenLabs')
-        return ttsResultToResponse(result)
-      } catch (error) {
-        console.error('ElevenLabs TTS failed:', error)
-        return c.json({ error: 'ElevenLabs TTS failed.' }, 500)
       }
     }
 
@@ -107,18 +95,18 @@ export const ttsRoute = new OpenAPIHono<{ Variables: Bindings }>().openapi(
       }
     }
 
-    // engine === 'auto': ElevenLabs → Gemini fallback (existing behavior)
+    // engine === 'auto': Gemini → VOICEVOX fallback
     try {
-      const result = await generateElevenLabsTTS(process.env, text, locale)
-      console.log('Successfully generated audio using ElevenLabs')
+      const result = await generateGeminiTTS(process.env, text, avatar)
+      console.log('Successfully generated audio using Gemini')
       return ttsResultToResponse(result)
     } catch (error) {
-      console.warn('ElevenLabs TTS failed, falling back to Gemini:', error)
+      console.warn('Gemini TTS failed, falling back to VOICEVOX:', error)
     }
 
     try {
-      const result = await generateGeminiTTS(process.env, text, avatar)
-      console.log('Successfully generated audio using Gemini (fallback)')
+      const result = await generateVoicevoxTTS(text, speakerId)
+      console.log('Successfully generated audio using VOICEVOX (fallback)')
       return ttsResultToResponse(result)
     } catch (error) {
       console.error('Both TTS providers failed:', error)
