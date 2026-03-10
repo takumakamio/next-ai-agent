@@ -1,6 +1,5 @@
 import { Button } from '@/components/ui'
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
-import { clientFetch } from '@/lib/client-fetcher'
 import { rpc } from '@/lib/rpc'
 import { X } from 'lucide-react'
 import type React from 'react'
@@ -22,7 +21,11 @@ export const QaDetailModal: React.FC<QaDetailModalProps> = ({ qa, isOpen, onClos
   useEffect(() => {
     if (isOpen && qa?.id) {
       setLoadingEmbedding(true)
-      clientFetch(rpc.api.qas[':id'], { param: { id: qa.id } })
+      rpc.api.qas[':id'].$get({ param: { id: qa.id } })
+        .then((res) => {
+          if (!res.ok) throw new Error(`Failed: ${res.status}`)
+          return res.json()
+        })
         .then((detail) => {
           setEmbedding(detail.embedding ?? null)
           setEmbeddingModel(detail.embeddingModel ?? null)

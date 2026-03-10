@@ -14,7 +14,6 @@
 ```bash
 code --version      # VS Code
 node --version      # Node.js
-docker --version    # Docker
 claude --version    # Claude Code
 ```
 
@@ -22,16 +21,7 @@ claude --version    # Claude Code
 
 ---
 
-## ① Docker を起動しておく（5分）
-
-```
-Windows：タスクバーからDocker Desktopを起動（クジラアイコンが出ればOK）
-Mac：アプリケーションからDocker Desktopを起動（メニューバーにクジラアイコン）
-```
-
----
-
-## ② プロジェクト用フォルダを作って VS Code で開く（5分）
+## ① プロジェクト用フォルダを作って VS Code で開く（5分）
 
 ```bash
 # ホームディレクトリにフォルダを作成
@@ -44,7 +34,7 @@ code .
 
 ---
 
-## ③ VS Code のターミナルで Claude Code を起動（5分）
+## ② VS Code のターミナルで Claude Code を起動（5分）
 
 VS Code 上部メニュー →「ターミナル」→「新しいターミナル」
 （またはショートカット：`Ctrl + ` `）
@@ -57,7 +47,7 @@ claude
 
 ---
 
-## ④ ウォーミングアップ：Claude Code と会話してみよう（10分）
+## ③ ウォーミングアップ：Claude Code と会話してみよう（10分）
 
 以下を順番に試してみましょう：
 
@@ -75,7 +65,7 @@ claude
 
 ---
 
-## ⑤ プロジェクトを生成してもらう（15分）
+## ④ プロジェクトを生成してもらう（15分）
 
 ### Next.js プロジェクトの作成
 
@@ -99,16 +89,9 @@ Claude Code への指示：
 
 > **セキュリティ注意：** `.env.local` には API キーなどの秘密情報を書きます。このファイルは `.gitignore` に含まれているため Git にアップされません。**API キーを直接コードに書かない** ようにしましょう。
 
-### Docker Compose の設定
-
-Claude Code への指示：
-
-> 「docker-compose.yml を作って。pgvector/pgvector:pg18 イメージで PostgreSQL を動かしたい。ポートは 5432、データベース名は next_ai_agent、ユーザーとパスワードは postgres」
-
 ### 起動確認
 
 ```bash
-docker compose up -d
 npm run dev
 ```
 

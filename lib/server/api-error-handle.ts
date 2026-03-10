@@ -1,4 +1,3 @@
-import { logErrorToSlack } from '@/lib/slack'
 import type { Context } from 'hono'
 
 // Error types with appropriate HTTP status codes
@@ -111,51 +110,13 @@ export async function handleApiError(
       responseBody.error.details = error.details
     }
 
-    // Only log 5xx errors to Slack
     if (status >= 500) {
-      await logErrorToSlack(`API Error: ${error.message}`, {
-        errorType: error.code,
-        status: status.toString(),
-        requestId,
-        endpoint: errorContext.endpoint,
-        method: errorContext.method,
-        userId: errorContext.user?.id,
-        userEmail: errorContext.user?.email,
-        ...error.details,
-        ...errorContext.additionalContext,
-      })
+      console.error(`[${requestId}] API error (${error.code}):`, error.message)
     }
   } else if (error instanceof Error) {
-    // For standard Error objects
     console.error(`[${requestId}] Unhandled API error:`, error)
-
-    // Log all unhandled errors to Slack
-    await logErrorToSlack(`Unhandled API Error: ${error.message}`, {
-      errorType: 'unhandled_error',
-      status: status.toString(),
-      stack: error.stack,
-      requestId,
-      endpoint: errorContext.endpoint,
-      method: errorContext.method,
-      userId: errorContext.user?.id,
-      userEmail: errorContext.user?.email,
-      ...errorContext.additionalContext,
-    })
   } else {
-    // For unknown error types
     console.error(`[${requestId}] Unknown API error:`, error)
-
-    await logErrorToSlack('Unknown API Error', {
-      errorType: 'unknown_error',
-      status: status.toString(),
-      requestId,
-      errorObject: JSON.stringify(error),
-      endpoint: errorContext.endpoint,
-      method: errorContext.method,
-      userId: errorContext.user?.id,
-      userEmail: errorContext.user?.email,
-      ...errorContext.additionalContext,
-    })
   }
 
   // Return JSON response with appropriate status code

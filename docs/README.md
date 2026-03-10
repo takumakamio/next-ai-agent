@@ -17,7 +17,7 @@
 | ------------- | ---------- | -------------------------------------- | ---------------------------------------------------- |
 | 事前          |            | 研修で理解できるようになること           | [00_learning-outcomes.md](./00_learning-outcomes.md)  |
 | 事前          |            | この研修で使う技術を知ろう              | [01_tech-overview.md](./01_tech-overview.md)          |
-| 事前          | Pre-Step   | 環境構築（VS Code, Node.js, Docker 等） | [02_pre-setup.md](./02_pre-setup.md)                 |
+| 事前          | Pre-Step   | 環境構築（VS Code, Node.js, Neon 等）  | [02_pre-setup.md](./02_pre-setup.md)                 |
 | 9:00 - 9:45   | **Step 0** | Claude Code の使い方を覚えよう          | [03_claude-code-intro.md](./03_claude-code-intro.md) |
 | 9:45 - 10:00  |            | 休憩                                   |                                                      |
 | 10:00 - 11:00 | **Step 1** | データベースを作ろう                    | [04_database.md](./04_database.md)                   |
@@ -52,10 +52,9 @@
 
 ```
 [ ] 受講者に 00_learning-outcomes.md、01_tech-overview.md、02_pre-setup.md を1週間前に配布
-[ ] 受講者PCに VS Code / Node.js / Docker / Claude Code がインストールされていることを確認
+[ ] 受講者PCに VS Code / Node.js / Claude Code がインストールされていることを確認
+[ ] 受講者が Neon アカウントを作成済みであることを確認
 [ ] Google AI Studio の API キーを各自取得（または共有キーを用意）
-[ ] Docker イメージを事前 pull（当日のネットワーク負荷軽減）
-     docker pull pgvector/pgvector:pg18
 [ ] 完成版のリポジトリを用意（詰まった人用のレスキュー）
 [ ] Wi-Fi 環境の確認（API 通信が必要）
 [ ] 各 Step の「期待される動作」をスクリーンショットで用意
@@ -67,9 +66,8 @@
 
 | つまづき                         | よくある原因                   | 対策                                                 |
 | -------------------------------- | ------------------------------ | ---------------------------------------------------- |
-| `docker compose up` が失敗       | Docker Desktop が起動していない | 研修開始前に確認                                      |
 | API キーエラー                   | `.env.local` の記述ミス         | Claude Code に「.env.local を確認して」と指示         |
-| DB 接続エラー                    | コンテナが起動していない        | `docker ps` で確認するよう誘導                        |
+| DB 接続エラー                    | DATABASE_URL の設定ミス         | `.env.local` の接続文字列を確認、Neon ダッシュボードで確認 |
 | Claude Code の回答が長すぎて混乱 | 指示が曖昧                     | **「まず○○だけ作って」** と範囲を絞る指示を教える     |
 | 型エラーが大量に出る             | 依存関係の不足                 | エラーをそのまま貼り付けて修正依頼                     |
 

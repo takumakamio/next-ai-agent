@@ -13,7 +13,6 @@
 // aiAnswer             | text | nullable
 // similarityScore      | doublePrecision | nullable
 // userRating           | integer | nullable
-// userFeedback         | text | nullable
 // responseTime         | integer | nullable
 // embeddingModel       | varchar | nullable | default: 'gemini-embedding-001'
 // qaId                 | varchar | nullable | references qas.id
@@ -40,10 +39,3 @@ export type SelectQaLog = z.infer<typeof selectQaLogSchema>
 export const insertQaLogSchema = createInsertSchema(qaLogs)
 export type InsertQaLog = z.infer<typeof insertQaLogSchema>
 
-export const qaLogFeedbackSchema = z.object({
-  logId: z.string().min(1, 'Log ID is required'),
-  rating: z.number().min(1, 'Rating must be at least 1').max(5, 'Rating must be at most 5'),
-  feedback: z.string().max(1000, 'Feedback must be 1000 characters or less').optional(),
-})
-
-export type QaLogFeedback = z.infer<typeof qaLogFeedbackSchema>

@@ -2,7 +2,6 @@
 
 import { ComboboxControl, InputControl, TextAreaControl } from '@/components/controls'
 import { Button, Form } from '@/components/ui'
-import { clientPost } from '@/lib/client-fetcher'
 import { rpc } from '@/lib/rpc'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader, Send } from 'lucide-react'
@@ -39,7 +38,9 @@ export const ManageQaForm = ({
   const execute = async (data: InsertQa) => {
     setIsPending(true)
     try {
-      const result = await clientPost(rpc.api.qas, data)
+      const res = await rpc.api.qas.$post({ json: data })
+      if (!res.ok) throw new Error(`Failed: ${res.status}`)
+      const result = await res.json()
 
       if (result.success) {
         toast('Save Success')

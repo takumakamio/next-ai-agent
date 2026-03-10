@@ -2,7 +2,6 @@
 
 import { ManageQaLogTable } from '@/features/qa-logs/components/table'
 import type { SelectQaLog } from '@/features/qa-logs/schema'
-import { clientFetch } from '@/lib/client-fetcher'
 import { rpc } from '@/lib/rpc'
 import { ScrollText } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
@@ -22,13 +21,15 @@ export const QaLogsTab = ({ onQaEditClick }: QaLogsTabProps) => {
   const fetchData = useCallback(async () => {
     setLoading(true)
     try {
-      const response = await clientFetch(rpc.api['qa-logs'], {
+      const res = await rpc.api['qa-logs'].$get({
         query: {
           page,
           limit: 50,
           ...(search && { search }),
         },
       })
+      if (!res.ok) throw new Error(`Failed: ${res.status}`)
+      const response = await res.json()
       setData(response.data)
       setMeta(response.meta)
     } catch (error) {

@@ -76,15 +76,6 @@ export const useManageQaLogColumns = ({
       ),
     },
     {
-      accessorKey: 'userFeedback',
-      header: 'ユーザーフィードバック',
-      cell: ({ row }) => (
-        <div className="flex gap-4 items-center">
-          <p>{row.original.userFeedback}</p>
-        </div>
-      ),
-    },
-    {
       accessorKey: 'responseTime',
       header: '応答時間' + '(' + '秒' + ')',
       cell: ({ row }) => (

@@ -1,6 +1,5 @@
 import { Button } from '@/components/ui'
 import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
-import { clientFetch } from '@/lib/client-fetcher'
 import { rpc } from '@/lib/rpc'
 import { Calendar, ChevronRight, X } from 'lucide-react'
 import type React from 'react'
@@ -31,7 +30,9 @@ export const QaListModal: React.FC<QaListModalProps> = ({ isOpen, onClose }) => 
     setLoading(true)
     setError(null)
     try {
-      const response = await clientFetch(rpc.api.qas, { query: {} })
+      const res = await rpc.api.qas.$get({ query: {} })
+      if (!res.ok) throw new Error(`Failed: ${res.status}`)
+      const response = await res.json()
       setQas(response.data)
     } catch (err) {
       setError('コンテンツ生成エラー')

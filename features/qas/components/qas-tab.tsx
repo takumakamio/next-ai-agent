@@ -3,7 +3,6 @@
 import { ManageQaForm } from '@/features/qas/components/form'
 import { ManageQaTable } from '@/features/qas/components/table'
 import type { SelectQa } from '@/features/qas/schema'
-import { clientDelete, clientFetch } from '@/lib/client-fetcher'
 import { rpc } from '@/lib/rpc'
 import { MessageCircleQuestion } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
@@ -21,13 +20,15 @@ export const QasTab = () => {
   const fetchData = useCallback(async () => {
     setLoading(true)
     try {
-      const response = await clientFetch(rpc.api.qas, {
+      const res = await rpc.api.qas.$get({
         query: {
           page,
           limit: 50,
           ...(search && { search }),
         },
       })
+      if (!res.ok) throw new Error(`Failed: ${res.status}`)
+      const response = await res.json()
       setData(response.data)
       setMeta(response.meta)
     } catch (error) {
@@ -44,7 +45,8 @@ export const QasTab = () => {
 
   const handleDelete = async (id: string) => {
     try {
-      await clientDelete(rpc.api.qas[':id'], { param: { id } })
+      const res = await rpc.api.qas[':id'].$delete({ param: { id } })
+      if (!res.ok) throw new Error(`Failed: ${res.status}`)
       toast('Deleted successfully')
       fetchData()
     } catch (error) {
@@ -60,7 +62,9 @@ export const QasTab = () => {
 
   const handleEditClick = async (id: string) => {
     try {
-      const qa = await clientFetch(rpc.api.qas[':id'], { param: { id } })
+      const res = await rpc.api.qas[':id'].$get({ param: { id } })
+      if (!res.ok) throw new Error(`Failed: ${res.status}`)
+      const qa = await res.json()
       setEditingQa(qa)
       setView('form')
     } catch (error) {

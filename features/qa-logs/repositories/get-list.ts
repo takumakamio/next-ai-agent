@@ -32,7 +32,6 @@ export async function getQaLogsList(options: GetQaLogsListOptions): Promise<GetQ
     aiAnswer: string | null
     similarityScore: number | null
     userRating: number | null
-    userFeedback: string | null
     responseTime: number | null
     qaId: string | null
     createdAt: Date
@@ -65,7 +64,6 @@ export async function getQaLogsList(options: GetQaLogsListOptions): Promise<GetQ
         aiAnswer: qaLogs.aiAnswer,
         similarityScore: qaLogs.similarityScore,
         userRating: qaLogs.userRating,
-        userFeedback: qaLogs.userFeedback,
         responseTime: qaLogs.responseTime,
         qaId: qaLogs.qaId,
         createdAt: qaLogs.createdAt,
@@ -90,7 +88,6 @@ export async function getQaLogsList(options: GetQaLogsListOptions): Promise<GetQ
         aiAnswer: qaLogs.aiAnswer,
         similarityScore: qaLogs.similarityScore,
         userRating: qaLogs.userRating,
-        userFeedback: qaLogs.userFeedback,
         responseTime: qaLogs.responseTime,
         qaId: qaLogs.qaId,
         createdAt: qaLogs.createdAt,

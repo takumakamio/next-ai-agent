@@ -13,7 +13,7 @@
 | ---- | -------------------- | ------------------------------------------------ |
 | 1    | **VS Code**          | コードエディタ                                    |
 | 2    | **Node.js**          | Next.js の実行・パッケージ管理（npm）に必須        |
-| 3    | **Docker Desktop**   | PostgreSQL をコンテナで動かすため                  |
+| 3    | **Neon アカウント**    | クラウド PostgreSQL（データベース）を利用するため    |
 | 4    | **Claude Code**      | AI アシスタント（今日の主役！）                    |
 | 5    | **Google AI API キー** | Gemini AI を使うため                             |
 
@@ -96,42 +96,15 @@ npm --version    # 例：10.x.x
 
 ---
 
-## 3. Docker Desktop のインストール
+## 3. Neon アカウントの作成
 
-> **Docker とは？** データベースなどのソフトウェアを、PC の環境を汚さずに動かせるツールです。
+> **Neon とは？** クラウド上で PostgreSQL データベースを提供するサービスです。ローカルにデータベースをインストールする必要がなく、ブラウザから簡単に管理できます。
 
-### Windows の場合
+1. https://neon.tech にアクセス
+2. 「Sign Up」からアカウントを作成（GitHub アカウントでもログイン可能）
+3. ログイン後、ダッシュボードが表示されることを確認
 
-1. https://www.docker.com/products/docker-desktop/ にアクセス
-2. 「Download for Windows」をクリック
-3. `.exe` を実行してインストール
-4. 再起動を求められたら再起動
-5. 初回起動時に Docker Desktop が立ち上がることを確認
-6. **WSL2 の有効化** を求められたら指示に従う
-
-### Mac の場合
-
-1. https://www.docker.com/products/docker-desktop/ にアクセス
-2. 「Download for Mac」をクリック（Apple Silicon / Intel を選択）
-3. `.dmg` を開いてアプリケーションフォルダにドラッグ
-4. Docker Desktop を起動
-5. 上部メニューバーにクジラのアイコンが出ればOK
-
-### インストール確認
-
-```bash
-docker --version
-# 例：Docker version 28.x.x と表示されればOK
-
-docker compose version
-# 例：Docker Compose version v2.x.x と表示されればOK
-```
-
-### 事前にイメージを取得（研修当日のネットワーク負荷軽減）
-
-```bash
-docker pull pgvector/pgvector:pg18
-```
+> **データベースの作成は研修当日に行います。** アカウント作成だけ事前に済ませてください。
 
 ---
 
@@ -195,7 +168,6 @@ AI API キーは不要です。
 code --version      # VS Code（例：1.96.x）
 node --version      # Node.js（例：v22.x.x）
 npm --version       # npm（例：10.x.x）
-docker --version    # Docker（例：28.x.x）
 claude --version    # Claude Code（例：2.x.x）
 ```
 
