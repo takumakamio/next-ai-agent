@@ -26,10 +26,11 @@
 | 12:15 - 13:15 |            | 昼休憩                                 |                                                      |
 | 13:15 - 14:15 | **Step 3** | AI と会話できるようにしよう              | [06_ai-conversation.md](./06_ai-conversation.md)     |
 | 14:15 - 14:30 |            | 休憩                                   |                                                      |
-| 14:30 - 15:45 | **Step 4** | 画面を作ろう                            | [07_frontend.md](./07_frontend.md)                   |
-| 15:45 - 16:00 |            | 休憩                                   |                                                      |
-| 16:00 - 16:30 | **Step 5** | 仕上げ & 動作確認                       | [08_finishing.md](./08_finishing.md)                  |
-| 16:30 - 17:00 |            | 成果発表 & 振り返り                     | [08_finishing.md](./08_finishing.md)                  |
+| 14:30 - 15:35 | **Step 4** | 画面を作ろう                            | [07_frontend.md](./07_frontend.md)                   |
+| 15:35 - 15:45 |            | 休憩                                   |                                                      |
+| 15:45 - 16:30 | **Step 5** | 実践チャレンジ：チャット要約機能        | [08_hands-on-challenge.md](./08_hands-on-challenge.md) |
+| 16:30 - 16:45 | **Step 6** | 仕上げ & 動作確認                       | [09_finishing.md](./09_finishing.md)                  |
+| 16:45 - 17:15 |            | 成果発表 & 振り返り                     | [09_finishing.md](./09_finishing.md)                  |
 
 ---
 
@@ -86,5 +87,6 @@ docs/
 ├── 05_api.md                  ← Step 2: API 構築
 ├── 06_ai-conversation.md      ← Step 3: AI 会話機能
 ├── 07_frontend.md             ← Step 4: フロントエンド
-└── 08_finishing.md            ← Step 5: 仕上げ & 振り返り
+├── 08_hands-on-challenge.md   ← Step 5: 実践チャレンジ
+└── 09_finishing.md            ← Step 6: 仕上げ & 振り返り
 ```
