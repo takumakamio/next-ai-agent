@@ -1,4 +1,4 @@
-# Claude Code 1日研修：AI チャットアプリを作ろう
+# Claude Code で喋る AI アバターを作ろう（90分）
 
 ## 研修概要
 
@@ -6,31 +6,26 @@
 | ------------ | ---------------------------------------------------------------- |
 | **成果物**   | AI メンター「つむぎ」とチャットできる Web アプリ                    |
 | **対象者**   | プログラミング初心者〜少し触ったことがある方                       |
-| **所要時間** | 1日（約7時間・休憩込み）                                          |
+| **所要時間** | 90分（15:00 〜 16:30）                                            |
 | **コンセプト** | **「自分でコードは書かない。Claude Code に指示を出してアプリを作る」** |
 
 ---
 
 ## タイムテーブル
 
-| 時間          | Step       | 内容                                   | 資料                                                 |
-| ------------- | ---------- | -------------------------------------- | ---------------------------------------------------- |
-| 事前          |            | 研修で理解できるようになること           | [00_learning-outcomes.md](./00_learning-outcomes.md)  |
-| 事前          |            | この研修で使う技術を知ろう              | [01_tech-overview.md](./01_tech-overview.md)          |
-| 事前          | Pre-Step   | 環境構築（VS Code, Node.js, Neon 等）  | [02_pre-setup.md](./02_pre-setup.md)                 |
-| 9:00 - 9:45   | **Step 0** | Claude Code の使い方を覚えよう          | [03_claude-code-intro.md](./03_claude-code-intro.md) |
-| 9:45 - 10:00  |            | 休憩                                   |                                                      |
-| 10:00 - 11:00 | **Step 1** | データベースを作ろう                    | [04_database.md](./04_database.md)                   |
-| 11:00 - 11:15 |            | 休憩                                   |                                                      |
-| 11:15 - 12:15 | **Step 2** | API を作ろう                            | [05_api.md](./05_api.md)                             |
-| 12:15 - 13:15 |            | 昼休憩                                 |                                                      |
-| 13:15 - 14:15 | **Step 3** | AI と会話できるようにしよう              | [06_ai-conversation.md](./06_ai-conversation.md)     |
-| 14:15 - 14:30 |            | 休憩                                   |                                                      |
-| 14:30 - 15:35 | **Step 4** | 画面を作ろう                            | [07_frontend.md](./07_frontend.md)                   |
-| 15:35 - 15:45 |            | 休憩                                   |                                                      |
-| 15:45 - 16:30 | **Step 5** | 実践チャレンジ：チャット要約機能        | [08_hands-on-challenge.md](./08_hands-on-challenge.md) |
-| 16:30 - 16:45 | **Step 6** | 仕上げ & 動作確認                       | [09_finishing.md](./09_finishing.md)                  |
-| 16:45 - 17:15 |            | 成果発表 & 振り返り                     | [09_finishing.md](./09_finishing.md)                  |
+| 時間          | Step         | 内容                                   | 資料                                                 |
+| ------------- | ------------ | -------------------------------------- | ---------------------------------------------------- |
+| 15:00 - 15:05 |              | 研修で理解できるようになること           | [00_learning-outcomes.md](./00_learning-outcomes.md)  |
+| 15:05 - 15:10 |              | このアプリの概要                        | [app-overview.md](./app-overview.md)                 |
+| 15:10 - 15:15 |              | この研修で使う技術を知ろう              | [01_tech-overview.md](./01_tech-overview.md)          |
+| 15:15 - 15:25 | **Pre-Step** | 環境構築（VS Code, Node.js, Neon 等）  | [02_pre-setup.md](./02_pre-setup.md)                 |
+| 15:25 - 15:35 | **Step 0**   | Claude Code の使い方を覚えよう          | [03_claude-code-intro.md](./03_claude-code-intro.md) |
+| 15:35 - 15:45 | **Step 1**   | データベースを作ろう                    | [04_database.md](./04_database.md)                   |
+| 15:45 - 15:55 | **Step 2**   | API を作ろう                            | [05_api.md](./05_api.md)                             |
+| 15:55 - 16:05 | **Step 3**   | AI と会話できるようにしよう              | [06_ai-conversation.md](./06_ai-conversation.md)     |
+| 16:05 - 16:15 | **Step 4**   | 画面を作ろう                            | [07_frontend.md](./07_frontend.md)                   |
+| 16:15 - 16:25 | **Step 5**   | 仕上げ & 振り返り                       | [09_finishing.md](./09_finishing.md)                  |
+| 16:25 - 16:30 | **Step 6**   | 実践チャレンジ：チャット要約機能        | [08_hands-on-challenge.md](./08_hands-on-challenge.md) |
 
 ---
 

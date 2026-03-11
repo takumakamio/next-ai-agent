@@ -1,4 +1,4 @@
-# Step 2：API を作ろう（60分）
+# Step 2：API を作ろう（10分）
 
 > **ゴール：** Q&A データの取得・作成・削除ができる API を作る
 
@@ -25,7 +25,7 @@
 
 ---
 
-## ① Hono を導入して API ルートを作る（15分）
+## ① Hono を導入して API ルートを作る（3分）
 
 > **Hono とは？** 軽量で高速な Web フレームワークです。API のルート（URL）を定義して、リクエストを処理するコードを書けます。
 
@@ -39,7 +39,7 @@ Claude Code への指示：
 
 ---
 
-## ② Q&A 一覧取得 API（15分）
+## ② Q&A 一覧取得 API（2分）
 
 Claude Code への指示：
 
@@ -49,7 +49,7 @@ Claude Code への指示：
 
 **GET** `/api/qas?page=1&limit=10&search=TypeScript`
 
-```json
+```json:features/qas/routes/get-list.ts
 {
   "data": [
     {
@@ -90,7 +90,7 @@ features/qas/
 
 ---
 
-## ③ Q&A 作成 API（15分）
+## ③ Q&A 作成 API（2分）
 
 Claude Code への指示：
 
@@ -102,7 +102,7 @@ Claude Code への指示：
 
 リクエスト：
 
-```json
+```json:features/qas/routes/create.ts
 {
   "question": "React とは？",
   "answer": "UI を作るためのライブラリです",
@@ -112,7 +112,7 @@ Claude Code への指示：
 
 レスポンス：
 
-```json
+```json:features/qas/routes/create.ts
 {
   "success": true,
   "message": "QA を作成しました",
@@ -127,7 +127,7 @@ Claude Code への指示：
 
 ---
 
-## ④ 動作確認（15分）
+## ④ 動作確認（3分）
 
 Claude Code への指示：
 
