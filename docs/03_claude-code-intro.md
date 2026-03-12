@@ -1,4 +1,4 @@
-# Step 0：Claude Code の使い方を覚えよう（20分）
+# Step 0：Claude Code の使い方を覚えよう（5分）
 
 > 事前セットアップが完了している前提で進めます。
 > まだの方は [02_pre-setup.md](./02_pre-setup.md) を先に完了してください。
