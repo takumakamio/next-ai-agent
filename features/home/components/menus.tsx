@@ -237,7 +237,7 @@ export const Menus = () => {
             {/* Q&A */}
             <button
               onClick={handleQAListButton}
-              className={`${menuButtonClass} w-28 h-36 bg-muted rounded-r-xl hover:bg-muted/80`}
+              className={`${menuButtonClass} w-28 h-36 bg-muted hover:bg-muted/80`}
               disabled={loading || isSpeaking}
               aria-label="View Q&A"
               title={isSpeaking ? 'Avatar is speaking...' : 'Click to view Q&A'}
@@ -256,6 +256,25 @@ export const Menus = () => {
                 {'QA'}
               </span>
             </button>
+
+            {/* Docs */}
+            <a
+              href="/docs"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`${menuButtonClass} w-28 h-36 bg-muted rounded-r-xl hover:bg-muted/80`}
+              aria-label="Open docs"
+              title="Open training docs in new tab"
+            >
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" />
+                <path d="M8 7h6" />
+                <path d="M8 11h8" />
+              </svg>
+              <span className="text-[10px] font-black uppercase tracking-widest text-foreground">
+                {'Docs'}
+              </span>
+            </a>
           </div>
         </div>
       </div>

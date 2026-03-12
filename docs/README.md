@@ -18,8 +18,7 @@
 | 15:00 - 15:05 |              | 研修で理解できるようになること           | [00_learning-outcomes.md](./00_learning-outcomes.md)  |
 | 15:05 - 15:10 |              | このアプリの概要                        | [app-overview.md](./app-overview.md)                 |
 | 15:10 - 15:15 |              | この研修で使う技術を知ろう              | [01_tech-overview.md](./01_tech-overview.md)          |
-| 15:15 - 15:25 | **Pre-Step** | 環境構築（VS Code, Node.js, Neon 等）  | [02_pre-setup.md](./02_pre-setup.md)                 |
-| 15:25 - 15:35 | **Step 0**   | Claude Code の使い方を覚えよう          | [03_claude-code-intro.md](./03_claude-code-intro.md) |
+| 15:15 - 15:35 | **Step 0**   | Claude Code の使い方を覚えよう          | [03_claude-code-intro.md](./03_claude-code-intro.md) |
 | 15:35 - 15:45 | **Step 1**   | データベースを作ろう                    | [04_database.md](./04_database.md)                   |
 | 15:45 - 15:55 | **Step 2**   | API を作ろう                            | [05_api.md](./05_api.md)                             |
 | 15:55 - 16:05 | **Step 3**   | AI と会話できるようにしよう              | [06_ai-conversation.md](./06_ai-conversation.md)     |
@@ -47,11 +46,10 @@
 ## 講師向け：事前準備チェックリスト
 
 ```
-[ ] 受講者に 00_learning-outcomes.md、01_tech-overview.md、02_pre-setup.md を1週間前に配布
-[ ] 受講者PCに VS Code / Node.js / Claude Code がインストールされていることを確認
-[ ] 受講者が Neon アカウントを作成済みであることを確認
-[ ] Google AI Studio の API キーを各自取得（または共有キーを用意）
-[ ] 完成版のリポジトリを用意（詰まった人用のレスキュー）
+[ ] Neon のデータベース接続文字列を受講者分用意（共有 or 個別）
+[ ] Google AI API キーを用意（共有キー推奨）
+[ ] 完成版リポジトリ（https://github.com/takumakamio/next-ai-agent.git）の動作確認
+[ ] 受講者 PC に VS Code / Node.js / Git がインストール済みか確認
 [ ] Wi-Fi 環境の確認（API 通信が必要）
 [ ] 各 Step の「期待される動作」をスクリーンショットで用意
 ```
@@ -82,6 +80,6 @@ docs/
 ├── 05_api.md                  ← Step 2: API 構築
 ├── 06_ai-conversation.md      ← Step 3: AI 会話機能
 ├── 07_frontend.md             ← Step 4: フロントエンド
-├── 08_hands-on-challenge.md   ← Step 5: 実践チャレンジ
-└── 09_finishing.md            ← Step 6: 仕上げ & 振り返り
+├── 09_finishing.md            ← Step 5: 仕上げ & 振り返り
+└── 08_hands-on-challenge.md   ← Step 6: 実践チャレンジ
 ```

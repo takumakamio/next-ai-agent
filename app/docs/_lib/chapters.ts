@@ -5,12 +5,12 @@ export type Chapter = {
 }
 
 export const CHAPTERS: Chapter[] = [
+  { slug: 'quick-start', title: 'クイックスタート & セットアップ', filename: 'quick-start.md' },
   { slug: 'readme', title: '研修概要', filename: 'README.md' },
   { slug: '00_learning-outcomes', title: '15:00 この研修で理解できるようになること', filename: '00_learning-outcomes.md' },
   { slug: 'app-overview', title: '15:05 このアプリの概要', filename: 'app-overview.md' },
   { slug: '01_tech-overview', title: '15:10 この研修で使う技術を知ろう', filename: '01_tech-overview.md' },
-  { slug: '02_pre-setup', title: '15:15 Pre-Step: 事前セットアップ', filename: '02_pre-setup.md' },
-  { slug: '03_claude-code-intro', title: '15:25 Step 0: Claude Code の使い方', filename: '03_claude-code-intro.md' },
+  { slug: '03_claude-code-intro', title: '15:15 Step 0: Claude Code の使い方', filename: '03_claude-code-intro.md' },
   { slug: '04_database', title: '15:35 Step 1: データベースを作ろう', filename: '04_database.md' },
   { slug: '05_api', title: '15:45 Step 2: API を作ろう', filename: '05_api.md' },
   { slug: '06_ai-conversation', title: '15:55 Step 3: AI と会話できるようにしよう', filename: '06_ai-conversation.md' },

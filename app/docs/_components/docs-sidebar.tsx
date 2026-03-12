@@ -92,7 +92,7 @@ export const DocsSidebar = ({ currentSlug }: DocsSidebarProps) => {
                   )}
 
                   <Link
-                    href={chapter.slug === 'readme' ? '/docs' : `/docs/${chapter.slug}`}
+                    href={chapter.slug === 'quick-start' ? '/docs' : `/docs/${chapter.slug}`}
                     onClick={() => setIsOpen(false)}
                     className={`
                       relative flex items-start gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors

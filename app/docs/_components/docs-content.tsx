@@ -5,6 +5,7 @@ import type { Components } from 'react-markdown'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import rehypeHighlight from 'rehype-highlight'
+import rehypeRaw from 'rehype-raw'
 import type { Node } from 'unist'
 import { visit } from 'unist-util-visit'
 import { CHAPTERS } from '../_lib/chapters'
@@ -69,6 +70,16 @@ function rehypeCodeFilepath() {
   }
 }
 
+function extractText(node: unknown): string {
+  if (typeof node === 'string') return node
+  if (typeof node === 'number') return String(node)
+  if (Array.isArray(node)) return node.map(extractText).join('')
+  if (typeof node === 'object' && node !== null && 'props' in node) {
+    return extractText((node as { props: { children?: unknown } }).props.children)
+  }
+  return ''
+}
+
 function parseCodeProps(className?: string, dataFilepath?: string): { language: string | null; filePath: string | null } {
   const filePath = dataFilepath || null
 
@@ -99,7 +110,7 @@ export const DocsContent = ({ content }: DocsContentProps) => {
         if (match) {
           const slug = FILENAME_TO_SLUG.get(match[1])
           if (slug) {
-            return <a href={slug === 'readme' ? '/docs' : `/docs/${slug}`} {...props}>{children}</a>
+            return <a href={slug === 'quick-start' ? '/docs' : `/docs/${slug}`} {...props}>{children}</a>
           }
         }
       }
@@ -119,7 +130,7 @@ export const DocsContent = ({ content }: DocsContentProps) => {
       const codeProps = codeChild.props as { className?: string; 'data-filepath'?: string; children?: string }
       const { language, filePath } = parseCodeProps(codeProps.className, codeProps['data-filepath'])
       const label = language ? LANGUAGE_LABELS[language] || language : null
-      const codeText = typeof codeProps.children === 'string' ? codeProps.children.replace(/\n$/, '') : ''
+      const codeText = extractText(codeProps.children).replace(/\n$/, '')
       const blockId = `code-${codeText.slice(0, 20).replace(/\s/g, '-')}`
 
       const hasHeader = label || filePath
@@ -189,7 +200,7 @@ export const DocsContent = ({ content }: DocsContentProps) => {
       ">
         <ReactMarkdown
           remarkPlugins={[remarkGfm]}
-          rehypePlugins={[rehypeCodeFilepath, rehypeHighlight]}
+          rehypePlugins={[rehypeRaw, rehypeCodeFilepath, rehypeHighlight]}
           components={components}
         >
           {content}
