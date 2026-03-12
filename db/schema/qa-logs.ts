@@ -2,8 +2,7 @@ import { relations } from 'drizzle-orm'
 import { doublePrecision, integer, pgTable, text, varchar, vector } from 'drizzle-orm/pg-core'
 import { nanoid } from 'nanoid'
 import { timestamps } from '../utils'
-import { languages } from './languages'
-import { qaTranslations, qas } from './qas'
+import { qas } from './qas'
 
 export const qaLogs = pgTable('qa_logs', {
   id: varchar('id')
@@ -25,10 +24,6 @@ export const qaLogs = pgTable('qa_logs', {
   embeddingModel: varchar('embedding_model', { length: 100 }).default('gemini-embedding-001'),
 
   qaId: varchar('qa_id').references(() => qas.id, { onDelete: 'set null' }),
-  qaTranslationId: integer('qa_translation_id').references(() => qaTranslations.id, { onDelete: 'set null' }),
-  languageId: integer('language_id')
-    .notNull()
-    .references(() => languages.id, { onDelete: 'cascade' }),
   ...timestamps,
 })
 
@@ -36,13 +31,5 @@ export const qaLogsRelations = relations(qaLogs, ({ one }) => ({
   qa: one(qas, {
     fields: [qaLogs.qaId],
     references: [qas.id],
-  }),
-  qaTranslation: one(qaTranslations, {
-    fields: [qaLogs.qaTranslationId],
-    references: [qaTranslations.id],
-  }),
-  language: one(languages, {
-    fields: [qaLogs.languageId],
-    references: [languages.id],
   }),
 }))

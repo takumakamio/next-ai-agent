@@ -1,29 +1,11 @@
 'use client'
 
-import { HomeTabs } from '@/features/root/home/components/home-tabs'
-import { useBackgroundStore } from '@/hooks/background'
-import { useEffect } from 'react'
+import { HomeTabs } from '@/features/home/components/home-tabs'
 
 export default function Home() {
-  const preset = useBackgroundStore((s) => s.preset)
-
-  useEffect(() => {
-    document.documentElement.setAttribute('data-preset', preset)
-    return () => document.documentElement.removeAttribute('data-preset')
-  }, [preset])
-
   return (
-    <>
-      <div className={`bg-layer bg-${preset}`}>
-        <div className="bg-layer-blob" />
-        <div className="bg-layer-blob" />
-        <div className="bg-layer-blob" />
-        <div className="bg-layer-blob" />
-        <div className="bg-layer-pattern" />
-      </div>
-      <div className="relative z-10">
-        <HomeTabs />
-      </div>
-    </>
+    <div className="relative z-10">
+      <HomeTabs />
+    </div>
   )
 }

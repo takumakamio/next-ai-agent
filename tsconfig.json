@@ -28,8 +28,6 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "features/root/home/components/spots-modal.jsx",
-    "features/root/plans/components/filters.tsx",
     ".next/dev/types/**/*.ts"
   ],
   "exclude": ["node_modules"]

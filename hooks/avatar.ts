@@ -1,15 +1,13 @@
 import { rpc } from '@/lib/rpc'
-import { VOICEVOX_SPEAKERS } from '@/lib/tts/voicevox'
 import { create } from 'zustand'
 
 export type Avatar = 'Tsumugi'
 export type ExpertiseLevel = 'beginner' | 'advanced' | 'fullstack' | 'specialist'
-export type TtsEngine = 'auto' | 'gemini' | 'voicevox'
 export type AiModel = 'gemini-2.5-flash' | 'gemini-2.5-pro'
 
-export const AI_MODEL_OPTIONS: { value: AiModel; labelKey: string }[] = [
-  { value: 'gemini-2.5-flash', labelKey: 'AIModelGemini25Flash' },
-  { value: 'gemini-2.5-pro', labelKey: 'AIModelGemini25Pro' },
+export const AI_MODEL_OPTIONS: { value: AiModel; label: string }[] = [
+  { value: 'gemini-2.5-flash', label: 'Gemini 2.5 Flash' },
+  { value: 'gemini-2.5-pro', label: 'Gemini 2.5 Pro' },
 ]
 
 export interface ConversationExchange {
@@ -53,8 +51,6 @@ export interface AvatarState {
   recording: boolean
   isSpeaking: boolean
   expertiseLevel: ExpertiseLevel
-  ttsEngine: TtsEngine
-  ttsSpeakerId: number | undefined
   aiModel: AiModel
   mediaRecorder?: MediaRecorder | null
   audioStream?: MediaStream | null
@@ -62,8 +58,6 @@ export interface AvatarState {
   // Actions
   setAvatar: (avatar: Avatar) => void
   setExpertiseLevel: (expertiseLevel: ExpertiseLevel) => void
-  setTtsEngine: (engine: TtsEngine) => void
-  setTtsSpeakerId: (id: number | undefined) => void
   setAiModel: (model: AiModel) => void
   addToHistory: (userMessage: string, assistantResponse: string) => void
   clearHistory: () => void
@@ -97,15 +91,6 @@ export const useAvatar = create<AvatarState>((set, get) => ({
   loading: false,
   loadingTTS: false,
   recording: false,
-
-  ttsEngine: 'voicevox' as TtsEngine,
-  ttsSpeakerId: VOICEVOX_SPEAKERS.KASUKABE_TSUMUGI.NORMAL,
-  setTtsEngine: (engine: TtsEngine) => {
-    set(() => ({ ttsEngine: engine }))
-  },
-  setTtsSpeakerId: (id: number | undefined) => {
-    set(() => ({ ttsSpeakerId: id }))
-  },
 
   aiModel: 'gemini-2.5-flash' as AiModel,
   setAiModel: (model: AiModel) => {
@@ -183,7 +168,7 @@ export const useAvatar = create<AvatarState>((set, get) => ({
 
         try {
           set({ loading: true })
-          const response = await fetch('/api/root/home/stt', {
+          const response = await fetch('/api/home/stt', {
             method: 'POST',
             body: formData,
           })
@@ -263,7 +248,7 @@ export const useAvatar = create<AvatarState>((set, get) => ({
         aiModel: get().aiModel,
       }
 
-      const res = await fetch(rpc.api.root.home.conversation.$url(), {
+      const res = await fetch(rpc.api.home.conversation.$url(), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -369,15 +354,10 @@ export const useAvatar = create<AvatarState>((set, get) => ({
         const ttsQuery: Record<string, string> = {
           avatar: get().avatar,
           text: ttsText,
-          engine: get().ttsEngine,
-        }
-        const currentSpeakerId = get().ttsSpeakerId
-        if (currentSpeakerId !== undefined) {
-          ttsQuery.speakerId = String(currentSpeakerId)
         }
 
         const audioRes = await fetch(
-          rpc.api.root.home.tts.$url({
+          rpc.api.home.tts.$url({
             query: ttsQuery as any,
           }),
         )

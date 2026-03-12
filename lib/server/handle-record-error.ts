@@ -1,5 +1,3 @@
-import { logErrorToSlack } from '@/lib/slack'
-
 interface RecordErrorContext {
   recordId?: string
   uniqueId: string
@@ -12,17 +10,6 @@ interface RecordErrorContext {
 export async function handleRecordError(error: unknown, context: RecordErrorContext): Promise<never> {
   console.error(`Database operation failed for ${context.recordType}:`, error)
   const { errorType, errorDetails, constraintName } = extractDatabaseErrorDetails(error)
-
-  // Log the error to Slack
-  await logErrorToSlack(`Database Error in ${context.recordType} Management`, {
-    errorType,
-    errorDetails,
-    constraintName,
-    [`${context.recordType}Name`]: context.recordName,
-    action: context.action,
-    [`${context.recordType}Id`]: context.recordId || context.uniqueId,
-    ...context.additionalContext,
-  })
 
   // Handle common error cases
   if (errorType === 'Unique Constraint Violation') {

@@ -1,67 +1,33 @@
 import { relations } from 'drizzle-orm'
-import { boolean, index, integer, pgTable, serial, text, uniqueIndex, varchar, vector } from 'drizzle-orm/pg-core'
+import { index, pgTable, text, varchar, vector } from 'drizzle-orm/pg-core'
 import { nanoid } from 'nanoid'
 import { timestamps } from '../utils'
-import { languages } from './languages'
 import { qaLogs } from './qa-logs'
 
-export const qas = pgTable('qas', {
-  id: varchar('id')
-    .primaryKey()
-    .notNull()
-    .$defaultFn(() => nanoid())
-    .unique(),
-
-  contentType: varchar('content_type', { length: 50 }).notNull(),
-  // 'general', 'spot', 'plan'
-  category: varchar('category', { length: 100 }),
-  // 'programming', 'architecture', 'devops', 'debugging', 'security', 'general'
-
-  priority: integer('priority').default(1),
-  viewCount: integer('view_count').default(0),
-  isActive: boolean('is_active').default(true),
-  websiteLink: varchar('website_link', { length: 500 }),
-
-  ...timestamps,
-})
-
-export const qasRelations = relations(qas, ({ many }) => ({
-  logs: many(qaLogs),
-  translations: many(qaTranslations),
-}))
-
-export const qaTranslations = pgTable(
-  'qa_translations',
+export const qas = pgTable(
+  'qas',
   {
-    id: serial('id').primaryKey().notNull(),
-    qaId: varchar('qa_id')
+    id: varchar('id')
+      .primaryKey()
       .notNull()
-      .references(() => qas.id, { onDelete: 'cascade' }),
-    languageId: integer('language_id')
-      .notNull()
-      .references(() => languages.id, { onDelete: 'cascade' }),
+      .$defaultFn(() => nanoid())
+      .unique(),
+
+    category: varchar('category', { length: 100 }),
+    // 'programming', 'architecture', 'devops', 'debugging', 'security', 'general'
+
+    websiteLink: varchar('website_link', { length: 500 }),
 
     question: text('question'),
     answer: text('answer'),
-
     embedding: vector('embedding', { dimensions: 2000 }),
     embeddingModel: varchar('embedding_model', { length: 100 }).default('gemini-embedding-001'),
 
     ...timestamps,
   },
-  (table) => [
-    uniqueIndex('qa_language_unique_idx').on(table.qaId, table.languageId),
-    index('qa_translations_embedding_idx').using('hnsw', table.embedding.op('vector_cosine_ops')),
-  ],
+  (table) => [index('qas_embedding_idx').using('hnsw', table.embedding.op('vector_cosine_ops'))],
 )
 
-export const qaTranslationsRelations = relations(qaTranslations, ({ one }) => ({
-  qa: one(qas, {
-    fields: [qaTranslations.qaId],
-    references: [qas.id],
-  }),
-  language: one(languages, {
-    fields: [qaTranslations.languageId],
-    references: [languages.id],
-  }),
+export const qasRelations = relations(qas, ({ many }) => ({
+  logs: many(qaLogs),
 }))

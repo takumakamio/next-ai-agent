@@ -24,7 +24,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
-import {} from '@/components/ui/popover'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { cn } from '@/lib/utils'
 import {
@@ -43,7 +42,6 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import { ChevronDown, ChevronUp, CircleAlert, Columns3, Ellipsis, Plus, Trash } from 'lucide-react'
-import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { type ReactNode, useEffect, useMemo, useState } from 'react'
@@ -89,7 +87,6 @@ export default function DataTable<TData extends { id: string | number }, TValue>
   onSearchChange,
   onPageChange,
 }: DataTableProps<TData, TValue>) {
-  const t = useTranslations()
   const router = useRouter()
   const searchParams = useSearchParams()
 
@@ -192,7 +189,7 @@ export default function DataTable<TData extends { id: string | number }, TValue>
     const hasActionsColumn = columns.some((col) => col.id === 'actions')
     const actionsColumn = {
       id: 'actions',
-      header: () => <span className="sr-only">{t('Actions')}</span>,
+      header: () => <span className="sr-only">{'アクション'}</span>,
       cell: ({ row }: { row: Row<TData> }) => (
         <RowActions
           row={row}
@@ -255,7 +252,7 @@ export default function DataTable<TData extends { id: string | number }, TValue>
           {meta && (
             <div className="relative">
               <Input
-                placeholder={t('SearchByName')}
+                placeholder={'名前で検索'}
                 value={searchValue}
                 onChange={(e) => setSearchValue(e.target.value)}
                 className="h-9 w-64 rounded-lg border border-border"
@@ -268,11 +265,11 @@ export default function DataTable<TData extends { id: string | number }, TValue>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground hover:bg-muted rounded-lg">
                 <Columns3 className="size-4" />
-                {t('Columns')}
+                {'列'}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuLabel>{t('ToggleColumns')}</DropdownMenuLabel>
+              <DropdownMenuLabel>{'列の表示切り替え'}</DropdownMenuLabel>
               {table
                 .getAllColumns()
                 .filter((column) => column.getCanHide())
@@ -301,7 +298,7 @@ export default function DataTable<TData extends { id: string | number }, TValue>
                   variant="outline"
                 >
                   <Trash className="-ms-1 me-2 opacity-60" size={16} strokeWidth={2} aria-hidden="true" />
-                  {t('Delete')}
+                  {'削除'}
                   <span className="-me-1 ms-3 inline-flex h-5 max-h-full items-center rounded border border-border bg-background px-1 font-[inherit] text-[0.625rem] font-medium text-muted-foreground/70">
                     {table.getSelectedRowModel().rows.length}
                   </span>
@@ -316,16 +313,14 @@ export default function DataTable<TData extends { id: string | number }, TValue>
                     <CircleAlert className="opacity-80" size={16} strokeWidth={2} />
                   </div>
                   <AlertDialogHeader>
-                    <AlertDialogTitle>{t('AreYouAbsolutelySure')}</AlertDialogTitle>
+                    <AlertDialogTitle>{'本当によろしいですか？'}</AlertDialogTitle>
                     <AlertDialogDescription>
-                      {t('DeleteSelectedRowsConfirmation', {
-                        count: table.getSelectedRowModel().rows.length,
-                      })}
+                      {`この操作は取り消せません。選択した${table.getSelectedRowModel().rows.length}件の行を完全に削除します。`}
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                 </div>
                 <AlertDialogFooter>
-                  <AlertDialogCancel>{t('Cancel')}</AlertDialogCancel>
+                  <AlertDialogCancel>{'キャンセル'}</AlertDialogCancel>
                   <AlertDialogAction
                     onClick={async () => {
                       if (onBulkDelete) {
@@ -335,7 +330,7 @@ export default function DataTable<TData extends { id: string | number }, TValue>
                       }
                     }}
                   >
-                    {t('Delete')}
+                    {'削除'}
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
@@ -435,7 +430,7 @@ export default function DataTable<TData extends { id: string | number }, TValue>
             ) : (
               <TableRow>
                 <TableCell colSpan={tableColumns.length} className="h-24 text-center">
-                  {t('NoResults')}
+                  {'結果がありません'}
                 </TableCell>
               </TableRow>
             )}
@@ -459,7 +454,7 @@ export default function DataTable<TData extends { id: string | number }, TValue>
                 meta?.total || table.getRowCount(),
               )}
             </span>{' '}
-            {t('Of')} <span className="text-foreground">{meta?.total || table.getRowCount()}</span>
+            {'件中'} <span className="text-foreground">{meta?.total || table.getRowCount()}</span>
           </p>
         </div>
 
@@ -538,7 +533,6 @@ function RowActions({
   onEditClick?: (id: string) => void
   onViewClick?: (id: string) => void
 }) {
-  const t = useTranslations()
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
 
   return (
@@ -556,7 +550,7 @@ function RowActions({
             (onViewClick ? (
               <DropdownMenuGroup>
                 <DropdownMenuItem onClick={() => onViewClick(String(row.original.id))}>
-                  <span>{t('View')}</span>
+                  <span>{'表示'}</span>
                   <DropdownMenuShortcut>⌘E</DropdownMenuShortcut>
                 </DropdownMenuItem>
               </DropdownMenuGroup>
@@ -564,7 +558,7 @@ function RowActions({
               <Link href={`/${dataKey}/${row.original.id}`}>
                 <DropdownMenuGroup>
                   <DropdownMenuItem>
-                    <span>{t('View')}</span>
+                    <span>{'表示'}</span>
                     <DropdownMenuShortcut>⌘E</DropdownMenuShortcut>
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
@@ -574,7 +568,7 @@ function RowActions({
             (onEditClick ? (
               <DropdownMenuGroup>
                 <DropdownMenuItem onClick={() => onEditClick(String(row.original.id))}>
-                  <span>{t('Edit')}</span>
+                  <span>{'編集'}</span>
                   <DropdownMenuShortcut>⌘E</DropdownMenuShortcut>
                 </DropdownMenuItem>
               </DropdownMenuGroup>
@@ -582,7 +576,7 @@ function RowActions({
               <Link href={`/${dataKey}/${row.original.id}/edit`}>
                 <DropdownMenuGroup>
                   <DropdownMenuItem>
-                    <span>{t('Edit')}</span>
+                    <span>{'編集'}</span>
                     <DropdownMenuShortcut>⌘E</DropdownMenuShortcut>
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
@@ -595,7 +589,7 @@ function RowActions({
                 className="text-destructive focus:text-destructive"
                 onClick={() => setShowDeleteDialog(true)}
               >
-                <span>{t('Delete')}</span>
+                <span>{'削除'}</span>
                 <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
               </DropdownMenuItem>
             </>
@@ -614,19 +608,19 @@ function RowActions({
               <CircleAlert className="opacity-80" size={16} strokeWidth={2} />
             </div>
             <AlertDialogHeader>
-              <AlertDialogTitle>{t('AreYouAbsolutelySure')}</AlertDialogTitle>
-              <AlertDialogDescription>{t('DeleteItemConfirmation')}</AlertDialogDescription>
+              <AlertDialogTitle>{'本当によろしいですか？'}</AlertDialogTitle>
+              <AlertDialogDescription>{'この操作は取り消せません。このアイテムを完全に削除します。'}</AlertDialogDescription>
             </AlertDialogHeader>
           </div>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setShowDeleteDialog(false)}>{t('Cancel')}</AlertDialogCancel>
+            <AlertDialogCancel onClick={() => setShowDeleteDialog(false)}>{'キャンセル'}</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => {
                 onDelete?.(row.original.id)
                 setShowDeleteDialog(false)
               }}
             >
-              {t('Delete')}
+              {'削除'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
