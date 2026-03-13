@@ -176,6 +176,161 @@ curl -X POST http://localhost:3000/api/home/conversation \
 | `buildQAContext()` | 検索で見つかった Q&A をプロンプト文字列に整形 |
 | `logQAInteraction()` | 会話ログを DB に保存 |
 
+<details>
+<summary>📄 実コードを見る（conversation.ts）</summary>
+
+```typescript:features/home/routes/conversation.ts
+// --- スキーマ定義 ---
+const conversationRequestSchema = z.object({
+  question: z.string().optional().default(''),
+  history: z.array(conversationExchangeSchema).max(5).optional().default([]),
+  locale: z.string().optional().default('ja'),
+  chatSessionId: z.string().optional(),
+  aiModel: z.enum(['gemini-2.5-flash', 'gemini-2.5-pro']).optional().default('gemini-2.5-flash'),
+})
+
+// --- メインハンドラ（抜粋） ---
+async (c) => {
+  const { question, history, chatSessionId, aiModel } = c.req.valid('json')
+  const requestLocale = c.get('locale')
+  const limitedHistory = history.slice(-5)
+
+  // ① ベクトル検索で関連 Q&A を取得
+  const relevantQAs = await searchRelevantQAs(question, requestLocale, 3)
+
+  // ② システムプロンプト構築
+  const baseSystemPrompt = `You are Tsumugi, a friendly engineering mentor AI...`
+  const historyContext = limitedHistory.length > 0 ? buildConversationContext(limitedHistory) : ''
+  const qaContext = relevantQAs.length > 0 ? buildQAContext(relevantQAs) : ''
+  const fullPrompt = `${baseSystemPrompt}${historyContext}${qaContext}\n\n${userMessage}`
+
+  // ③ Gemini API に送信
+  const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY })
+  const response = await ai.models.generateContent({
+    model: aiModel,
+    contents: fullPrompt,
+  })
+
+  // ④ ログ保存 & レスポンス返却
+  const logId = await logQAInteraction({ chatSessionId, userQuestion: question, aiAnswer: text, relevantQAs, requestLocale, responseTime })
+  return c.json({ response: text, relatedQAs: relevantQAs, logId }, 200)
+}
+
+// --- ベクトル検索関数 ---
+async function searchRelevantQAs(question: string, locale: string, limit = 5): Promise<QASearchResult[]> {
+  const db = getDB()
+  const questionEmbedding = await generateEmbedding(question)
+  const embeddingString = `[${questionEmbedding.join(',')}]`
+
+  // コサイン類似度で検索（タイムアウト 10 秒）
+  const qaResults = await Promise.race([
+    db.select({
+      id: qas.id,
+      question: qas.question,
+      answer: qas.answer,
+      category: qas.category,
+      similarity: sql<number>`1 - (${qas.embedding} <=> ${embeddingString}::vector)`,
+      websiteLink: qas.websiteLink,
+    })
+    .from(qas)
+    .where(sql`${qas.embedding} IS NOT NULL`)
+    .orderBy(desc(sql<number>`1 - (${qas.embedding} <=> ${embeddingString}::vector)`))
+    .limit(limit),
+    new Promise<never>((_, reject) => setTimeout(() => reject(new Error('Timeout')), 10000)),
+  ])
+
+  // 類似度 0.65 以上だけを返す
+  return qaResults.filter((qa) => qa.similarity > 0.65)
+}
+
+// --- 会話履歴コンテキスト構築 ---
+function buildConversationContext(history: ConversationExchange[]): string {
+  const contextLines = history
+    .map((exchange, index) =>
+      `${index + 1}. User: ${exchange.user.substring(0, 100)}\n   Assistant: ${exchange.assistant.substring(0, 100)}`
+    )
+    .join('\n\n')
+  return '\n\n🗣️ **Conversation History:**\n' + contextLines
+}
+
+// --- QA コンテキスト構築 ---
+function buildQAContext(qas: QASearchResult[]): string {
+  const contextLines = qas
+    .map((qa, index) =>
+      `【QA ${index + 1} - Similarity: ${Math.round(qa.similarity * 100)}%】\nQuestion: ${qa.question}\n**Answer**: ${qa.answer}`
+    )
+    .join('\n')
+  return '\n\n📚 **QA Reference:**\n' + contextLines
+}
+
+// --- ログ保存 ---
+async function logQAInteraction({ chatSessionId, userQuestion, aiAnswer, relevantQAs, requestLocale, responseTime }): Promise<string> {
+  const db = getDB()
+  const questionEmbedding = await generateEmbedding(userQuestion)
+  const bestQA = relevantQAs[0] ?? null
+
+  const [insertedLog] = await db.insert(qaLogs).values({
+    id: nanoid(),
+    chatSessionId,
+    userQuestion,
+    userQuestionEmbedding: questionEmbedding.length > 0 ? questionEmbedding : null,
+    aiAnswer,
+    similarityScore: bestQA?.similarity || null,
+    responseTime,
+    embeddingModel: 'gemini-embedding-001',
+    qaId: bestQA?.id || null,
+  }).returning({ id: qaLogs.id })
+
+  return insertedLog.id
+}
+```
+
+</details>
+
+<details>
+<summary>📄 実コードを見る（lib/google-ai.ts — Embedding 生成）</summary>
+
+```typescript:lib/google-ai.ts
+import { GoogleGenAI } from '@google/genai'
+
+export const EMBEDDING_MODEL = 'gemini-embedding-001'
+
+export async function generateEmbedding(text: string): Promise<number[] | never[]> {
+  const env = process.env
+
+  if (!env.GOOGLE_GENERATIVE_AI_API_KEY || env.GOOGLE_GENERATIVE_AI_API_KEY === '') {
+    console.error('Missing GOOGLE_GENERATIVE_AI_API_KEY')
+    return []
+  }
+
+  try {
+    const ai = new GoogleGenAI({ apiKey: env.GOOGLE_GENERATIVE_AI_API_KEY })
+
+    const response = await ai.models.embedContent({
+      model: EMBEDDING_MODEL,
+      contents: text,
+      config: {
+        outputDimensionality: 2000,
+      },
+    })
+
+    const embeddings = response.embeddings
+
+    if (!embeddings || !Array.isArray(embeddings) || embeddings.length === 0) {
+      console.error('No embeddings returned from API')
+      return []
+    }
+
+    return embeddings[0].values as number[]
+  } catch (error) {
+    console.error('Embedding generation error:', error)
+    return []
+  }
+}
+```
+
+</details>
+
 ---
 
 ### 音声合成 API（TTS）
@@ -202,6 +357,63 @@ AI の回答テキストを音声に変換して返します。
 
 > **ポイント：** アバターごとに声を変えられます。`voiceMap` に `{ アバター名: Gemini音声名 }` を追加するだけです。
 
+<details>
+<summary>📄 実コードを見る（tts.ts + lib/tts/gemini.ts）</summary>
+
+```typescript:features/home/routes/tts.ts
+export const ttsRoute = new OpenAPIHono<{ Variables: Bindings }>().openapi(
+  createRoute({
+    method: 'get',
+    path: '/api/home/tts',
+    request: { query: z.object({ text: z.string().min(1), avatar: z.string().optional().default('Tsumugi') }) },
+    // ...responses 省略
+  }),
+  async (c) => {
+    const { text, avatar } = c.req.valid('query')
+    const result = await generateGeminiTTS(process.env, text, avatar)
+    return new Response(result.audioBuffer, {
+      headers: { 'Content-Type': 'audio/wav', 'X-TTS-Provider': 'Gemini' },
+    })
+  },
+)
+```
+
+```typescript:lib/tts/gemini.ts
+export async function generateGeminiTTS(env: any, text: string, avatar: string): Promise<TTSResult> {
+  // アバター名 → Gemini 音声名のマッピング
+  const voiceMap: Record<string, string> = {
+    Tsumugi: 'Sulafat',
+  }
+  const geminiVoice = voiceMap[avatar] || 'Kore'
+
+  const { GoogleGenAI } = await import('@google/genai')
+  const genai = new GoogleGenAI({ apiKey: env.GOOGLE_GENERATIVE_AI_API_KEY })
+
+  // 音声生成リクエスト
+  const response = await genai.models.generateContent({
+    model: 'gemini-2.5-flash-preview-tts',
+    contents: [{ parts: [{ text }] }],
+    config: {
+      responseModalities: ['AUDIO'],           // ← 音声データを要求
+      speechConfig: {
+        voiceConfig: {
+          prebuiltVoiceConfig: { voiceName: geminiVoice },
+        },
+      },
+    },
+  })
+
+  // PCM → WAV 変換
+  const audioData = response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data
+  const pcmBuffer = Buffer.from(audioData, 'base64')
+  const wavBuffer = createWavBuffer(pcmBuffer, 24000, 1, 16)
+
+  return { audioBuffer: wavBuffer, contentType: 'audio/wav', provider: 'Gemini', filename: 'tts.wav' }
+}
+```
+
+</details>
+
 ---
 
 ### 音声認識 API（STT）
@@ -226,6 +438,59 @@ AI の回答テキストを音声に変換して返します。
 ```
 
 > **ポイント：** 専用の音声認識サービスではなく、Gemini のマルチモーダル機能（テキスト＋音声を同時に扱える能力）を使っています。
+
+<details>
+<summary>📄 実コードを見る（stt.ts）</summary>
+
+```typescript:features/home/routes/stt.ts
+export const sttRoute = new OpenAPIHono<{ Variables: Bindings }>().openapi(
+  createRoute({
+    method: 'post',
+    path: '/api/home/stt',
+    request: {
+      body: { content: { 'multipart/form-data': { schema: z.object({ audio: z.instanceof(File) }) } } },
+    },
+    // ...responses 省略
+  }),
+  async (c) => {
+    // ① FormData から音声ファイルを取得
+    const formData = await c.req.formData()
+    const audioFile = formData.get('audio') as File
+
+    // ② ArrayBuffer → Base64 に変換
+    const buffer = Buffer.from(await audioFile.arrayBuffer())
+    const base64Audio = buffer.toString('base64')
+
+    // ③ Gemini API に音声データを送信
+    const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY })
+
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.0-flash',
+      contents: [
+        {
+          role: 'user',
+          parts: [
+            { text: 'Generate a transcript of the speech. Provide only the transcribed text.' },
+            { inlineData: { mimeType: audioFile.type || 'audio/webm', data: base64Audio } },
+          ],
+        },
+      ],
+      config: {
+        temperature: 0.1,    // 低め＝正確さ重視
+        topK: 1,
+        topP: 1,
+        maxOutputTokens: 2048,
+      },
+    })
+
+    // ④ 文字起こし結果を返却
+    const transcription = response.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || ''
+    return c.json({ text: transcription }, 200)
+  },
+)
+```
+
+</details>
 
 ---
 

@@ -26,6 +26,72 @@ Claude Code への指示：
 - `drizzle.config.ts` — Drizzle の設定ファイル
 - `db/database.ts` — データベース接続
 
+<details>
+<summary>📄 実コードを見る（drizzle.config.ts）</summary>
+
+```typescript:db/drizzle.config.ts
+import { config } from 'dotenv'
+import { defineConfig } from 'drizzle-kit'
+
+config({ path: '.dev.vars' })
+
+export default defineConfig({
+  schema: './db/schema/_index.ts',
+  dialect: 'postgresql',
+  dbCredentials: {
+    url: process.env.DATABASE_URL!,
+  },
+  verbose: true,
+  strict: true,
+  casing: 'snake_case',
+  out: './db/migrations/dev',
+})
+```
+
+</details>
+
+<details>
+<summary>📄 実コードを見る（db/database.ts）</summary>
+
+```typescript:db/database.ts
+import { type PostgresJsDatabase, drizzle } from 'drizzle-orm/postgres-js'
+import postgres from 'postgres'
+import { cache } from 'react'
+import * as schema from './schema/_index'
+
+// 環境変数から DB 接続文字列を取得（遅延評価）
+const getDatabaseUrl = () => {
+  const url = process.env.DATABASE_URL
+  if (!url) {
+    throw new Error('Database URL is not set. Check DATABASE_URL environment variable.')
+  }
+  return url
+}
+
+// 通常のクエリ用 DB クライアント
+export const getDB = cache(() => {
+  const client = postgres(getDatabaseUrl())
+  return drizzle(client, { schema })
+})
+
+// トランザクションが必要な処理用
+export async function withTransaction<T>(
+  callback: (tx: PostgresJsDatabase<typeof schema>) => Promise<T>
+): Promise<T> {
+  const client = postgres(getDatabaseUrl(), { max: 1 })
+  const db = drizzle(client, { schema })
+  try {
+    return await db.transaction(async (tx) => {
+      return await callback(tx as unknown as PostgresJsDatabase<typeof schema>)
+    })
+  } finally {
+    await client.end()
+  }
+}
+```
+
+</details>
+
 ---
 
 ## ② Q&A テーブルのスキーマを作る（3分）
@@ -53,6 +119,49 @@ Claude Code への指示：
 > テキストを数値の配列に変換したものです。例えば「TypeScript とは？」という質問を `[0.1, 0.3, 0.8, ...]` のような 2000個の数値に変換します。似た意味の文章は似た数値の並びになるので、「意味の近さ」を計算できます。
 
 → 生成されたスキーマを一緒に読んで解説
+
+<details>
+<summary>📄 実コードを見る（db/schema/qas.ts）</summary>
+
+```typescript:db/schema/qas.ts
+import { relations } from 'drizzle-orm'
+import { index, pgTable, text, varchar, vector } from 'drizzle-orm/pg-core'
+import { nanoid } from 'nanoid'
+import { timestamps } from '../utils'
+import { qaLogs } from './qa-logs'
+
+export const qas = pgTable(
+  'qas',
+  {
+    id: varchar('id')
+      .primaryKey()
+      .notNull()
+      .$defaultFn(() => nanoid())    // ← nanoid で自動生成
+      .unique(),
+
+    category: varchar('category', { length: 100 }),
+    // 'programming', 'architecture', 'devops', 'debugging', 'security', 'general'
+
+    websiteLink: varchar('website_link', { length: 500 }),
+
+    question: text('question'),
+    answer: text('answer'),
+    embedding: vector('embedding', { dimensions: 2000 }),  // ← pgvector の 2000 次元ベクトル
+    embeddingModel: varchar('embedding_model', { length: 100 }).default('gemini-embedding-001'),
+
+    ...timestamps,  // createdAt, updatedAt を共通ユーティリティから展開
+  },
+  // HNSW インデックス（コサイン類似度検索を高速化）
+  (table) => [index('qas_embedding_idx').using('hnsw', table.embedding.op('vector_cosine_ops'))],
+)
+
+// QA ログとのリレーション定義
+export const qasRelations = relations(qas, ({ many }) => ({
+  logs: many(qaLogs),
+}))
+```
+
+</details>
 
 ---
 
@@ -93,6 +202,89 @@ npm run db:seed
 ```
 
 → 「5件のデータを挿入しました」のようなメッセージが出ればOK
+
+<details>
+<summary>📄 実コードを見る（db/seed.ts + db/seeds/qa.ts）</summary>
+
+```typescript:db/seed.ts
+import { config } from 'dotenv'
+import { drizzle } from 'drizzle-orm/postgres-js'
+import postgres from 'postgres'
+import * as schema from './schema/_index'
+import { seedQasData } from './seeds/qa'
+
+config({ path: '.dev.vars' })
+
+const databaseUrl = process.env.DATABASE_URL!
+
+async function seed() {
+  const client = postgres(databaseUrl)
+  const db = drizzle(client, { schema })
+
+  try {
+    console.log('Seeding Q&As with translations and embeddings...')
+    await seedQasData(db)
+    console.log('Seeded Q&As with translations and embeddings')
+  } catch (error) {
+    console.error('❌ Seed process failed:', error)
+    throw error
+  } finally {
+    await client.end()
+  }
+}
+
+seed().catch((err) => {
+  console.error('❌ Seed failed')
+  console.error(err)
+  process.exit(1)
+})
+```
+
+```typescript:db/seeds/qa.ts
+import { generateEmbedding } from '@/lib/google-ai'
+import { nanoid } from 'nanoid'
+import { qas } from '../schema/_index'
+import qaData from './qaData.json'
+
+export async function seedQasData(db: any) {
+  console.log('❓ Seeding Q&As...')
+
+  // 既存データの件数を確認してスキップ判定
+  const existingQas = await db.select().from(qas)
+  if (existingQas.length >= totalQas) {
+    console.log(`⏭️ ${existingQas.length} Q&As already exist`)
+    return
+  }
+
+  let totalInserted = 0
+
+  for (const [category, categoryQaList] of Object.entries(qaData)) {
+    for (const qa of categoryQaList) {
+      const qaId = nanoid()
+
+      // 質問＋回答のテキストを Embedding に変換
+      const embeddingText = `${qa.question} ${qa.answer}`
+      const embedding = await generateEmbedding(embeddingText)
+
+      // DB に挿入
+      await db.insert(qas).values({
+        id: qaId,
+        category: category,
+        question: qa.question,
+        answer: qa.answer,
+        embedding,
+        embeddingModel: 'gemini-embedding-001',
+      })
+
+      totalInserted++
+    }
+  }
+
+  console.log(`✅ Seeded ${totalInserted} Q&As`)
+}
+```
+
+</details>
 
 ---
 

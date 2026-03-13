@@ -66,6 +66,46 @@ Step 3 で作った `features/home/routes/conversation.ts` が **そのままお
 
 Claude Code に「conversation.ts を参考にして」と伝えると、同じパターンで作ってくれます。
 
+<details>
+<summary>📄 お手本コードを見る（conversation.ts の Gemini 呼び出しパターン）</summary>
+
+```typescript:features/home/routes/conversation.ts
+// ① Hono OpenAPI ルート定義
+export const conversationRoute = new OpenAPIHono<{ Variables: Bindings }>().openapi(
+  createRoute({
+    method: 'post',
+    path: '/api/home/conversation',
+    request: {
+      body: { content: { 'application/json': { schema: conversationRequestSchema } } },
+    },
+    responses: {
+      200: { description: 'Success', content: { 'application/json': { schema: conversationResponseSchema } } },
+    },
+  }),
+  async (c) => {
+    // ② リクエストデータの取得（Zod バリデーション済み）
+    const { question, history, chatSessionId, aiModel } = c.req.valid('json')
+
+    // ③ Gemini API の初期化
+    const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY })
+
+    // ④ プロンプトを構築して送信
+    const response = await ai.models.generateContent({
+      model: aiModel,          // 'gemini-2.5-flash' etc.
+      contents: fullPrompt,    // システムプロンプト + コンテキスト + ユーザー質問
+    })
+
+    // ⑤ レスポンスを返却
+    const text = response?.text?.trim()
+    return c.json({ response: text, relatedQAs: relevantQAs }, 200)
+  },
+)
+```
+
+> **要約 API でも同じパターン**：ルート定義 → リクエスト取得 → Gemini API 呼び出し → レスポンス返却
+
+</details>
+
 ### まず自分で Claude Code に指示を出してみよう！
 
 何を作りたいか、どこに作りたいかを考えて、**自分の言葉** で Claude Code に伝えてみましょう。

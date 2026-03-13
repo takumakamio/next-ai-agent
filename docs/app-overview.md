@@ -42,6 +42,45 @@
 
 > **ポイント：** この仕組みを **RAG（Retrieval-Augmented Generation）** と呼びます。AI が「知らないこと」でも、データベースに情報があれば正確に答えられるようになります。
 
+<details>
+<summary>📄 実コードを見る（RAG の中核処理 — conversation.ts 抜粋）</summary>
+
+```typescript:features/home/routes/conversation.ts
+// ① ユーザーの質問をベクトル化して関連 Q&A を検索
+const relevantQAs = await searchRelevantQAs(question, requestLocale, 3)
+
+// ② コンテキストを構築
+const historyContext = limitedHistory.length > 0 ? buildConversationContext(limitedHistory) : ''
+const qaContext = relevantQAs.length > 0 ? buildQAContext(relevantQAs) : ''
+const fullPrompt = `${baseSystemPrompt}${historyContext}${qaContext}\n\n${userMessage}`
+
+// ③ Gemini API で回答を生成
+const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY })
+const response = await ai.models.generateContent({ model: aiModel, contents: fullPrompt })
+```
+
+```typescript:features/home/routes/conversation.ts
+// ベクトル検索の核心部分
+async function searchRelevantQAs(question: string, locale: string, limit = 5) {
+  const questionEmbedding = await generateEmbedding(question)
+  const embeddingString = `[${questionEmbedding.join(',')}]`
+
+  const qaResults = await db
+    .select({
+      id: qas.id, question: qas.question, answer: qas.answer,
+      similarity: sql`1 - (${qas.embedding} <=> ${embeddingString}::vector)`,  // コサイン類似度
+    })
+    .from(qas)
+    .where(sql`${qas.embedding} IS NOT NULL`)
+    .orderBy(desc(sql`1 - (${qas.embedding} <=> ${embeddingString}::vector)`))
+    .limit(limit)
+
+  return qaResults.filter((qa) => qa.similarity > 0.65)  // 類似度 0.65 以上のみ
+}
+```
+
+</details>
+
 ### 2. 3D アバター「春日部つむぎ」
 
 AI の回答に合わせて 3D キャラクター「つむぎ」が動きます。
@@ -114,6 +153,56 @@ next-ai-agent/
 ```
 
 > **features/ フォルダのパターン：** 機能ごとに `components/`、`routes/`、`repositories/`、`schema.ts` を持つ構成です。「どこに何があるか」が分かりやすくなっています。
+
+<details>
+<summary>📄 実コードを見る（主要ファイルのコード）</summary>
+
+**API エントリーポイント** — Hono を Next.js App Router に統合
+
+```typescript:app/api/[[...route]]/route.ts
+const app = new OpenAPIHono<{ Variables: Bindings }>({ defaultHook: createDefaultHook() })
+
+// 各 feature のルートを登録
+const appRouter = app
+  .route('/', homeRoutes)    // conversation / tts / stt
+  .route('/', qaRoutes)      // QA CRUD
+  .route('/', qaLogRoutes)   // QA ログ
+
+// Next.js App Router 用のハンドラをエクスポート
+export const GET = handle(app)
+export const POST = handle(app)
+export const PATCH = handle(app)
+export const DELETE = handle(app)
+
+// フロントエンドの RPC クライアント用型
+export type AppType = typeof appRouter
+```
+
+**RPC クライアント** — フロントエンドから型安全に API を呼ぶ
+
+```typescript:lib/rpc.ts
+import type { AppType } from '@/app/api/[[...route]]/route'
+import { hc } from 'hono/client'
+
+export const rpc = hc<AppType>('/')
+// 使い方: const res = await rpc.api.qas.$get({ query: { page: 1 } })
+```
+
+**Gemini API クライアント** — Embedding 生成
+
+```typescript:lib/google-ai.ts
+export async function generateEmbedding(text: string): Promise<number[]> {
+  const ai = new GoogleGenAI({ apiKey: env.GOOGLE_GENERATIVE_AI_API_KEY })
+  const response = await ai.models.embedContent({
+    model: 'gemini-embedding-001',
+    contents: text,
+    config: { outputDimensionality: 2000 },
+  })
+  return response.embeddings[0].values as number[]
+}
+```
+
+</details>
 
 ---
 
