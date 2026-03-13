@@ -16,9 +16,9 @@ export const sttRoute = new OpenAPIHono<{ Variables: Bindings }>().openapi(
   createRoute({
     method: 'post',
     path: '/api/home/stt',
-    tags: ['AI Speech'],
-    summary: 'Convert speech to text',
-    description: 'Transcribe audio files to text using Gemini AI',
+    tags: ['AI 音声'],
+    summary: '音声をテキストに変換（STT）',
+    description: 'Gemini AI を使って音声ファイルをテキストに文字起こし',
     request: {
       body: {
         content: {
@@ -32,7 +32,7 @@ export const sttRoute = new OpenAPIHono<{ Variables: Bindings }>().openapi(
     },
     responses: {
       200: {
-        description: 'Successfully transcribed audio',
+        description: '音声の文字起こしに成功',
         content: {
           'application/json': {
             schema: sttResponseSchema,
@@ -40,7 +40,7 @@ export const sttRoute = new OpenAPIHono<{ Variables: Bindings }>().openapi(
         },
       },
       400: {
-        description: 'Bad request - no audio file provided',
+        description: 'リクエスト不正 — 音声ファイルが指定されていません',
         content: {
           'application/json': {
             schema: errorResponseSchema,
@@ -48,7 +48,7 @@ export const sttRoute = new OpenAPIHono<{ Variables: Bindings }>().openapi(
         },
       },
       500: {
-        description: 'Server error',
+        description: 'サーバーエラー',
         content: {
           'application/json': {
             schema: errorResponseSchema,

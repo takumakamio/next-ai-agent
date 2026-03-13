@@ -31,15 +31,15 @@ export const ttsRoute = new OpenAPIHono<{ Variables: Bindings }>().openapi(
   createRoute({
     method: 'get',
     path: '/api/home/tts',
-    tags: ['AI Speech'],
-    summary: 'Convert text to speech',
-    description: 'Generate audio from text using Gemini TTS',
+    tags: ['AI 音声'],
+    summary: 'テキストを音声に変換（TTS）',
+    description: 'Gemini TTS を使ってテキストから音声を生成',
     request: {
       query: ttsRequestSchema,
     },
     responses: {
       200: {
-        description: 'Successfully generated audio',
+        description: '音声の生成に成功',
         content: {
           'audio/mpeg': {
             schema: {
@@ -58,7 +58,7 @@ export const ttsRoute = new OpenAPIHono<{ Variables: Bindings }>().openapi(
         }),
       },
       500: {
-        description: 'Server error',
+        description: 'サーバーエラー',
         content: {
           'application/json': {
             schema: errorResponseSchema,

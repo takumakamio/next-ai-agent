@@ -69,7 +69,7 @@ app.doc31('/api/swagger.json', {
   info: {
     title: APP_TITLE,
     version: '1.0.0',
-    description: isDevelopment ? 'API with enhanced debugging for 400 errors' : 'Production API',
+    description: isDevelopment ? 'デバッグ強化モードの API（400 エラー詳細表示）' : 'プロダクション API',
   },
 })
 

@@ -63,9 +63,9 @@ export const conversationRoute = new OpenAPIHono<{ Variables: Bindings }>().open
   createRoute({
     method: 'post',
     path: '/api/home/conversation',
-    tags: ['AI Chat'],
-    summary: 'Enhanced conversation with QA search',
-    description: 'Natural conversations with QA search using vector embeddings',
+    tags: ['AI チャット'],
+    summary: 'QA 検索付き AI 会話',
+    description: 'ベクトル埋め込みを使った QA 検索による自然な会話',
     request: {
       body: {
         content: {
@@ -77,7 +77,7 @@ export const conversationRoute = new OpenAPIHono<{ Variables: Bindings }>().open
     },
     responses: {
       200: {
-        description: 'Successfully generated conversational response',
+        description: '会話レスポンスの生成に成功',
         content: {
           'application/json': {
             schema: conversationResponseSchema,
@@ -85,7 +85,7 @@ export const conversationRoute = new OpenAPIHono<{ Variables: Bindings }>().open
         },
       },
       400: {
-        description: 'Bad request',
+        description: 'リクエスト不正',
         content: {
           'application/json': {
             schema: errorResponseSchema,
@@ -93,7 +93,7 @@ export const conversationRoute = new OpenAPIHono<{ Variables: Bindings }>().open
         },
       },
       500: {
-        description: 'Server error',
+        description: 'サーバーエラー',
         content: {
           'application/json': {
             schema: errorResponseSchema,

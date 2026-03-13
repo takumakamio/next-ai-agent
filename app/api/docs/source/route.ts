@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
 
   // Security: prevent path traversal
   const normalized = path.normalize(filePath).replace(/\\/g, '/')
-  if (normalized.includes('..') || normalized.startsWith('/')) {
+  if (normalized.split('/').includes('..') || normalized.startsWith('/')) {
     return NextResponse.json({ error: 'Invalid path' }, { status: 400 })
   }
 

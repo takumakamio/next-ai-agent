@@ -7,8 +7,8 @@ export const getId = new OpenAPIHono<{ Variables: Bindings }>().openapi(
   createRoute({
     method: 'get',
     path: '/api/qas/{id}',
-    tags: ['Manage qa'],
-    summary: 'Get a single qa',
+    tags: ['Q&A 管理'],
+    summary: 'Q&A 単体取得',
     schema: {
       type: 'object',
       properties: {
@@ -20,7 +20,7 @@ export const getId = new OpenAPIHono<{ Variables: Bindings }>().openapi(
     },
     responses: {
       200: {
-        description: 'Success',
+        description: '取得成功',
         content: {
           'application/json': {
             schema: selectQaSchema,
@@ -28,10 +28,10 @@ export const getId = new OpenAPIHono<{ Variables: Bindings }>().openapi(
         },
       },
       401: {
-        description: 'Unauthorized',
+        description: '認証エラー',
       },
       404: {
-        description: 'Not found',
+        description: '見つかりません',
       },
     },
   }),

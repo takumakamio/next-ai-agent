@@ -14,8 +14,8 @@ export const create = new OpenAPIHono<{ Variables: Bindings }>().openapi(
   createRoute({
     method: 'post',
     path: '/api/qas',
-    tags: ['Manage QA'],
-    summary: 'Create or update a Q&A',
+    tags: ['Q&A 管理'],
+    summary: 'Q&A の作成・更新',
     request: {
       body: {
         content: {
@@ -27,7 +27,7 @@ export const create = new OpenAPIHono<{ Variables: Bindings }>().openapi(
     },
     responses: {
       200: {
-        description: 'QA created/updated successfully',
+        description: 'Q&A の作成・更新に成功',
         content: {
           'application/json': {
             schema: responseSchema,
@@ -35,13 +35,13 @@ export const create = new OpenAPIHono<{ Variables: Bindings }>().openapi(
         },
       },
       400: {
-        description: 'Bad Request',
+        description: 'リクエスト不正',
       },
       401: {
-        description: 'Unauthorized',
+        description: '認証エラー',
       },
       500: {
-        description: 'Internal Server Error',
+        description: 'サーバー内部エラー',
       },
     },
   }),

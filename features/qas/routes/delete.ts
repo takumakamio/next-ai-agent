@@ -11,8 +11,8 @@ export const deleteRoute = new OpenAPIHono<{ Variables: Bindings }>().openapi(
   createRoute({
     method: 'delete',
     path: '/api/qas/{id}',
-    tags: ['Manage QA'],
-    summary: 'Delete a Q&A',
+    tags: ['Q&A 管理'],
+    summary: 'Q&A の削除',
     request: {
       params: z.object({
         id: z.string(),
@@ -20,7 +20,7 @@ export const deleteRoute = new OpenAPIHono<{ Variables: Bindings }>().openapi(
     },
     responses: {
       200: {
-        description: 'QA deleted successfully',
+        description: 'Q&A の削除に成功',
         content: {
           'application/json': {
             schema: responseSchema,
@@ -28,13 +28,13 @@ export const deleteRoute = new OpenAPIHono<{ Variables: Bindings }>().openapi(
         },
       },
       401: {
-        description: 'Unauthorized',
+        description: '認証エラー',
       },
       404: {
-        description: 'Not Found',
+        description: '見つかりません',
       },
       500: {
-        description: 'Internal Server Error',
+        description: 'サーバー内部エラー',
       },
     },
   }),

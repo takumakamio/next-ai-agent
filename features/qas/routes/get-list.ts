@@ -23,14 +23,14 @@ export const getList = new OpenAPIHono<{ Variables: Bindings }>().openapi(
   createRoute({
     method: 'get',
     path: '/api/qas',
-    tags: ['Manage qa'],
-    summary: 'Get qas list with pagination and search',
+    tags: ['Q&A 管理'],
+    summary: 'Q&A 一覧取得（ページネーション・検索対応）',
     request: {
       query: querySchema,
     },
     responses: {
       200: {
-        description: 'Success',
+        description: '取得成功',
         content: {
           'application/json': {
             schema: paginatedResponseSchema,
@@ -38,10 +38,10 @@ export const getList = new OpenAPIHono<{ Variables: Bindings }>().openapi(
         },
       },
       401: {
-        description: 'Unauthorized',
+        description: '認証エラー',
       },
       404: {
-        description: 'Not found',
+        description: '見つかりません',
       },
     },
   }),
