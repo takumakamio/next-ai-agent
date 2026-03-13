@@ -1,7 +1,7 @@
 # Step 0：Claude Code の使い方を覚えよう（5分）
 
 > 事前セットアップが完了している前提で進めます。
-> まだの方は [02_pre-setup.md](./02_pre-setup.md) を先に完了してください。
+> まだの方は [クイックスタート](./quick-start.md) を先に完了してください。
 
 ---
 
@@ -21,7 +21,7 @@ claude --version    # Claude Code
 
 ---
 
-## ① プロジェクト用フォルダを作って VS Code で開く（2分）
+## ① プロジェクト用フォルダを作って VS Code で開く（1分）
 
 ```bash
 # ホームディレクトリにフォルダを作成
@@ -34,7 +34,7 @@ code .
 
 ---
 
-## ② VS Code のターミナルで Claude Code を起動（2分）
+## ② VS Code のターミナルで Claude Code を起動（1分）
 
 VS Code 上部メニュー →「ターミナル」→「新しいターミナル」
 （またはショートカット：`Ctrl + ` `）
@@ -47,7 +47,7 @@ claude
 
 ---
 
-## ③ ウォーミングアップ：Claude Code と会話してみよう（2分）
+## ③ ウォーミングアップ：Claude Code と会話してみよう（1分）
 
 以下を順番に試してみましょう：
 
@@ -69,9 +69,11 @@ claude
 
 ### Next.js プロジェクトの作成
 
-Claude Code への指示：
+> 💻 **Claude Code への指示**
 
-> 「Next.js のプロジェクトを初期化して。TypeScript と Tailwind CSS 4 を使う構成で。パッケージマネージャーは npm で。」
+```text
+Next.js のプロジェクトを初期化して。TypeScript と Tailwind CSS 4 を使う構成で。パッケージマネージャーは npm で。
+```
 
 → 生成されたファイルを一緒に確認：
 
@@ -81,11 +83,13 @@ Claude Code への指示：
 
 ### 環境変数の設定
 
-Claude Code への指示：
+> 💻 **Claude Code への指示**
 
-> 「.env.local ファイルを作って。中身はこの2つ：
-> DATABASE_URL=postgresql://postgres:postgres@localhost:5432/next_ai_agent
-> GOOGLE_GENERATIVE_AI_API_KEY=（自分のAPIキーをここに貼る）」
+```text
+.env.local ファイルを作って。中身はこの2つ：
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/next_ai_agent
+GOOGLE_GENERATIVE_AI_API_KEY=（自分のAPIキーをここに貼る）
+```
 
 > **セキュリティ注意：** `.env.local` には API キーなどの秘密情報を書きます。このファイルは `.gitignore` に含まれているため Git にアップされません。**API キーを直接コードに書かない** ようにしましょう。
 
@@ -119,3 +123,16 @@ npm run dev
 ## このステップで伝えること
 
 > **「Claude Code には、友達に頼むように自然な日本語で指示を出せばOKです。完璧な指示じゃなくても、会話しながら修正できます。」**
+
+---
+
+## トラブルシューティング
+
+| 症状                                   | 原因                          | 対処法                                                  |
+| -------------------------------------- | ----------------------------- | ------------------------------------------------------- |
+| `claude` コマンドが見つからない         | Claude Code 未インストール     | [クイックスタート](./quick-start.md) の手順 4 を確認      |
+| Claude Code がログインを求めてくる      | 認証が未完了                  | ブラウザで Anthropic アカウントにログインして認証を完了    |
+| `npm run dev` でエラーが出る            | パッケージ未インストール       | `npm install` を実行してから再度 `npm run dev`            |
+| ポート 3000 が使用中と表示される        | 他のプロセスが占有            | `npx kill-port 3000` で解放してから再起動                |
+| `.env.local` の API キーが反映されない  | サーバー再起動が必要           | `npm run dev` を一度止めて（Ctrl+C）再度起動              |
+| Claude Code の回答が英語になる          | 指示が英語と判定されている     | 「日本語で回答して」と追加で伝える                        |

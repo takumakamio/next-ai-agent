@@ -103,6 +103,35 @@ export const DocsContent = ({ content }: DocsContentProps) => {
   }, [])
 
   const components: Components = {
+    details({ children, ...props }) {
+      return (
+        <details
+          className="group/accordion my-4 rounded-lg border border-border overflow-hidden [&>div]:!my-0 [&>div]:!border-0 [&>div]:!rounded-none"
+          {...props}
+        >
+          {children}
+        </details>
+      )
+    },
+    summary({ children, ...props }) {
+      return (
+        <summary
+          className="flex items-center gap-2 px-4 py-3 cursor-pointer select-none text-sm font-medium text-muted-foreground hover:text-foreground bg-[#161b22] hover:bg-[#1c2129] transition-colors list-none [&::-webkit-details-marker]:hidden [&::marker]:hidden group-open/accordion:border-b group-open/accordion:border-border"
+          {...props}
+        >
+          <svg
+            className="w-4 h-4 shrink-0 transition-transform group-open/accordion:rotate-90"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+          </svg>
+          {children}
+        </summary>
+      )
+    },
     a({ href, children, ...props }) {
       if (href) {
         // Transform ./filename.md links to /docs/slug
@@ -114,7 +143,8 @@ export const DocsContent = ({ content }: DocsContentProps) => {
           }
         }
       }
-      return <a href={href} {...props}>{children}</a>
+      const isExternal = href?.startsWith('http')
+      return <a href={href} {...(isExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {})} {...props}>{children}</a>
     },
     pre({ children, ...props }) {
       const codeChild = Array.isArray(children)
@@ -174,7 +204,7 @@ export const DocsContent = ({ content }: DocsContentProps) => {
               {copiedId === blockId ? 'Copied!' : 'Copy'}
             </button>
           )}
-          <pre className="!my-0 !rounded-none !border-0" {...props}>
+          <pre className="!my-0 !rounded-none !border-0 !whitespace-pre-wrap break-words" {...props}>
             {children}
           </pre>
         </div>

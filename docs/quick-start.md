@@ -9,18 +9,18 @@
 
 | 順番 | ツール | 必要な理由 |
 | ---- | --- | --- |
-| 1 | **Git** | 完成版コードをダウンロード（クローン）するため |
-| 2 | **VS Code** | コードエディタ |
-| 3 | **Node.js** | Next.js の実行・パッケージ管理（npm）に必須 |
-| 4 | **Claude Code** | AI アシスタント（今日の主役！） |
+| 1 | **[Git](https://git-scm.com)** | 完成版コードをダウンロード（クローン）するため |
+| 2 | **[VS Code](https://code.visualstudio.com)** | コードエディタ |
+| 3 | **[Node.js](https://nodejs.org)** | Next.js の実行・パッケージ管理（npm）に必須 |
+| 4 | **[Claude Code](https://docs.anthropic.com/en/docs/claude-code)** | AI アシスタント（今日の主役！） |
 
-> **Neon アカウント** と **Google AI API キー** は講師側で用意します。個別に作成する必要はありません。
+> **[Neon](https://neon.tech) アカウント** と **[Google AI](https://ai.google.dev/gemini-api/docs/models?hl=ja) API キー** は講師側で用意します。個別に作成する必要はありません。
 
 ---
 
 ## 1. Git のインストール
 
-> **Git とは？** ソースコードのバージョン管理ツールです。完成版のコードをダウンロード（クローン）するために使います。
+> **[Git](https://git-scm.com) とは？** ソースコードのバージョン管理ツールです。完成版のコードをダウンロード（クローン）するために使います。
 
 ### Windows の場合
 
@@ -52,7 +52,7 @@ git --version
 
 ## 2. VS Code のインストール
 
-> **VS Code とは？** Microsoft が提供する無料のコードエディタです。
+> **[VS Code](https://code.visualstudio.com) とは？** Microsoft が提供する無料のコードエディタです。
 
 ### Windows の場合
 
@@ -92,7 +92,7 @@ code --version
 
 ## 3. Node.js のインストール
 
-> **Node.js とは？** JavaScript を PC 上で動かすための実行環境です。
+> **[Node.js](https://nodejs.org) とは？** JavaScript を PC 上で動かすための実行環境です。
 > Node.js をインストールすると **npm** というパッケージ管理ツールも一緒に入ります。
 
 ### Windows の場合
@@ -128,7 +128,7 @@ npm --version       # 例：10.x.x
 
 ## 4. Claude Code のインストール
 
-> **Claude Code とは？** ターミナルで動く AI アシスタント。自然な日本語で指示すると、コードを書いたりファイルを作ったりしてくれます。**今日の研修の主役です！**
+> **[Claude Code](https://docs.anthropic.com/en/docs/claude-code) とは？** ターミナルで動く AI アシスタント。自然な日本語で指示すると、コードを書いたりファイルを作ったりしてくれます。**今日の研修の主役です！**
 
 ### Mac の場合
 

@@ -28,15 +28,15 @@
 
 | 技術             | 理解できること                                                      |
 | ---------------- | ------------------------------------------------------------------- |
-| **Next.js**      | React ベースの Web アプリの作り方、ページの構成方法                    |
-| **TypeScript**   | 型があるとなぜ安全なのか、JavaScript との違い                         |
-| **Hono**         | API（サーバー側の処理）の作り方、リクエストとレスポンスの仕組み        |
-| **PostgreSQL**   | データベースにデータを保存・検索する仕組み                            |
-| **Drizzle ORM**  | SQL を書かずにデータベースを操作する方法                               |
-| **pgvector**     | テキストを数値（ベクトル）に変換して「意味の近さ」で検索する仕組み     |
-| **Gemini AI**    | AI に質問して回答を生成させる方法、Embedding（ベクトル変換）の仕組み  |
-| **shadcn/ui**    | 既成の UI パーツを組み合わせて画面を作る方法                          |
-| **Neon**         | クラウド PostgreSQL サービスを使ってデータベースをセットアップする方法 |
+| **[Next.js](https://nextjs.org)**           | React ベースの Web アプリの作り方、ページの構成方法                    |
+| **[TypeScript](https://www.typescriptlang.org)** | 型があるとなぜ安全なのか、JavaScript との違い                   |
+| **[Hono](https://hono.dev)**                | API（サーバー側の処理）の作り方、リクエストとレスポンスの仕組み        |
+| **[PostgreSQL](https://www.postgresql.org)** | データベースにデータを保存・検索する仕組み                           |
+| **[Drizzle ORM](https://orm.drizzle.team)** | SQL を書かずにデータベースを操作する方法                              |
+| **[pgvector](https://github.com/pgvector/pgvector)** | テキストを数値（ベクトル）に変換して「意味の近さ」で検索する仕組み |
+| **[Gemini AI](https://ai.google.dev/gemini-api/docs/models?hl=ja)**      | AI に質問して回答を生成させる方法、Embedding（ベクトル変換）の仕組み  |
+| **[shadcn/ui](https://ui.shadcn.com)**      | 既成の UI パーツを組み合わせて画面を作る方法                          |
+| **[Neon](https://neon.tech)**               | クラウド PostgreSQL サービスを使ってデータベースをセットアップする方法 |
 
 ---
 
@@ -77,4 +77,4 @@
 
 ---
 
-> 次は [01_tech-overview.md](./01_tech-overview.md) で使う技術について学び、その後 [02_pre-setup.md](./02_pre-setup.md) で事前セットアップを行いましょう。
+> 次は [01_tech-overview.md](./01_tech-overview.md) で使う技術について学び、その後 [クイックスタート](./quick-start.md) で事前セットアップを行いましょう。

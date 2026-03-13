@@ -12,7 +12,7 @@ export const CHAPTERS: Chapter[] = [
   { slug: '01_tech-overview', title: '15:15 この研修で使う技術を知ろう', filename: '01_tech-overview.md' },
   { slug: '03_claude-code-intro', title: '15:20 Step 0: Claude Code の使い方', filename: '03_claude-code-intro.md' },
   { slug: '04_database', title: '15:25 Step 1: データベースを作ろう', filename: '04_database.md' },
-  { slug: '05_api', title: '15:40 Step 2: API を作ろう', filename: '05_api.md' },
+  { slug: '05_api', title: '15:35 Step 2: API を作ろう', filename: '05_api.md' },
   { slug: '06_ai-conversation', title: '15:50 Step 3: AI と会話できるようにしよう', filename: '06_ai-conversation.md' },
   { slug: '07_frontend', title: '16:05 Step 4: 画面を作ろう', filename: '07_frontend.md' },
   { slug: '09_finishing', title: '16:15 Step 5: 仕上げ & 振り返り', filename: '09_finishing.md' },

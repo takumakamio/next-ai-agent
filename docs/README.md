@@ -20,8 +20,8 @@
 | 15:10 - 15:15 |              | このアプリの概要                        | [app-overview.md](./app-overview.md)                 |
 | 15:15 - 15:20 |              | この研修で使う技術を知ろう              | [01_tech-overview.md](./01_tech-overview.md)          |
 | 15:20 - 15:25 | **Step 0**   | Claude Code の使い方を覚えよう          | [03_claude-code-intro.md](./03_claude-code-intro.md) |
-| 15:25 - 15:40 | **Step 1**   | データベースを作ろう                    | [04_database.md](./04_database.md)                   |
-| 15:40 - 15:50 | **Step 2**   | API を作ろう                            | [05_api.md](./05_api.md)                             |
+| 15:25 - 15:35 | **Step 1**   | データベースを作ろう                    | [04_database.md](./04_database.md)                   |
+| 15:35 - 15:50 | **Step 2**   | API を作ろう                            | [05_api.md](./05_api.md)                             |
 | 15:50 - 16:05 | **Step 3**   | AI と会話できるようにしよう              | [06_ai-conversation.md](./06_ai-conversation.md)     |
 | 16:05 - 16:15 | **Step 4**   | 画面を作ろう                            | [07_frontend.md](./07_frontend.md)                   |
 | 16:15 - 16:25 | **Step 5**   | 仕上げ & 振り返り                       | [09_finishing.md](./09_finishing.md)                  |
@@ -75,7 +75,7 @@ docs/
 ├── README.md                  ← この文書（研修概要）
 ├── 00_learning-outcomes.md    ← 研修で理解できるようになること
 ├── 01_tech-overview.md        ← この研修で使う技術を知ろう
-├── 02_pre-setup.md            ← 事前セットアップ手順
+├── quick-start.md             ← クイックスタート & セットアップ
 ├── 03_claude-code-intro.md    ← Step 0: Claude Code 入門
 ├── 04_database.md             ← Step 1: データベース構築
 ├── 05_api.md                  ← Step 2: API 構築

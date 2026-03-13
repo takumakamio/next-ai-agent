@@ -1,6 +1,8 @@
-# Step 6：実践チャレンジ — チャット要約機能を作ろう（5分）
+# Step 6：実践チャレンジ — チャット要約機能を作ろう（5分 + ハンズオン）
 
 > **ゴール：** Step 1〜4 で学んだスキルを活かして、Claude Code に指示して **新しい AI 機能** を追加する
+>
+> **所要時間：** 講師の説明は 5 分、ハンズオン（実装）は約 25 分です。研修時間内に終わらなくても、自習用として持ち帰れます。
 
 > **講師向けメモ：** このステップが研修のクライマックスです。
 > 今まではステップごとに指示通り作ってきましたが、ここで初めて **自分で考えて Claude Code に指示を出す** 体験をします。
@@ -60,6 +62,13 @@
 }
 ```
 
+### 作るファイルと登録先
+
+| 作業 | パス |
+| --- | --- |
+| 要約 API を新規作成 | `features/home/routes/summary.ts` |
+| ルートを登録 | `features/home/routes/index.ts` に追加 |
+
 ### 参考にできる既存コード
 
 Step 3 で作った `features/home/routes/conversation.ts` が **そのままお手本** になります。この API も Gemini AI を呼び出してテキストを返す仕組みです。
@@ -110,12 +119,22 @@ export const conversationRoute = new OpenAPIHono<{ Variables: Bindings }>().open
 
 何を作りたいか、どこに作りたいかを考えて、**自分の言葉** で Claude Code に伝えてみましょう。
 
+> **ヒント：** 以下のことを伝えると Claude Code が理解しやすいです：
+> 1. **何を作るか** — 「会話を要約する API」
+> 2. **どこに作るか** — 「features/home/routes/summary.ts に」
+> 3. **何を参考にするか** — 「conversation.ts を参考にして」
+> 4. **登録も忘れずに** — 「routes/index.ts にも登録して」
+
 ---
 
 <details>
 <summary>ヒント：うまく伝わらないときはこの指示を使おう</summary>
 
-> 「チャットの会話履歴を要約する POST API を features/home/routes/summary.ts に作って。リクエストで messages（role と content の配列）を受け取って、Gemini に『以下の会話を日本語で3行以内で要約して』と送って、結果を返して。既存の features/home/routes/conversation.ts を参考にして。routes/index.ts にも登録して」
+> 💻 **Claude Code への指示**
+
+```text
+チャットの会話履歴を要約する POST API を features/home/routes/summary.ts に作って。リクエストで messages（role と content の配列）を受け取って、Gemini に『以下の会話を日本語で3行以内で要約して』と送って、結果を返して。既存の features/home/routes/conversation.ts を参考にして。routes/index.ts にも登録して
+```
 
 </details>
 
@@ -147,26 +166,37 @@ curl -X POST http://localhost:3000/api/home/summary \
 
 1. チャット画面に「要約する」ボタンを追加（会話が 2 件以上あるときだけ表示）
 2. ボタンを押したら ① で作った API を呼び出す
-3. 返ってきた要約をカード形式で画面に表示する
+3. 返ってきた要約を shadcn/ui の `Card` コンポーネントで画面に表示する
 
 ### まず自分で Claude Code に指示を出してみよう！
 
 > **ポイント：** 一度に全部頼まず、**2 回に分けて** 指示するとうまくいきやすいです。
-> まず「ボタンを追加して API を呼ぶ」、次に「見た目を整える」のように段階的に進めましょう。
+>
+> | 1 回目 | 「ボタンを追加して API を呼ぶ」 |
+> | --- | --- |
+> | **2 回目** | **「見た目を整える（ローディング表示など）」** |
 
 ---
 
 <details>
 <summary>ヒント①：要約ボタンと API 呼び出し</summary>
 
-> 「チャット画面に『要約する』ボタンを追加して。会話が2件以上あるときだけ表示して。ボタンを押したら POST /api/home/summary に会話履歴を送って、返ってきた要約をチャット画面の下部にカード形式で表示して」
+> 💻 **Claude Code への指示**
+
+```text
+チャット画面に『要約する』ボタンを追加して。会話が2件以上あるときだけ表示して。ボタンを押したら POST /api/home/summary に会話履歴を送って、返ってきた要約をチャット画面の下部にカード形式で表示して
+```
 
 </details>
 
 <details>
 <summary>ヒント②：ローディング表示の追加</summary>
 
-> 「要約ボタンを押している間はローディング表示にして。要約が完了したらボタンのテキストを『再要約』に変えて」
+> 💻 **Claude Code への指示**
+
+```text
+要約ボタンを押している間はローディング表示にして。要約が完了したらボタンのテキストを『再要約』に変えて
+```
 
 </details>
 
