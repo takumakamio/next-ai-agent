@@ -5,17 +5,17 @@
   "scripts": {
     "cc": "claude --dangerously-skip-permissions",
     "with-dev": "dotenv -e .env.local --",
-    "dev": "bun with-dev next dev",
-    "build": "bun next build",
-    "start": "bun next start",
-    "lint": "bunx biome check .",
+    "dev": "npm with-dev next dev",
+    "build": "npm next build",
+    "start": "npm next start",
+    "lint": "npx biome check .",
     "clean": "rm -rf .next",
-    "db:generate": "bunx drizzle-kit generate --config=./db/drizzle.config.ts",
-    "db:migrate": "bun ./db/migrate.ts",
-    "db:gnm": "bun db:generate && bun db:migrate",
-    "db:seed": "NODE_ENV=development bun ./db/seed.ts --config=./db/drizzle.config.ts",
-    "db:drop": "NODE_ENV=development bun ./db/drop.ts",
-    "db:reset": "NODE_ENV=development bun ./db/drop.ts --config=./db/drizzle.config.ts && bun db:generate && bun db:migrate && bun db:seed"
+    "db:generate": "npx drizzle-kit generate --config=./db/drizzle.config.ts",
+    "db:migrate": "npm ./db/migrate.ts",
+    "db:gnm": "npm db:generate && npm db:migrate",
+    "db:seed": "NODE_ENV=development npm ./db/seed.ts --config=./db/drizzle.config.ts",
+    "db:drop": "NODE_ENV=development npm ./db/drop.ts",
+    "db:reset": "NODE_ENV=development npm ./db/drop.ts --config=./db/drizzle.config.ts && npm db:generate && npm db:migrate && npm db:seed"
   },
   "dependencies": {
     "@gltf-transform/core": "^4.1.4",
